@@ -4,5 +4,4 @@ import { ipcRenderer, contextBridge } from 'electron'
 contextBridge.exposeInMainWorld('ipcRenderer', {
   showSaveDialog: () => ipcRenderer.invoke('showSaveDialog'),
   showOpenDialog: () => ipcRenderer.invoke('showOpenDialog'),
-  showMessageBox: (options: Electron.MessageBoxOptions) => ipcRenderer.invoke('showMessageBox', options),
 })
