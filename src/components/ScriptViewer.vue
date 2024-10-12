@@ -9,7 +9,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useStore } from '../store/'
-import { saveAs } from 'file-saver'
 import { ElMessage } from 'element-plus'
 
 
@@ -30,17 +29,10 @@ const validateScripts = () => {
 const saveScripts = async () => {
   if (store.loadedFilePath) {
     store.saveRasFile(store.loadedFilePath)
-    ElMessage.success('保存成功')
   } else {
     const filePath = await window.ipcRenderer.showSaveDialog()
     if (filePath) {
       store.saveRasFile(filePath)
-      ElMessage.success('保存成功')
-    } else {
-      // 如果无法使用 Electron 的对话框，可以使用 file-saver
-      const blob = new Blob([rasContent.value], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, 'script.ras')
-      ElMessage.success('已保存到本地')
     }
   }
 }

@@ -116,9 +116,9 @@ export const useStore = defineStore('main', {
             const content = this.generateRasContent()
             try {
                 await window.ipcRenderer.saveFile(filePath, content)
-                ElMessage.success('文件保存成功')
+                ElMessage.success('保存成功')
             } catch (error) {
-                ElMessage.error('文件保存失败')
+                ElMessage.error('保存失败')
                 console.error(error)
             }
         },
