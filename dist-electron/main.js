@@ -1,5 +1,8 @@
 import { app, ipcMain, dialog, BrowserWindow } from "electron";
 import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 let win;
 function createWindow() {
   win = new BrowserWindow({
@@ -27,4 +30,10 @@ ipcMain.handle("showSaveDialog", async () => {
     filters: [{ name: "Ras Files", extensions: ["ras"] }]
   });
   return filePath;
+});
+ipcMain.handle("showOpenDialog", async () => {
+  const { filePaths, canceled } = await dialog.showOpenDialog({
+    filters: [{ name: "Ras Files", extensions: ["ras"] }]
+  });
+  return { filePaths, canceled };
 });
