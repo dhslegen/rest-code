@@ -1,24 +1,53 @@
 <template>
-    <el-table :data="scripts" style="width: 100%">
+    <el-table :data="scripts" style="width: 100%" border>
         <el-table-column label="内置模板">
-            <template #default="{ row, $index }">
-                <el-select v-model="row.template" @change="onTemplateChange(row, $index)">
+            <template #default="{ row }">
+                <el-select v-model="row.template" @change="onTemplateChange(row)">
                     <el-option v-for="item in templates" :key="item.name" :label="item.name" :value="item"></el-option>
                 </el-select>
             </template>
         </el-table-column>
         <el-table-column label="领域名称">
             <template #default="{ row }">
-                <el-select v-model="row.domain">
+                <el-select v-model="row.domain" @change="onTemplateChange(row)">
                     <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
                         :value="domain.name"></el-option>
                 </el-select>
             </template>
         </el-table-column>
-        <!-- 其他列类似 -->
+        <el-table-column label="HTTP请求方法">
+            <template #default="{ row }">
+                <el-select v-model="row.httpMethod">
+                    <el-option label="GET" value="GET"></el-option>
+                    <el-option label="POST" value="POST"></el-option>
+                    <el-option label="PUT" value="PUT"></el-option>
+                    <el-option label="DELETE" value="DELETE"></el-option>
+                </el-select>
+            </template>
+        </el-table-column>
+        <el-table-column label="API路径">
+            <template #default="{ row }">
+                <el-input v-model="row.apiPath" placeholder="例如：/users"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作名称">
+            <template #default="{ row }">
+                <el-input v-model="row.operation" placeholder="操作名称"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="参数契约">
+            <template #default="{ row }">
+                <el-input v-model="row.contract" placeholder="参数契约"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="描述">
+            <template #default="{ row }">
+                <el-input v-model="row.description" placeholder="描述"></el-input>
+            </template>
+        </el-table-column>
         <el-table-column label="操作">
             <template #default="{ $index }">
-                <el-button @click="deleteScript($index)">删除</el-button>
+                <el-button type="danger" @click="deleteScript($index)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -36,7 +65,6 @@ const domains = store.domains
 
 const addScript = () => {
     store.addScript({
-        template: null,
         domain: '',
         httpMethod: '',
         apiPath: '',
@@ -50,8 +78,7 @@ const deleteScript = (index: number) => {
     store.removeScript(index)
 }
 
-const onTemplateChange = (row: any, index: number) => {
-    console.log('onTemplateChange', row, index)
+const onTemplateChange = (row: any) => {
     if (row.template && row.domain) {
         const domainName = row.domain
         const domainDesc = domains.find((d: { name: string; description?: string }) => d.name === domainName)?.description || ''

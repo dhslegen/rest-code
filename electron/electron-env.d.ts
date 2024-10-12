@@ -9,7 +9,9 @@ declare namespace NodeJS {
 
 interface IpcRendererAPI {
   showSaveDialog(): Promise<string | undefined>
-  showOpenDialog(): Promise<string | undefined>
+  showOpenDialog(): Promise<{ filePaths: string[]; canceled: boolean }>
+  readFile(filePath: string): Promise<string | null>
+  saveFile(filePath: string, content: string): Promise<boolean>
 }
 
 interface Window {

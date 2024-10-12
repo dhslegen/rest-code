@@ -4,7 +4,6 @@ export interface Domain {
 }
 
 export interface Script {
-    template: any
     domain: string
     httpMethod: string
     apiPath: string

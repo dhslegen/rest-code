@@ -1,29 +1,61 @@
 <template>
-  <el-container style="height: 100vh;">
+  <el-container style="height: 100vh; flex-direction: column;">
     <!-- 顶部区域 -->
     <el-header>
       <h2>Rest API 生成器</h2>
     </el-header>
 
-    <!-- 中间内容区域 -->
-    <el-container>
-      <!-- 左侧编辑区域 -->
-      <el-aside width="300px">
-        <file-loader />
+    <!-- 第1行：文件加载区域和生成代码区域 -->
+    <el-main>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <template #header>
+              <span>文件加载</span>
+            </template>
+            <file-loader />
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <template #header>
+              <span>生成代码</span>
+            </template>
+            <code-generator />
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-main>
+
+    <!-- 第2行：领域编辑区域 -->
+    <el-main>
+      <el-card shadow="hover">
+        <template #header>
+          <span>领域编辑</span>
+        </template>
         <domain-editor />
-        <code-generator />
-      </el-aside>
+      </el-card>
+    </el-main>
 
-      <!-- 中间脚本编辑区域 -->
-      <el-main>
+    <!-- 第3行：脚本编辑区域 -->
+    <el-main>
+      <el-card shadow="hover">
+        <template #header>
+          <span>脚本编辑</span>
+        </template>
         <script-editor />
-      </el-main>
+      </el-card>
+    </el-main>
 
-      <!-- 右侧脚本查看区域 -->
-      <el-aside width="400px">
+    <!-- 第4行：脚本查看区域 -->
+    <el-main>
+      <el-card shadow="hover">
+        <template #header>
+          <span>脚本查看</span>
+        </template>
         <script-viewer />
-      </el-aside>
-    </el-container>
+      </el-card>
+    </el-main>
 
     <!-- 底部区域 -->
     <el-footer>
@@ -40,3 +72,9 @@ import ScriptEditor from './components/ScriptEditor.vue'
 import ScriptViewer from './components/ScriptViewer.vue'
 import CodeGenerator from './components/CodeGenerator.vue'
 </script>
+
+<style scoped>
+el-main {
+  padding: 10px;
+}
+</style>

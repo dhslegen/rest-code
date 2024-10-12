@@ -1,9 +1,5 @@
 <template>
-    <el-upload class="upload-demo" drag action="" :before-upload="beforeUpload" :auto-upload="false">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">仅支持 .ras 文件</div>
-    </el-upload>
+    <el-button type="primary" @click="openFile">打开文件</el-button>
 </template>
 
 <script setup lang="ts">
@@ -12,18 +8,21 @@ import { ElMessage } from 'element-plus'
 
 const store = useStore()
 
-const beforeUpload = (file: File) => {
-    if (file.type !== 'application/octet-stream' && !file.name.endsWith('.ras')) {
-        ElMessage.error('只能上传 .ras 文件')
-        return false
+const openFile = async () => {
+    const { filePaths, canceled } = await window.ipcRenderer.showOpenDialog()
+    if (!canceled && filePaths && filePaths.length > 0) {
+        const filePath = filePaths[0]
+        // 读取文件内容
+        const content = await window.ipcRenderer.readFile(filePath)
+        if (content) {
+            store.parseRasFile(content)
+            store.loadedFilePath = filePath
+            ElMessage.success('文件加载成功')
+        } else {
+            ElMessage.error('文件读取失败')
+        }
+    } else {
+        ElMessage.info('已取消选择文件')
     }
-    const reader = new FileReader()
-    reader.onload = (e) => {
-        const content = e.target?.result as string
-        // 解析文件内容
-        store.parseRasFile(content)
-    }
-    reader.readAsText(file)
-    return false
 }
 </script>

@@ -1,5 +1,5 @@
-// main.js
-import { app, ipcMain, dialog, BrowserWindow } from "electron";
+import { app, ipcMain, dialog, BrowserWindow } from 'electron';
+import fs from 'fs';
 import path from "path";
 import { fileURLToPath } from 'url';
 
@@ -14,7 +14,7 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(__dirname, "preload.mjs")
     }
   });
 
@@ -44,7 +44,28 @@ ipcMain.handle("showSaveDialog", async () => {
 
 ipcMain.handle("showOpenDialog", async () => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
-    filters: [{ name: "Ras Files", extensions: ["ras"] }]
+    filters: [{ name: "Ras Files", extensions: ["ras"] }],
+    properties: ['openFile']
   });
   return { filePaths, canceled };
 });
+
+ipcMain.handle('readFile', async (_event, filePath: string) => {
+  try {
+    const data = fs.readFileSync(filePath, 'utf-8');
+    return data;
+  } catch (error) {
+    console.error('读取文件出错：', error);
+    return null;
+  }
+});
+
+ipcMain.handle('saveFile', async (_event, filePath: string, content: string) => {
+  try {
+    fs.writeFileSync(filePath, content, 'utf-8')
+    return true
+  } catch (error) {
+    console.error('保存文件出错：', error)
+    return false
+  }
+})
