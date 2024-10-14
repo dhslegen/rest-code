@@ -12,8 +12,8 @@ export const useStore = defineStore('main', {
     actions: {
         parseRasFile(content: string) {
             // 清空当前的 domains 和 scripts
-            this.domains = []
-            this.scripts = []
+            this.domains.splice(0, this.domains.length)
+            this.scripts.splice(0, this.scripts.length)
 
             const lines = content.split('\n')
             const domainRegex = /^\/([A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*)\/([^\n\.]+)$/
