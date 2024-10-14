@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { Domain, Script, Template } from '../types'
+import { templates } from '../templates'
 import { ElMessage } from 'element-plus'
 
 export const useStore = defineStore('main', {
     state: () => ({
         domains: [] as Domain[],
         scripts: [] as Script[],
-        templates: [] as Template[],
+        templates: templates as Template[],
         loadedFilePath: '',
     }),
     actions: {

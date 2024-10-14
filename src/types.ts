@@ -13,6 +13,11 @@ export interface Script {
 }
 
 export interface Template {
-    name: string
-    [key: string]: any
+    name: string;
+    domain: string;
+    httpMethod: string;
+    apiPath: string | undefined | null;
+    operation: string;
+    contract: string;
+    description: string;
 }
