@@ -8,12 +8,12 @@
         </el-form-item>
         <el-form-item label="生成方式">
             <el-radio-group v-model="config.mode">
-                <el-radio label="overwrite">覆盖</el-radio>
-                <el-radio label="incremental">增量</el-radio>
+                <el-radio value="overwrite">覆盖</el-radio>
+                <el-radio value="incremental">增量</el-radio>
             </el-radio-group>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="generateCode">生成代码</el-button>
+            <el-button color="#1565c0" type="primary" @click="generateCode">生成代码</el-button>
         </el-form-item>
     </el-form>
 </template>

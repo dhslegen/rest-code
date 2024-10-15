@@ -1,5 +1,5 @@
 <template>
-    <el-button type="primary" @click="openFile">打开文件</el-button>
+    <el-button color="#1565c0" type="primary" @click="openFile">打开文件</el-button>
 </template>
 
 <script setup lang="ts">

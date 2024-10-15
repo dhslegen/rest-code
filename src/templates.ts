@@ -2,7 +2,7 @@ export interface Template {
     name: string;
     domain: string;
     httpMethod: string;
-    apiPath: string | undefined | null;
+    apiPath: string;
     operation: string;
     contract: string;
     description: string;
@@ -14,7 +14,7 @@ export const templates: Template[] = [
         "name": "POST-创建",
         "domain": "{领域名称}",
         "httpMethod": "POST",
-        "apiPath": null,
+        "apiPath": '',
         "operation": "create",
         "contract": "@",
         "description": "创建{领域描述}"
@@ -41,7 +41,7 @@ export const templates: Template[] = [
         "name": "DELETE-批量删除",
         "domain": "{领域名称}",
         "httpMethod": "DELETE",
-        "apiPath": null,
+        "apiPath": '',
         "operation": "delete",
         "contract": "@ids",
         "description": "批量删除{领域描述}"
@@ -59,7 +59,7 @@ export const templates: Template[] = [
         "name": "PUT-批量编辑",
         "domain": "{领域名称}",
         "httpMethod": "PUT",
-        "apiPath": null,
+        "apiPath": '',
         "operation": "batchUpdate",
         "contract": "@=update",
         "description": "批量编辑{领域描述}"
@@ -140,7 +140,7 @@ export const templates: Template[] = [
         "name": "GET-获取列表",
         "domain": "{领域名称}",
         "httpMethod": "GET",
-        "apiPath": null,
+        "apiPath": '',
         "operation": "list",
         "contract": "?>=",
         "description": "获取{领域描述}列表"
@@ -167,7 +167,7 @@ export const templates: Template[] = [
         "name": "GET-获取分页",
         "domain": "{领域名称}",
         "httpMethod": "GET",
-        "apiPath": null,
+        "apiPath": '',
         "operation": "page",
         "contract": "?>+",
         "description": "获取{领域描述}xxx信息"
