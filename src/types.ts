@@ -10,6 +10,7 @@ export interface Script {
     operation: string
     contract: string
     description: string
+    template: Template | null;  
 }
 
 export interface Template {

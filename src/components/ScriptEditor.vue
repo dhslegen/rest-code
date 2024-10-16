@@ -74,6 +74,7 @@ const addScript = () => {
         operation: '',
         contract: '',
         description: '',
+        template: templates[0],
     })
 }
 

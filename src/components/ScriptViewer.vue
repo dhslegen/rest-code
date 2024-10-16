@@ -11,8 +11,9 @@
     <div class="line-numbers">
       <pre>{{ lineNumbers }}</pre>
     </div>
-    <el-input type="textarea" :rows="10" v-model="rasContent" readonly class="code-input"
-      @click="showErrorPopover = false"></el-input>
+    <div class="code-content" @click="showErrorPopover = false">
+      <pre>{{ rasContent }}</pre>
+    </div>
   </div>
   <div style="text-align: center; margin-top: 10px;">
     <el-button type="primary" @click="validateScripts"
@@ -87,6 +88,15 @@ const saveScripts = async () => {
 <style scoped>
 .script-viewer {
   display: flex;
+  overflow: auto;
+  height: 100%;
+}
+
+.line-numbers,
+.code-content {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .line-numbers {
@@ -98,9 +108,14 @@ const saveScripts = async () => {
   color: #999;
 }
 
-.code-input {
+.code-content {
   flex: 1;
-  font-family: monospace;
-  font-size: 14px;
+  padding: 5px;
+  overflow: auto;
+}
+
+.line-numbers pre,
+.code-content pre {
+  margin: 0;
 }
 </style>
