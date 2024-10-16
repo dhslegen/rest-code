@@ -77,37 +77,52 @@ export const useStore = defineStore('main', {
             const apiPathRegex = /^\/(?:[^/\.]+\/)*[^/\.]+$/
             const operationRegex = /^[a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*$/
             const contractRegex = /^((?:@=?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:#(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\$(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
+            // 校验领域声明
+            for (let i = 0; i < this.domains.length; i++) {
+                const domain = this.domains[i]
+                const lineNumber = i + 1 // 领域声明在最前面
 
+                if (!domainRegex.test(domain.name)) {
+                    errors.push(`第${lineNumber}行：【领域名称】不符合大写字母开头的驼峰命名法`)
+                }
+
+                if (!domain.description || domain.description.trim() === '') {
+                    errors.push(`第${lineNumber}行：【领域描述】不能为空`)
+                }
+            }
+
+            // 校验脚本
+            const scriptLineOffset = this.domains.length
             for (let i = 0; i < this.scripts.length; i++) {
                 const script = this.scripts[i]
-                const lineNumber = i + 1
+                const lineNumber = scriptLineOffset + i + 1
 
                 if (!domainRegex.test(script.domain)) {
-                    errors.push(`第${lineNumber}行：领域名称不符合规则`)
+                    errors.push(`第${lineNumber}行：【领域名称】不符合 大写字母开头的驼峰命名法`)
                 }
 
                 if (!domainNames.includes(script.domain)) {
-                    errors.push(`第${lineNumber}行：领域名称${script.domain}未在领域声明中定义`)
+                    errors.push(`第${lineNumber}行：【领域名称】${script.domain}未在领域声明中定义`)
                 }
 
                 if (!httpMethodRegex.test(script.httpMethod)) {
-                    errors.push(`第${lineNumber}行：HTTP请求方法不符合规则`)
+                    errors.push(`第${lineNumber}行：【HTTP请求方法】不符合 POST、GET、PUT、DELETE 中的一个`)
                 }
 
                 if (script.apiPath && !apiPathRegex.test(script.apiPath)) {
-                    errors.push(`第${lineNumber}行：API路径不符合规则`)
+                    errors.push(`第${lineNumber}行：【API路径】不符合 /xx/xx 的写法`)
                 }
 
                 if (!operationRegex.test(script.operation)) {
-                    errors.push(`第${lineNumber}行：操作名称不符合规则`)
+                    errors.push(`第${lineNumber}行：【操作名称】不符合 小写字母开头的驼峰命名法`)
                 }
 
                 if (!contractRegex.test(script.contract)) {
-                    errors.push(`第${lineNumber}行：参数契约不符合规则`)
+                    errors.push(`第${lineNumber}行：【参数契约】不符合  @xxx?yyy#num$str>zzz 的随机组合`)
                 }
 
                 if (!script.description || script.description.trim() === '') {
-                    errors.push(`第${lineNumber}行：描述不能为空`)
+                    errors.push(`第${lineNumber}行：【描述】非空字符串`)
                 }
             }
 

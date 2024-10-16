@@ -1,14 +1,14 @@
 <template>
-    <el-table :data="scripts" style="width: 100%" border max-height="300"
-        :header-cell-style="{ backgroundColor: '#f5f7fa' }" :show-header="true">
-        <el-table-column label="内置模板">
+    <el-table :data="scripts" style="width: 100%" border max-height="265"
+        :header-cell-style="{ backgroundColor: '#f5f7fa', textAlign: 'center' }" :show-header="true">
+        <el-table-column label="内置模板" align="center">
             <template #default="{ row }">
                 <el-select v-model="row.template" @change="onTemplateChange(row)" :placeholder="'请选择模板'" filterable>
                     <el-option v-for="item in templates" :key="item.name" :label="item.name" :value="item"></el-option>
                 </el-select>
             </template>
         </el-table-column>
-        <el-table-column label="领域名称">
+        <el-table-column label="领域名称" align="center">
             <template #default="{ row }">
                 <el-select v-model="row.domain" @change="onTemplateChange(row)" :placeholder="'请选择领域名称'" filterable>
                     <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
@@ -16,7 +16,7 @@
                 </el-select>
             </template>
         </el-table-column>
-        <el-table-column label="HTTP请求方法" width="100">
+        <el-table-column label="HTTP请求方法" align="center" width="100">
             <template #default="{ row }">
                 <el-select v-model="row.httpMethod">
                     <el-option label="GET" value="GET"></el-option>
@@ -26,27 +26,27 @@
                 </el-select>
             </template>
         </el-table-column>
-        <el-table-column label="API路径">
+        <el-table-column label="API路径" align="center">
             <template #default="{ row }">
                 <el-input v-model="row.apiPath" placeholder="例如：/users"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="操作名称">
+        <el-table-column label="操作名称" align="center">
             <template #default="{ row }">
                 <el-input v-model="row.operation" placeholder="操作名称"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="参数契约">
+        <el-table-column label="参数契约" align="center">
             <template #default="{ row }">
                 <el-input v-model="row.contract" placeholder="参数契约"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="描述">
+        <el-table-column label="描述" align="center">
             <template #default="{ row }">
                 <el-input v-model="row.description" placeholder="描述"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column label="操作" align="center" width="100">
             <template #default="{ $index }">
                 <el-button type="danger" @click="deleteScript($index)">删除</el-button>
             </template>

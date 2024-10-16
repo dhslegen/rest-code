@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 92vh; flex-direction: column;">
+  <el-container style="height: 88vh; flex-direction: column; background-color: #f0f2f5;">
     <!-- 主内容区域 -->
     <el-main style="padding: 0; overflow: auto;">
       <!-- 第1行：文件加载区域和生成代码区域 -->
@@ -44,9 +44,7 @@
     </el-main>
 
     <!-- 脚本查看区域 -->
-    <el-footer style="height: 200px; padding: 0;">
-      <el-alert center title="脚本查看" style="background-color:#c41d7f; height: 20px;" type="success" effect="dark"
-        :closable=false />
+    <el-footer style="height: 208px; padding: 0;">
       <script-viewer />
     </el-footer>
   </el-container>
