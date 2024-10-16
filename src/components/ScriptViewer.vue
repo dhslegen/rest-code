@@ -8,11 +8,13 @@
     </template>
   </el-popover>
   <div class="script-viewer">
-    <div class="line-numbers">
-      <pre>{{ lineNumbers }}</pre>
-    </div>
-    <div class="code-content" @click="showErrorPopover = false">
-      <pre>{{ rasContent }}</pre>
+    <div class="code-container">
+      <div class="line-numbers">
+        <pre>{{ lineNumbers }}</pre>
+      </div>
+      <div class="code-content" @click="showErrorPopover = false">
+        <pre>{{ rasContent }}</pre>
+      </div>
     </div>
   </div>
   <div style="text-align: center; margin-top: 10px;">
@@ -87,9 +89,13 @@ const saveScripts = async () => {
 
 <style scoped>
 .script-viewer {
+  height: 100%;
+}
+
+.code-container {
   display: flex;
   overflow: auto;
-  height: 100%;
+  height: 190px;
 }
 
 .line-numbers,
@@ -106,12 +112,12 @@ const saveScripts = async () => {
   text-align: right;
   border-right: 1px solid #ccc;
   color: #999;
+  flex-shrink: 0;
 }
 
 .code-content {
   flex: 1;
   padding: 5px;
-  overflow: auto;
 }
 
 .line-numbers pre,

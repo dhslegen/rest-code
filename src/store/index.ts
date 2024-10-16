@@ -44,13 +44,14 @@ export const useStore = defineStore('main', {
                             operation: match[4],
                             contract: match[5],
                             description: match[6],
-                            template: null, // 初始化 template 属性
+                            template: '',
                         }
                         // 尝试匹配模板
-                        script.template = this.templates.find(t =>
+                        const matchedTemplate = this.templates.find(t =>
                             t.httpMethod === script.httpMethod &&
-                            t.operation.replace(/\{领域名称\}/g, script.domain) === script.operation
-                        ) || null
+                            t.operation === script.operation
+                        )
+                        script.template = matchedTemplate ? matchedTemplate.name : ''
                         this.scripts.push(script)
                     } else {
                         ElMessage.error(`脚本格式错误：${line}`)

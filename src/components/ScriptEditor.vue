@@ -4,7 +4,8 @@
         <el-table-column label="内置模板" align="center">
             <template #default="{ row }">
                 <el-select v-model="row.template" @change="onTemplateChange(row)" :placeholder="'请选择模板'" filterable>
-                    <el-option v-for="item in templates" :key="item.name" :label="item.name" :value="item"></el-option>
+                    <el-option v-for="template in templates" :key="template.name" :label="template.name"
+                        :value="template.name"></el-option>
                 </el-select>
             </template>
         </el-table-column>
@@ -74,7 +75,7 @@ const addScript = () => {
         operation: '',
         contract: '',
         description: '',
-        template: templates[0],
+        template: templates[0].name,
     })
 }
 
@@ -85,13 +86,17 @@ const deleteScript = (index: number) => {
 const onTemplateChange = (row: any) => {
     if (row.template && row.domain) {
         const domainName = row.domain
+        const templateName = row.template
         const domainDesc = domains.find((d: { name: string; description?: string }) => d.name === domainName)?.description || ''
-        // 根据模板自动填充脚本元素
-        row.httpMethod = row.template.httpMethod
-        row.apiPath = row.template.apiPath
-        row.operation = row.template.operation
-        row.contract = row.template.contract
-        row.description = row.template.description.replace('{领域描述}', domainDesc)
+        const template = templates.find(t => t.name === templateName)
+        if (template) {
+            // 根据模板自动填充脚本元素
+            row.httpMethod = template.httpMethod
+            row.apiPath = template.apiPath
+            row.operation = template.operation
+            row.contract = template.contract
+            row.description = template.description.replace('{领域描述}', domainDesc)
+        }
     }
 }
 </script>
