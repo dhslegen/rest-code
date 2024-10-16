@@ -1,8 +1,8 @@
 <template>
   <el-input type="textarea" :rows="10" :value="rasContent" readonly></el-input>
-  <div>
-    <el-button type="primary" @click="validateScripts">校验</el-button>
-    <el-button @click="saveScripts">保存</el-button>
+  <div style="text-align: center; margin-top: 10px;">
+    <el-button type="primary" @click="validateScripts" style="background-color: #c41d7f;">校验</el-button>
+    <el-button type="primary" @click="saveScripts" style="background-color: #c41d7f;">保存</el-button>
   </div>
 </template>
 

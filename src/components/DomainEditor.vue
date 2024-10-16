@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="domains" style="width: 100%" border :max-height="200"
+    <el-table :data="domains" style="width: 100%" border :max-height="300"
         :header-cell-style="{ backgroundColor: '#f5f7fa' }" :show-header="true">
         <el-table-column prop="name" label="领域名称" width="180">
             <template #default="{ row }">
