@@ -42,7 +42,7 @@ export const templates: Template[] = [
         "domain": "{领域名称}",
         "httpMethod": "DELETE",
         "apiPath": '',
-        "operation": "delete",
+        "operation": "batchDelete",
         "contract": "@ids",
         "description": "批量删除{领域描述}"
     },
@@ -80,7 +80,7 @@ export const templates: Template[] = [
         "apiPath": "/batchXxx",
         "operation": "batchXxx",
         "contract": "@=xxx",
-        "description": "batchXxx{领域描述}"
+        "description": "批量Xxx{领域描述}"
     },
     {
         "name": "PUT-自定义操作，无详情",
@@ -98,7 +98,7 @@ export const templates: Template[] = [
         "apiPath": "/batchXxx",
         "operation": "batchXxx",
         "contract": "@ids",
-        "description": "batchXxx{领域描述}"
+        "description": "批量Xxx{领域描述}"
     },
     {
         "name": "GET-获取单个",
@@ -170,7 +170,7 @@ export const templates: Template[] = [
         "apiPath": '',
         "operation": "page",
         "contract": "?>+",
-        "description": "获取{领域描述}xxx信息"
+        "description": "获取{领域描述}分页"
     },
     {
         "name": "GET-获取简单分页",
