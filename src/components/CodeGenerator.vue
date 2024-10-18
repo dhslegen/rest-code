@@ -26,24 +26,26 @@
 import { reactive } from 'vue'
 import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
+import { generateJavaCode } from '../code-generator'
+import type { Config } from '../types'
 
 const store = useStore()
-const config = reactive({
+
+const config = reactive<Config>({
     frameworkPackagePrefix: '',
     outputPath: '',
     basePackage: '',
     mode: 'overwrite',
 })
 
-const generateCode = () => {
-    // 暂时使用空实现，打印输入参数
-    console.log('生成代码参数：', {
-        frameworkPackagePrefix: config.frameworkPackagePrefix,
-        outputPath: config.outputPath,
-        basePackage: config.basePackage,
-        mode: config.mode,
-        rasContent: store.generateRasContent(),
-    })
-    ElMessage.success('代码生成成功（模拟）')
+const generateCode = async () => {
+    try {
+        const rasContent = store.generateRasContent()
+        await generateJavaCode(config, rasContent)
+        ElMessage.success('代码生成成功')
+    } catch (error) {
+        console.error(error)
+        ElMessage.error('代码生成失败')
+    }
 }
 </script>

@@ -22,3 +22,25 @@ export interface Template {
     contract: string;
     description: string;
 }
+
+export interface ApiMethod {
+    domainName: string
+    httpMethod: string
+    apiPath: string
+    operationName: string
+    parameterContract: string
+    description: string
+    apiNote: string
+    imports: Set<string>
+    parameters: string[]
+    responseType: string
+    hasResponseType: boolean
+    returnType: string
+}
+
+export interface Config {
+    frameworkPackagePrefix: string
+    outputPath: string
+    basePackage: string
+    mode: 'overwrite' | 'incremental'
+}

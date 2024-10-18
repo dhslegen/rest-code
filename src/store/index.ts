@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { Domain, Script, Template } from '../types'
 import { templates } from '../templates'
 import { ElMessage } from 'element-plus'
+import { domainRegex, scriptRegex } from '../utils/regex'
 
 export const useStore = defineStore('main', {
     state: () => ({
@@ -17,8 +18,6 @@ export const useStore = defineStore('main', {
             this.scripts.splice(0, this.scripts.length)
 
             const lines = content.split('\n')
-            const domainRegex = /^\/([A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*)\/([^\n\.]+)$/
-            const scriptRegex = /^([A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*)\.(POST|GET|PUT|DELETE)\.(\/(?:[^/\.]+\/)*[^/\.]+)?\.([a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*)\.((?:(?:@=?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:#(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\$(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*)\.([^\n\.]+)$/
 
             for (const line of lines) {
                 if (line.startsWith('/')) {

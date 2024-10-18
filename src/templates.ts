@@ -218,3 +218,41 @@ export const templates: Template[] = [
         "description": "获取{领域描述}自定义树"
     },
 ];
+
+export function getControllerTemplate(): string {
+    return `
+package {{basePackage}}.controller;
+
+{{#imports}}
+import {{.}};
+{{/imports}}
+
+/**
+ * {{description}}开放接口
+ *
+ * @author RestCodeGenerator
+ * @since {{date}}
+ */
+{{#classAnnotations}}
+{{{.}}}
+{{/classAnnotations}}
+public class {{domainName}}Controller {
+
+    {{#methods}}
+    /**
+     * {{description}}
+     *
+     * @apiNote {{apiNote}}
+     */
+    @Operation(summary = "{{description}}")
+    @{{httpMethod}}Mapping("{{apiPath}}")
+    public {{#hasResponseType}}{{responseType}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
+        // TODO: 实现方法逻辑
+        return Result.ok();
+    }
+
+    {{/methods}}
+}
+`
+}
+
