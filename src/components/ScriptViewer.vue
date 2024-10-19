@@ -77,11 +77,11 @@ const saveScripts = async () => {
     return
   }
   if (store.loadedFilePath) {
-    await store.saveRasFile(store.loadedFilePath)
+    store.saveRasFile(store.loadedFilePath)
   } else {
-    const filePath = await window.ipcRenderer.showSaveDialog()
+    const filePath = await window.api.showSaveDialog()
     if (filePath) {
-      await store.saveRasFile(filePath)
+      store.saveRasFile(filePath)
     }
   }
 }

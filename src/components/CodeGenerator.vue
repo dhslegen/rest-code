@@ -1,13 +1,12 @@
 <template>
     <el-form :model="config" label-width="120px">
-        <el-form-item label="框架包名前缀">
-            <el-input v-model="config.frameworkPackagePrefix"
-                :placeholder="'生成代码依赖的框架包名前缀，例如：com.wanji.software.tocc'"></el-input>
+        <el-form-item label="框架基本包名">
+            <el-input v-model="config.frameworkBasePackage" :placeholder="'例如：com.wanji.software.tocc'"></el-input>
         </el-form-item>
-        <el-form-item label="源码生成根路径">
+        <el-form-item label="源码输出路径">
             <el-input v-model="config.outputPath" :placeholder="'例如：/.../src/main/java'"></el-input>
         </el-form-item>
-        <el-form-item label="基本包名">
+        <el-form-item label="源码基本包名">
             <el-input v-model="config.basePackage" :placeholder="'例如：com.wanji.software.tocc.system.uaa'"></el-input>
         </el-form-item>
         <el-form-item label="生成方式">
@@ -32,7 +31,7 @@ import type { Config } from '../types'
 const store = useStore()
 
 const config = reactive<Config>({
-    frameworkPackagePrefix: '',
+    frameworkBasePackage: '',
     outputPath: '',
     basePackage: '',
     mode: 'overwrite',

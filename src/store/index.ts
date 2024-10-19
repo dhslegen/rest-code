@@ -134,10 +134,10 @@ export const useStore = defineStore('main', {
 
             return errors
         },
-        async saveRasFile(filePath: string) {
+        saveRasFile(filePath: string) {
             const content = this.generateRasContent()
             try {
-                await window.ipcRenderer.saveFile(filePath, content)
+                window.api.writeFile(filePath, content)
                 ElMessage.success('保存成功')
             } catch (error) {
                 ElMessage.error('保存失败')

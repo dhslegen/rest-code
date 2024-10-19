@@ -36,10 +36,11 @@ export interface ApiMethod {
     responseType: string
     hasResponseType: boolean
     returnType: string
+    methodBody: string
 }
 
 export interface Config {
-    frameworkPackagePrefix: string
+    frameworkBasePackage: string
     outputPath: string
     basePackage: string
     mode: 'overwrite' | 'incremental'

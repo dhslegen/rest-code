@@ -7,13 +7,18 @@ declare namespace NodeJS {
   }
 }
 
-interface IpcRendererAPI {
+interface CommonAPI {
   showSaveDialog(): Promise<string | undefined>
   showOpenDialog(): Promise<{ filePaths: string[]; canceled: boolean }>
-  readFile(filePath: string): Promise<string | null>
-  saveFile(filePath: string, content: string): Promise<boolean>
+  readFile(filePath: string): string
+  writeFile(filePath: string, content: string): void
+  exists(filePath: string): boolean
+  join(...paths: string[]): string
+  basename(path: string): string
+  dirname(path: string): string
+  mkdir(path: string): void
 }
 
 interface Window {
-  ipcRenderer: IpcRendererAPI
+  api: CommonAPI
 }

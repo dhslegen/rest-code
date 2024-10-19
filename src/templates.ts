@@ -220,11 +220,10 @@ export const templates: Template[] = [
 ];
 
 export function getControllerTemplate(): string {
-    return `
-package {{basePackage}}.controller;
+    return `package {{basePackage}}.controller;
 
 {{#imports}}
-import {{.}};
+import {{{.}}};
 {{/imports}}
 
 /**
@@ -238,21 +237,26 @@ import {{.}};
 {{/classAnnotations}}
 public class {{domainName}}Controller {
 
+    /**
+     * 服务对象
+     */
+    @Resource
+    private {{domainName}}Service {{domainNameLower}}Service;
+
+
     {{#methods}}
     /**
-     * {{description}}
+     * {{{description}}}
      *
-     * @apiNote {{apiNote}}
+     * @apiNote {{{apiNote}}}
      */
-    @Operation(summary = "{{description}}")
-    @{{httpMethod}}Mapping("{{apiPath}}")
-    public {{#hasResponseType}}{{responseType}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
-        // TODO: 实现方法逻辑
-        return Result.ok();
+    @Operation(summary = "{{{description}}}")
+    @{{httpMethod}}Mapping("{{{apiPath}}}")
+    public {{#hasResponseType}}{{{responseType}}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
+        {{{methodBody}}}
     }
 
     {{/methods}}
-}
-`
+}`
 }
 

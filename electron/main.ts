@@ -1,5 +1,4 @@
 import { app, ipcMain, dialog, BrowserWindow } from 'electron';
-import fs from 'fs';
 import path from "path";
 import { fileURLToPath } from 'url';
 
@@ -17,6 +16,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.mjs"),
       contextIsolation: true,
       allowRunningInsecureContent: false,
+      nodeIntegration: true
     }
   });
 
@@ -51,23 +51,3 @@ ipcMain.handle("showOpenDialog", async () => {
   });
   return { filePaths, canceled };
 });
-
-ipcMain.handle('readFile', async (_event, filePath: string) => {
-  try {
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return data;
-  } catch (error) {
-    console.error('读取文件出错：', error);
-    return null;
-  }
-});
-
-ipcMain.handle('saveFile', async (_event, filePath: string, content: string) => {
-  try {
-    fs.writeFileSync(filePath, content, 'utf-8')
-    return true
-  } catch (error) {
-    console.error('保存文件出错：', error)
-    return false
-  }
-})

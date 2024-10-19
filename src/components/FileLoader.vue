@@ -9,11 +9,11 @@ import { ElMessage } from 'element-plus'
 const store = useStore()
 
 const openFile = async () => {
-    const { filePaths, canceled } = await window.ipcRenderer.showOpenDialog()
+    const { filePaths, canceled } = await window.api.showOpenDialog()
     if (!canceled && filePaths && filePaths.length > 0) {
         const filePath = filePaths[0]
         // 读取文件内容
-        const content = await window.ipcRenderer.readFile(filePath)
+        const content = window.api.readFile(filePath)
         if (content) {
             store.parseRasFile(content)
             store.loadedFilePath = filePath
