@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import { generateJavaCode } from '../code-generator'
@@ -30,12 +30,22 @@ import type { Config } from '../types'
 
 const store = useStore()
 
-const config = reactive<Config>({
+// 默认配置
+const defaultConfig: Config = {
     frameworkBasePackage: '',
     outputPath: '',
     basePackage: '',
     mode: 'overwrite',
-})
+}
+
+// 从 localStorage 中加载配置
+const savedConfig = localStorage.getItem('codeGeneratorConfig')
+const config = reactive<Config>(savedConfig ? JSON.parse(savedConfig) : defaultConfig)
+
+// 监听配置变化，保存到 localStorage
+watch(config, (newConfig) => {
+    localStorage.setItem('codeGeneratorConfig', JSON.stringify(newConfig))
+}, { deep: true })
 
 const generateCode = async () => {
     try {

@@ -223,7 +223,7 @@ export function getControllerTemplate(): string {
     return `package {{basePackage}}.controller;
 
 {{#imports}}
-import {{{.}}};
+{{{.}}}
 {{/imports}}
 
 /**
@@ -260,3 +260,42 @@ public class {{domainName}}Controller {
 }`
 }
 
+export function getControllerBasicTemplate(): string {
+    return `package {{basePackage}}.controller;
+
+/**
+ * {{description}}开放接口
+ *
+ * @since {{date}}
+ */
+{{#classAnnotations}}
+{{{.}}}
+{{/classAnnotations}}
+public class {{domainName}}Controller {
+
+    /**
+     * 服务对象
+     */
+    @Resource
+    private {{domainName}}Service {{domainNameLower}}Service;
+
+
+}
+`;
+}
+
+export function getControllerMethodsTemplate(): string {
+    return `{{#methods}}
+    /**
+     * {{{description}}}
+     *
+     * @apiNote {{{apiNote}}}
+     */
+    @Operation(summary = "{{{description}}}")
+    @{{httpMethod}}Mapping("{{{apiPath}}}")
+    public {{#hasResponseType}}{{{responseType}}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
+        {{{methodBody}}}
+    }
+
+    {{/methods}}`;
+}

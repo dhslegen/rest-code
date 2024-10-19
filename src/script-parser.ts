@@ -115,29 +115,40 @@ function parseParameterContract(config: Config, method: ApiMethod) {
             parameterNames.push(paramName)
             method.imports.add('org.springframework.web.bind.annotation.PathVariable')
         } else if (token.startsWith('>')) {
-            // 响应类型
-            let typeName = `${domainName}RespVo`
-            if (token === '>') {
-                method.responseType = `Result<${typeName}>`
-                method.hasResponseType = true
-            } else if (token === '>=') {
-                method.responseType = `Result<List<${typeName}>>`
-                method.hasResponseType = true
-                method.imports.add('java.util.List')
-            } else if (token === '><') {
-                typeName = `${domainName}TreeVo`
-                method.responseType = `Result<TreeNode<Long, ${typeName}>>`
-                method.hasResponseType = true
-                method.imports.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
-            } else if (token === '>+') {
-                method.parameters.unshift('PageQueryVo pageQueryVo')
-                parameterNames.unshift('pageQueryVo')
-                method.responseType = `Result<Page<${typeName}>>`
-                method.hasResponseType = true
-                method.imports.add(`${config.basePackage}.model.req.PageQueryVo`)
-                method.imports.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
+            // 响应类型，考虑业务后缀
+            const responseMatch = token.match(/^>([=+<]?)([A-Za-z][A-Za-z0-9]*)?$/)
+            if (responseMatch) {
+                const operator = responseMatch[1] // 可能是 '=', '+', '<' 或空字符串
+                const suffix = responseMatch[2] || '' // 业务后缀，可能为空
+
+                let typeName = `${method.domainName}${capitalize(suffix)}RespVo`
+
+                if (operator === '') {
+                    // '>'
+                    method.responseType = `Result<${typeName}>`
+                    method.hasResponseType = true
+                } else if (operator === '=') {
+                    // '>='
+                    method.responseType = `Result<List<${typeName}>>`
+                    method.hasResponseType = true
+                    method.imports.add('java.util.List')
+                } else if (operator === '+') {
+                    // '>+'
+                    method.parameters.unshift('PageQueryVo pageQueryVo')
+                    parameterNames.unshift('pageQueryVo')
+                    method.responseType = `Result<Page<${typeName}>>`
+                    method.hasResponseType = true
+                    method.imports.add(`${config.basePackage}.model.req.PageQueryVo`)
+                    method.imports.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
+                } else if (operator === '<') {
+                    // '><'
+                    typeName = `${method.domainName}${capitalize(suffix)}TreeVo`
+                    method.responseType = `Result<TreeNode<Long, ${typeName}>>`
+                    method.hasResponseType = true
+                    method.imports.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
+                }
+                method.imports.add(`${config.basePackage}.model.resp.${typeName}`)
             }
-            method.imports.add(`${config.basePackage}.model.resp.${typeName}`)
         }
     }
     method.methodBody = `return Result.ok(${domainNameLower}Service.${method.operationName}(${parameterNames.join(', ')}));`
