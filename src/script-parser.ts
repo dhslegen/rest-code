@@ -2,6 +2,7 @@ import { domainRegex, scriptRegex } from './utils/regex'
 import { Domain, ApiMethod, Config } from './types'
 
 function capitalize(str: string): string {
+    if (str.length === 0) return str
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -36,11 +37,17 @@ export function parseScript(config: Config, content: string): { domains: Domain[
                     description: match[6],
                     apiNote: `${match[4]}.${match[5]}`,
                     imports: new Set(),
+                    importsService: new Set(),
+                    importsServiceImpl: new Set(),
                     parameters: [],
+                    parametersPure: [],
+                    parameterNames: [],
                     responseType: '',
                     hasResponseType: false,
                     returnType: '',
+                    voNames: [],
                     methodBody: '',
+                    methodBodyServiceImpl: '',
                 }
                 // 解析参数契约
                 parseParameterContract(config, method)
@@ -60,35 +67,37 @@ function parseParameterContract(config: Config, method: ApiMethod) {
 
     const domainName = method.domainName
     const domainNameLower = domainName.charAt(0).toLowerCase() + domainName.slice(1)
-    const parameterNames: string[] = []
 
     for (const token of tokens) {
         console.log("token: ", token)
         if (token.startsWith('@')) {
             // @RequestBody
-            let typeName = `${domainName}ReqVo`
-            let requestType = typeName
-            let paramName = 'reqVo'
-            if (token.startsWith('@=')) {
-                requestType = `List<${typeName}>`
-                paramName = 'reqVos'
-                method.imports.add('java.util.List')
-            }
-            if (token.length > 1 && !['@', '@='].includes(token)) {
-                const suffix = token.replace(/^@=?/, '')
-                typeName = `${domainName}${capitalize(suffix)}ReqVo`
-                requestType = typeName
-                paramName = `${suffix}ReqVo`
-                if (token.startsWith('@=')) {
+            const requestBodyMatch = token.match(/^@([=]?)([A-Za-z][A-Za-z0-9]*)?$/)
+            if (requestBodyMatch) {
+                const operator = requestBodyMatch[1] // 可能是 '=' 或空字符串
+                const suffix = requestBodyMatch[2] || '' // 业务后缀，可能为空
+
+                let typeName = `${method.domainName}${capitalize(suffix)}ReqVo`
+                let requestType = typeName
+                let paramName = 'reqVo'
+                if (operator === '=') {
+                    // '@='
                     requestType = `List<${typeName}>`
-                    paramName = `${suffix}ReqVos`
+                    paramName = 'reqVos'
                     method.imports.add('java.util.List')
+                    method.importsService.add('java.util.List')
                 }
+                method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
+                method.parametersPure.push(`${requestType} ${paramName}`)
+                method.parameterNames.push(paramName)
+
+                method.imports.add('org.springframework.web.bind.annotation.RequestBody')
+                method.imports.add('javax.validation.Valid')
+
+                method.voNames.push(typeName)
+                method.imports.add(`${config.basePackage}.model.req.${typeName}`)
+                method.importsService.add(`${config.basePackage}.model.req.${typeName}`)
             }
-            method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
-            parameterNames.push(paramName)
-            method.imports.add('javax.validation.Valid')
-            method.imports.add(`${config.basePackage}.model.req.${typeName}`)
         } else if (token.startsWith('?')) {
             // Query 参数
             let typeName = `${domainName}QueryVo`
@@ -100,19 +109,25 @@ function parseParameterContract(config: Config, method: ApiMethod) {
             }
             const paramName = 'queryVo'
             method.parameters.push(`${requestType} ${paramName}`)
-            parameterNames.push(paramName)
+            method.parametersPure.push(`${requestType} ${paramName}`)
+            method.parameterNames.push(paramName)
+
+            method.voNames.push(typeName)
             method.imports.add(`${config.basePackage}.model.req.${typeName}`)
+            method.importsService.add(`${config.basePackage}.model.req.${typeName}`)
         } else if (token.startsWith('#')) {
             // @PathVariable 数值型
             const paramName = token.substring(1) || 'id'
             method.parameters.push(`@PathVariable("${paramName}") long ${paramName}`)
-            parameterNames.push(paramName)
+            method.parametersPure.push(`long ${paramName}`)
+            method.parameterNames.push(paramName)
             method.imports.add('org.springframework.web.bind.annotation.PathVariable')
         } else if (token.startsWith('$')) {
             // @PathVariable 字符串型
             const paramName = token.substring(1) || 'code'
             method.parameters.push(`@PathVariable("${paramName}") String ${paramName}`)
-            parameterNames.push(paramName)
+            method.parametersPure.push(`String ${paramName}`)
+            method.parameterNames.push(paramName)
             method.imports.add('org.springframework.web.bind.annotation.PathVariable')
         } else if (token.startsWith('>')) {
             // 响应类型，考虑业务后缀
@@ -132,34 +147,43 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     method.responseType = `Result<List<${typeName}>>`
                     method.hasResponseType = true
                     method.imports.add('java.util.List')
+                    method.importsService.add('java.util.List')
                 } else if (operator === '+') {
                     // '>+'
                     method.parameters.unshift('PageQueryVo pageQueryVo')
-                    parameterNames.unshift('pageQueryVo')
+                    method.parametersPure.unshift('PageQueryVo pageQueryVo')
+                    method.parameterNames.unshift('pageQueryVo')
                     method.responseType = `Result<Page<${typeName}>>`
                     method.hasResponseType = true
                     method.imports.add(`${config.basePackage}.model.req.PageQueryVo`)
                     method.imports.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
+                    method.importsService.add(`${config.basePackage}.model.req.PageQueryVo`)
+                    method.importsService.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
                 } else if (operator === '<') {
                     // '><'
                     typeName = `${method.domainName}${capitalize(suffix)}TreeVo`
                     method.responseType = `Result<TreeNode<Long, ${typeName}>>`
                     method.hasResponseType = true
                     method.imports.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
+                    method.importsService.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
                 }
+
+                method.voNames.push(typeName)
                 method.imports.add(`${config.basePackage}.model.resp.${typeName}`)
+                method.importsService.add(`${config.basePackage}.model.resp.${typeName}`)
             }
         }
     }
-    method.methodBody = `return Result.ok(${domainNameLower}Service.${method.operationName}(${parameterNames.join(', ')}));`
+    // 设置方法体
+    method.methodBody = `return Result.ok(${domainNameLower}Service.${method.operationName}(${method.parameterNames.join(', ')}));`
+    method.methodBodyServiceImpl = `return null;`
 
     if (!method.hasResponseType) {
         method.responseType = 'Result<Void>'
-        method.methodBody = `${domainNameLower}Service.${method.operationName}(${parameterNames.join(', ')});
+        method.methodBody = `${domainNameLower}Service.${method.operationName}(${method.parameterNames.join(', ')});
         return Result.ok();`
+        method.methodBodyServiceImpl = '';
     }
-
-    // 设置方法体
 
     // 设置 Service 方法的返回类型
     method.returnType = method.responseType.replace('Result<', '').replace('>', '')
@@ -167,11 +191,18 @@ function parseParameterContract(config: Config, method: ApiMethod) {
         method.returnType = 'void'
     }
 
-    // 添加常用的 imports
+    // 添加 Controller 常用的 imports
     method.imports.add(`${config.frameworkBasePackage}.model.Result`)
     method.imports.add(`${config.basePackage}.service.${domainName}Service`)
     method.imports.add('io.swagger.v3.oas.annotations.Operation')
     method.imports.add('io.swagger.v3.oas.annotations.tags.Tag')
     method.imports.add('org.springframework.web.bind.annotation.*')
     method.imports.add('javax.annotation.Resource')
+
+    // 添加 ServiceImpl 常用的 imports，包括 Service 的 imports，以及 @Service 注解
+    method.importsService.forEach((importItem) => {
+        method.importsServiceImpl.add(importItem);
+    });
+    method.importsServiceImpl.add(`${config.basePackage}.service.${domainName}Service`)
+    method.importsServiceImpl.add('org.springframework.stereotype.Service')
 }

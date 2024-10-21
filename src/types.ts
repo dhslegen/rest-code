@@ -32,11 +32,17 @@ export interface ApiMethod {
     description: string
     apiNote: string
     imports: Set<string>
+    importsService: Set<string>
+    importsServiceImpl: Set<string>
     parameters: string[]
+    parametersPure: string[]
+    parameterNames: string[]
     responseType: string
     hasResponseType: boolean
     returnType: string
+    voNames: string[]
     methodBody: string
+    methodBodyServiceImpl: string
 }
 
 export interface Config {

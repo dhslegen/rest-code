@@ -219,12 +219,8 @@ export const templates: Template[] = [
     },
 ];
 
-export function getControllerTemplate(): string {
+export function getControllerBasicTemplate(): string {
     return `package {{basePackage}}.controller;
-
-{{#imports}}
-{{{.}}}
-{{/imports}}
 
 /**
  * {{description}}开放接口
@@ -244,41 +240,36 @@ public class {{domainName}}Controller {
     private {{domainName}}Service {{domainNameLower}}Service;
 
 
-    {{#methods}}
-    /**
-     * {{{description}}}
-     *
-     * @apiNote {{{apiNote}}}
-     */
-    @Operation(summary = "{{{description}}}")
-    @{{httpMethod}}Mapping("{{{apiPath}}}")
-    public {{#hasResponseType}}{{{responseType}}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
-        {{{methodBody}}}
-    }
-
-    {{/methods}}
-}`
+}
+`;
 }
 
-export function getControllerBasicTemplate(): string {
-    return `package {{basePackage}}.controller;
+export function getServiceBasicTemplate(): string {
+    return `package {{basePackage}}.service;
 
 /**
- * {{description}}开放接口
+ * {{description}}服务
  *
+ * @author RestCodeGenerator
  * @since {{date}}
  */
-{{#classAnnotations}}
-{{{.}}}
-{{/classAnnotations}}
-public class {{domainName}}Controller {
+public interface {{domainName}}Service {
 
-    /**
-     * 服务对象
-     */
-    @Resource
-    private {{domainName}}Service {{domainNameLower}}Service;
+}
+`;
+}
 
+export function getServiceImplBasicTemplate(): string {
+    return `package {{basePackage}}.service.impl;
+
+/**
+ * {{description}}服务实现
+ *
+ * @author RestCodeGenerator
+ * @since {{date}}
+ */
+@Service
+public class {{domainName}}ServiceImpl implements {{domainName}}Service {
 
 }
 `;
@@ -295,6 +286,31 @@ export function getControllerMethodsTemplate(): string {
     @{{httpMethod}}Mapping("{{{apiPath}}}")
     public {{#hasResponseType}}{{{responseType}}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
         {{{methodBody}}}
+    }
+
+    {{/methods}}`;
+}
+
+export function getServiceMethodsTemplate(): string {
+    return `{{#methods}}
+    /**
+     * {{{description}}}
+     */
+    {{{returnType}}} {{operationName}}({{{parameters}}});
+
+    {{/methods}}`;
+}
+
+export function getServiceImplMethodsTemplate(): string {
+    return `{{#methods}}
+    @Override
+    public {{{returnType}}} {{operationName}}({{{parameters}}}) {
+        {{#methodBody}}
+        {{{methodBody}}}
+        {{/methodBody}}
+        {{^methodBody}}
+
+        {{/methodBody}}
     }
 
     {{/methods}}`;
