@@ -4,7 +4,11 @@
             <el-input v-model="config.frameworkBasePackage" :placeholder="'例如：com.wanji.software.tocc'"></el-input>
         </el-form-item>
         <el-form-item label="源码输出路径">
-            <el-input v-model="config.outputPath" :placeholder="'例如：/.../src/main/java'"></el-input>
+            <el-input v-model="config.outputPath" :placeholder="'例如：/.../src/main/java'">
+                <template #append>
+                    <el-button :icon="FolderOpened" @click="selectOutputPath"></el-button>
+                </template>
+            </el-input>
         </el-form-item>
         <el-form-item label="源码基本包名">
             <el-input v-model="config.basePackage" :placeholder="'例如：com.wanji.software.tocc.system.uaa'"></el-input>
@@ -27,6 +31,7 @@ import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import { generateJavaCode } from '../code-generator'
 import type { Config } from '../types'
+import { FolderOpened } from '@element-plus/icons-vue'
 
 const store = useStore()
 
@@ -55,6 +60,15 @@ const generateCode = async () => {
     } catch (error) {
         console.error(error)
         ElMessage.error('代码生成失败')
+    }
+}
+
+const selectOutputPath = async () => {
+    const { filePaths, canceled } = await window.api.showOpenDialog({
+        properties: ['openDirectory']
+    })
+    if (!canceled && filePaths && filePaths.length > 0) {
+        config.outputPath = filePaths[0]
     }
 }
 </script>

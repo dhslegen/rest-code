@@ -44,10 +44,9 @@ ipcMain.handle("showSaveDialog", async () => {
   return filePath;
 });
 
-ipcMain.handle("showOpenDialog", async () => {
+ipcMain.handle("showOpenDialog", async (_event, options) => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
-    filters: [{ name: "Ras Files", extensions: ["ras"] }],
-    properties: ['openFile']
+    ...options
   });
   return { filePaths, canceled };
 });

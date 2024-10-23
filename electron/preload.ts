@@ -5,7 +5,7 @@ import { join, basename, dirname } from 'path'
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('api', {
   showSaveDialog: () => ipcRenderer.invoke('showSaveDialog'),
-  showOpenDialog: () => ipcRenderer.invoke('showOpenDialog'),
+  showOpenDialog: (options: Electron.OpenDialogOptions) => ipcRenderer.invoke('showOpenDialog', options),
   readFile: (filePath: string) => readFileSync(filePath, 'utf-8'),
   writeFile: (filePath: string, content: string) => writeFileSync(filePath, content, 'utf-8'),
   exists: (filePath: string) => existsSync(filePath),

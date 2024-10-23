@@ -9,7 +9,7 @@ declare namespace NodeJS {
 
 interface CommonAPI {
   showSaveDialog(): Promise<string | undefined>
-  showOpenDialog(): Promise<{ filePaths: string[]; canceled: boolean }>
+  showOpenDialog(options?: Electron.OpenDialogOptions): Promise<{ filePaths: string[]; canceled: boolean }>
   readFile(filePath: string): string
   writeFile(filePath: string, content: string): void
   exists(filePath: string): boolean

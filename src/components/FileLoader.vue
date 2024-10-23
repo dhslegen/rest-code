@@ -9,7 +9,10 @@ import { ElMessage } from 'element-plus'
 const store = useStore()
 
 const openFile = async () => {
-    const { filePaths, canceled } = await window.api.showOpenDialog()
+    const { filePaths, canceled } = await window.api.showOpenDialog({
+        filters: [{ name: "Ras Files", extensions: ["ras"] }],
+        properties: ['openFile']
+    })
     if (!canceled && filePaths && filePaths.length > 0) {
         const filePath = filePaths[0]
         // 读取文件内容
