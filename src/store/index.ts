@@ -10,6 +10,10 @@ export const useStore = defineStore('main', {
         scripts: [] as Script[],
         templates: templates as Template[],
         loadedFilePath: '',
+        scrollToBottom: false,
+        errors: [] as string[],
+        showErrorPopover: false,
+        triggerErrorDisplay: false,
     }),
     actions: {
         parseRasFile(content: string) {
@@ -74,8 +78,9 @@ export const useStore = defineStore('main', {
 
             return content
         },
-        validateScripts(): string[] {
-            const errors: string[] = []
+        validateScripts(): boolean {
+            this.errors = []
+            const errors = this.errors
             const domainNames = this.domains.map(d => d.name)
             // 检查 operation + contract 的重复
             const operationContractMap: Map<string, number[]> = new Map()
@@ -148,7 +153,21 @@ export const useStore = defineStore('main', {
                     errors.push(`脚本重复：${key}，行号：${lineNumbers.join(', ')}`)
                 }
             })
-            return errors
+
+            return errors.length === 0
+        },
+        showValidationErrors() {
+            this.showErrorPopover = true
+        },
+        validateAndShowErrors(): boolean {
+            const isValid = this.validateScripts()
+            if (!isValid) {
+                this.showErrorPopover = true
+                this.triggerErrorDisplay = true
+            } else {
+                this.showErrorPopover = false
+            }
+            return isValid
         },
         saveRasFile(filePath: string) {
             const content = this.generateRasContent()
@@ -174,6 +193,9 @@ export const useStore = defineStore('main', {
         },
         updateDomain(index: number, domain: Domain) {
             this.domains[index] = domain
+        },
+        setScrollToBottom(value: boolean) {
+            this.scrollToBottom = value;
         }
     },
 })

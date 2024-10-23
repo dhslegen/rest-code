@@ -128,6 +128,8 @@ const confirmCRUD = () => {
         if (scriptTableWrapper.value) {
             scriptTableWrapper.value.scrollTop = scriptTableWrapper.value.scrollHeight
         }
+        // 将 scrollToBottom 设置为 true
+        store.setScrollToBottom(true)
     })
 }
 
@@ -145,6 +147,8 @@ const addScript = () => {
         if (scriptTableWrapper.value) {
             scriptTableWrapper.value.scrollTop = scriptTableWrapper.value.scrollHeight
         }
+        // 将 scrollToBottom 设置为 true
+        store.setScrollToBottom(true)
     })
 }
 

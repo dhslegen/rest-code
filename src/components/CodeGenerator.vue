@@ -20,8 +20,8 @@
             </el-radio-group>
         </el-form-item>
         <el-form-item>
-            <el-button color="#1565c0" type="primary" @click="previewCode">预览</el-button>
-            <el-button color="#1565c0" type="primary" @click="generateCode">生成代码</el-button>
+            <el-button color="#1565c0" type="primary" @click.stop="previewCode">预览</el-button>
+            <el-button color="#1565c0" type="primary" @click.stop="generateCode">生成代码</el-button>
         </el-form-item>
     </el-form>
 
@@ -64,6 +64,11 @@ watch(config, (newConfig) => {
 
 const generateCode = async () => {
     try {
+        const isValid = store.validateAndShowErrors()
+        if (!isValid) {
+            ElMessage.error('脚本校验失败，无法生成代码')
+            return
+        }
         const rasContent = store.generateRasContent()
         await generateJavaCode(config, rasContent)
         ElMessage.success('代码生成成功')
@@ -106,6 +111,11 @@ const previewContentHtml = computed(() => md.render(previewContent.value))
 
 const previewCode = async () => {
     try {
+        const isValid = store.validateAndShowErrors()
+        if (!isValid) {
+            ElMessage.error('脚本校验失败，无法预览代码')
+            return
+        }
         const rasContent = store.generateRasContent()
         const generatedFiles = await generateJavaCode(config, rasContent, true)
         let markdownContent = ''

@@ -8,7 +8,7 @@
     </template>
   </el-popover>
   <div class="script-viewer">
-    <div class="code-container">
+    <div class="code-container" ref="codeContent">
       <div class="line-numbers">
         <pre>{{ lineNumbers }}</pre>
       </div>
@@ -40,25 +40,24 @@ import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
+import helpContentRaw from '../docs/help.md?raw' // 直接导入帮助内容
 
 const store = useStore()
+const codeContent = ref<HTMLElement | null>(null)
 const rasContent = computed(() => {
   return store.generateRasContent()
 })
 
 const lineNumbers = ref('')
-const errors = ref<string[]>([])
-const showErrorPopover = ref(false)
-const formattedErrors = ref('')
+const showErrorPopover = computed({
+  get: () => store.showErrorPopover,
+  set: (val) => { store.showErrorPopover = val }
+})
+const formattedErrors = computed(() => {
+  return store.errors.map(error => `<div style="color: #d50000; font-size: 12px" >${error}</div>`).join('')
+})
 const showHelpDialog = ref(false)
-const helpContent = ref('')
-
-const loadHelpContent = async () => {
-  const appPath = await window.api.appPath()
-  const helpFilePath = window.api.join(appPath, 'docs', 'help.md')
-  const content = await window.api.readFile(helpFilePath)
-  helpContent.value = content
-}
+const helpContent = ref(helpContentRaw)
 
 const md: MarkdownIt = new MarkdownIt({
   html: true,
@@ -94,26 +93,26 @@ watch(rasContent, (newValue) => {
 })
 
 const validateScripts = async () => {
-  errors.value = store.validateScripts()
-  if (errors.value.length > 0) {
-    ElMessage.error(`校验失败`)
-    formattedErrors.value = errors.value.map(error => `<div style="color: #d50000; font-size: 12px" >${error}</div>`).join('')
-    showErrorPopover.value = true
+  const isValid = store.validateScripts()
+  if (isValid) {
+    ElMessage.success('校验通过')
+    store.showErrorPopover = false
+  } else {
+    ElMessage.error('校验失败')
+    store.showErrorPopover = true
     await nextTick()
     if (errorButton.value) {
       const errorBtn = (errorButton.value as ComponentPublicInstance).$el
       errorBtn.click()
     }
-  } else {
-    ElMessage.success('校验通过')
-    showErrorPopover.value = false
   }
+  return isValid
 }
 
 const saveScripts = async () => {
-  await validateScripts()
-  if (errors.value.length > 0) {
-    ElMessage.error('校验失败，无法保存')
+  const isValid = store.validateAndShowErrors()
+  if (!isValid) {
+    ElMessage.error('脚本校验失败，无法保存')
     return
   }
   if (store.loadedFilePath) {
@@ -125,8 +124,8 @@ const saveScripts = async () => {
     }
   }
 }
+
 onMounted(() => {
-  loadHelpContent()
   document.addEventListener('click', closePopover)
 })
 
@@ -137,6 +136,31 @@ onBeforeUnmount(() => {
 const closePopover = () => {
   showErrorPopover.value = false
 }
+
+// 监听 scrollToBottom 的变化
+watch(
+  () => store.scrollToBottom,
+  (newVal) => {
+    if (newVal && codeContent.value) {
+      nextTick(() => {
+        codeContent.value!.scrollTop = codeContent.value!.scrollHeight
+        store.setScrollToBottom(false)
+      })
+    }
+  }
+)
+
+// 监听 triggerErrorDisplay，当其为 true 时，触发错误信息展示
+watch(() => store.triggerErrorDisplay, async (newVal) => {
+  if (newVal) {
+    await nextTick()
+    if (errorButton.value) {
+      const errorBtn = (errorButton.value as ComponentPublicInstance).$el
+      errorBtn.click()
+    }
+    store.triggerErrorDisplay = false
+  }
+})
 </script>
 
 <style scoped>
