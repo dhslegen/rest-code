@@ -19,7 +19,7 @@
 - **可扩展性**：支持用户自定义模板和配置，以满足不同项目的特殊需求。
 - **校验功能**：提供脚本校验功能，实时检测脚本中的错误和重复，保证生成代码的质量。
 - **一键 CRUD**（inspire by [@linjiahui](http://gitea126.weightyware.com:16680/linjiahui)）：快速生成常用的 CRUD 脚本，提升开发效率。
-- **代码预览**（inspire by [@fengzilong](http://gitea126.weightyware.com:16680/fengzilong)）**：在生成代码之前，支持预览生成的代码，方便用户检查和修改。
+- **代码预览**（inspire by [@fengzilong](http://gitea126.weightyware.com:16680/fengzilong)）：在生成代码之前，支持预览生成的代码，方便用户检查和修改。
 
 ## Ras 文件格式
 
