@@ -13,6 +13,7 @@ interface CommonAPI {
   readFile(filePath: string): string
   writeFile(filePath: string, content: string): void
   exists(filePath: string): boolean
+  appPath(): Promise<string>
   join(...paths: string[]): string
   basename(path: string): string
   dirname(path: string): string

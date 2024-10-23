@@ -50,3 +50,7 @@ ipcMain.handle("showOpenDialog", async (_event, options) => {
   });
   return { filePaths, canceled };
 });
+
+ipcMain.handle('appPath', () => {
+  return app.getAppPath()
+})

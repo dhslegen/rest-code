@@ -3,7 +3,17 @@ import { getControllerBasicTemplate, getServiceBasicTemplate, getServiceImplBasi
 import Mustache from 'mustache'
 import { Domain, ApiMethod, Config } from './types'
 
-export async function generateJavaCode(config: Config, rasContent: string) {
+export interface GeneratedFile {
+    filePath: string
+    content: string
+}
+
+export async function generateJavaCode(
+    config: Config,
+    rasContent: string,
+    preview: boolean = false
+): Promise<GeneratedFile[]> {
+    const generatedFiles: GeneratedFile[] = []
     // 1. 解析脚本，得到领域和方法信息
     const { domains, apiMethods } = parseScript(config, rasContent)
 
@@ -13,15 +23,17 @@ export async function generateJavaCode(config: Config, rasContent: string) {
         const methodsToDomain = apiMethods.filter(
             (method) => method.domainName === domain.name);
         // 生成 Controller
-        const methodsToAdd = await generateController(domain, methodsToDomain, config)
+        const methodsToAdd = await generateController(domain, methodsToDomain, config, preview, generatedFiles)
         // 生成 Service 接口和实现
-        await generateService(domain, methodsToAdd, config)
+        await generateService(domain, methodsToAdd, config, preview, generatedFiles)
         // 生成 VO 类
-        await generateVoClasses(domain, methodsToDomain, config)
+        await generateVoClasses(domain, methodsToDomain, config, preview, generatedFiles)
     }
+    // 最后返回 generatedFiles
+    return generatedFiles
 }
 
-async function generateController(domain: Domain, apiMethods: ApiMethod[], config: Config) {
+async function generateController(domain: Domain, apiMethods: ApiMethod[], config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
     const className = `${domain.name}Controller`;
     const packageName = `${config.basePackage}.controller`;
     const filePath = window.api.join(config.outputPath, ...packageName.split('.'), `${className}.java`);
@@ -86,9 +98,13 @@ async function generateController(domain: Domain, apiMethods: ApiMethod[], confi
     // 在最后一个 '}' 前插入新方法
     const finalContent = insertMethodsBeforeLastBrace(updatedContentWithImports, renderedMethods);
 
-    // 写入文件
-    ensureDirectoryExistence(filePath);
-    window.api.writeFile(filePath, finalContent);
+    // 写入文件 或 预览
+    if (preview) {
+        generatedFiles.push({ filePath, content: finalContent })
+    } else {
+        ensureDirectoryExistence(filePath);
+        window.api.writeFile(filePath, finalContent);
+    }
     return methodsToAdd;
 }
 
@@ -292,7 +308,7 @@ function ensureDirectoryExistence(filePath: string) {
     window.api.mkdir(dirname)
 }
 
-async function generateService(domain: Domain, apiMethods: ApiMethod[], config: Config) {
+async function generateService(domain: Domain, apiMethods: ApiMethod[], config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
     const interfaceName = `${domain.name}Service`;
     const packageName = `${config.basePackage}.service`;
     const interfaceFilePath = window.api.join(config.outputPath, ...packageName.split('.'), `${interfaceName}.java`);
@@ -302,13 +318,13 @@ async function generateService(domain: Domain, apiMethods: ApiMethod[], config: 
     const implFilePath = window.api.join(config.outputPath, ...implPackageName.split('.'), `${implName}.java`);
 
     // 生成 Service 接口
-    await generateServiceInterface(domain, apiMethods, config, interfaceFilePath);
+    await generateServiceInterface(domain, apiMethods, config, interfaceFilePath, preview, generatedFiles);
 
     // 生成 Service 实现类
-    await generateServiceImpl(domain, apiMethods, config, implFilePath);
+    await generateServiceImpl(domain, apiMethods, config, implFilePath, preview, generatedFiles);
 }
 
-async function generateServiceInterface(domain: Domain, apiMethods: ApiMethod[], config: Config, filePath: string) {
+async function generateServiceInterface(domain: Domain, apiMethods: ApiMethod[], config: Config, filePath: string, preview: boolean, generatedFiles: GeneratedFile[]) {
     let existingContent = '';
     let existingImports: Map<string, { classes: Set<string>; hasStar: boolean }> = new Map();
 
@@ -358,8 +374,12 @@ async function generateServiceInterface(domain: Domain, apiMethods: ApiMethod[],
     const finalContent = insertMethodsBeforeLastBrace(updatedContentWithImports, renderedMethods);
 
     // 写入文件
-    ensureDirectoryExistence(filePath);
-    window.api.writeFile(filePath, finalContent);
+    if (preview) {
+        generatedFiles.push({ filePath, content: finalContent })
+    } else {
+        ensureDirectoryExistence(filePath);
+        window.api.writeFile(filePath, finalContent);
+    }
 }
 
 function generateBasicServiceInterface(config: Config, domain: Domain): string {
@@ -374,7 +394,7 @@ function generateBasicServiceInterface(config: Config, domain: Domain): string {
     return Mustache.render(template, data);
 }
 
-async function generateServiceImpl(domain: Domain, apiMethods: ApiMethod[], config: Config, implFilePath: string) {
+async function generateServiceImpl(domain: Domain, apiMethods: ApiMethod[], config: Config, implFilePath: string, preview: boolean, generatedFiles: GeneratedFile[]) {
     let existingContent = '';
     let existingImports: Map<string, { classes: Set<string>; hasStar: boolean }> = new Map();
 
@@ -426,8 +446,12 @@ async function generateServiceImpl(domain: Domain, apiMethods: ApiMethod[], conf
     const finalContent = insertMethodsBeforeLastBrace(updatedContentWithImports, renderedMethods);
 
     // 写入文件
-    ensureDirectoryExistence(implFilePath);
-    window.api.writeFile(implFilePath, finalContent);
+    if (preview) {
+        generatedFiles.push({ filePath: implFilePath, content: finalContent })
+    } else {
+        ensureDirectoryExistence(implFilePath);
+        window.api.writeFile(implFilePath, finalContent);
+    }
 }
 
 function generateBasicServiceImplClass(config: Config, domain: Domain): string {
@@ -442,7 +466,7 @@ function generateBasicServiceImplClass(config: Config, domain: Domain): string {
     return Mustache.render(template, data);
 }
 
-async function generateVoClasses(domain: Domain, apiMethods: ApiMethod[], config: Config) {
+async function generateVoClasses(domain: Domain, apiMethods: ApiMethod[], config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
     // 收集需要生成的 VO 类名
     const reqVoSet = new Set<string>();
     const queryVoSet = new Set<string>();
@@ -458,26 +482,26 @@ async function generateVoClasses(domain: Domain, apiMethods: ApiMethod[], config
 
     // 生成 VO 类
     for (const voName of reqVoSet) {
-        await generateVoClass(voName, 'req', config, domain, 'ReqVo', '请求VO');
+        await generateVoClass(voName, 'req', config, domain, 'ReqVo', '请求VO', preview, generatedFiles);
     }
     for (const voName of queryVoSet) {
-        await generateVoClass(voName, 'req', config, domain, 'QueryVo', '查询VO');
+        await generateVoClass(voName, 'req', config, domain, 'QueryVo', '查询VO', preview, generatedFiles);
     }
     for (const voName of respVoSet) {
-        await generateVoClass(voName, 'resp', config, domain, 'RespVo', '响应VO');
+        await generateVoClass(voName, 'resp', config, domain, 'RespVo', '响应VO', preview, generatedFiles);
     }
     for (const voName of treeVoSet) {
-        await generateVoClass(voName, 'resp', config, domain, 'TreeVo', '树VO');
+        await generateVoClass(voName, 'resp', config, domain, 'TreeVo', '树VO', preview, generatedFiles);
     }
 
     // 如果需要，生成 PageQueryVo
     if (needsPageQueryVo(apiMethods)) {
-        await generatePageQueryVo(config);
+        await generatePageQueryVo(config, preview, generatedFiles);
     }
 
     // 生成 Converter
     if (apiMethods.length > 0) {
-        await generateConverter(domain, config);
+        await generateConverter(domain, config, preview, generatedFiles);
     }
 }
 
@@ -508,7 +532,9 @@ async function generateVoClass(
     config: Config,
     domain: Domain,
     suffix: string,
-    voDescription: string
+    voDescription: string,
+    preview: boolean,
+    generatedFiles: GeneratedFile[]
 ) {
     const packageName = `${config.basePackage}.model.${subPackage}`;
     const filePath = window.api.join(config.outputPath, ...packageName.split('.'), `${voName}.java`);
@@ -630,9 +656,12 @@ public class {{voName}} implements Serializable {
     }
 
     const content = Mustache.render(template, data);
-
-    ensureDirectoryExistence(filePath);
-    window.api.writeFile(filePath, content);
+    if (preview) {
+        generatedFiles.push({ filePath, content: content })
+    } else {
+        ensureDirectoryExistence(filePath);
+        window.api.writeFile(filePath, content);
+    }
 }
 
 function needsPageQueryVo(apiMethods: ApiMethod[]): boolean {
@@ -641,7 +670,7 @@ function needsPageQueryVo(apiMethods: ApiMethod[]): boolean {
     );
 }
 
-async function generatePageQueryVo(config: Config) {
+async function generatePageQueryVo(config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
     const packageName = `${config.basePackage}.model.req`;
     const filePath = window.api.join(config.outputPath, ...packageName.split('.'), `PageQueryVo.java`);
 
@@ -698,12 +727,15 @@ public class PageQueryVo implements Serializable {
 }
 `;
     const content = Mustache.render(template, data);
-
-    ensureDirectoryExistence(filePath);
-    window.api.writeFile(filePath, content);
+    if (preview) {
+        generatedFiles.push({ filePath, content: content })
+    } else {
+        ensureDirectoryExistence(filePath);
+        window.api.writeFile(filePath, content);
+    }
 }
 
-async function generateConverter(domain: Domain, config: Config) {
+async function generateConverter(domain: Domain, config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
     const className = `${domain.name}Converter`;
     const packageName = `${config.basePackage}.converter`;
     const filePath = window.api.join(config.outputPath, ...packageName.split('.'), `${className}.java`);
@@ -750,8 +782,11 @@ public interface {{domainName}}Converter {
 }
 `;
     const content = Mustache.render(template, data);
-
-    ensureDirectoryExistence(filePath);
-    window.api.writeFile(filePath, content);
+    if (preview) {
+        generatedFiles.push({ filePath, content: content })
+    } else {
+        ensureDirectoryExistence(filePath);
+        window.api.writeFile(filePath, content);
+    }
 }
 

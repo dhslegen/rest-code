@@ -77,6 +77,8 @@ export const useStore = defineStore('main', {
         validateScripts(): string[] {
             const errors: string[] = []
             const domainNames = this.domains.map(d => d.name)
+            // 检查 operation + contract 的重复
+            const operationContractMap: Map<string, number[]> = new Map()
 
             const domainRegex = /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*$/
             const httpMethodRegex = /^(POST|GET|PUT|DELETE)$/
@@ -102,6 +104,14 @@ export const useStore = defineStore('main', {
             for (let i = 0; i < this.scripts.length; i++) {
                 const script = this.scripts[i]
                 const lineNumber = scriptLineOffset + i + 1
+
+                // 记录 operation + contract 组合
+                const key = `${script.domain}.${script.operation}.${script.contract}`
+                if (operationContractMap.has(key)) {
+                    operationContractMap.get(key)!.push(lineNumber)
+                } else {
+                    operationContractMap.set(key, [lineNumber])
+                }
 
                 if (!domainRegex.test(script.domain)) {
                     errors.push(`第${lineNumber}行：【领域名称】不符合 大写字母开头的驼峰命名法`)
@@ -132,6 +142,12 @@ export const useStore = defineStore('main', {
                 }
             }
 
+            // 添加重复的错误信息
+            operationContractMap.forEach((lineNumbers, key) => {
+                if (lineNumbers.length > 1) {
+                    errors.push(`脚本重复：${key}，行号：${lineNumbers.join(', ')}`)
+                }
+            })
             return errors
         },
         saveRasFile(filePath: string) {

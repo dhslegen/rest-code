@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('api', {
   readFile: (filePath: string) => readFileSync(filePath, 'utf-8'),
   writeFile: (filePath: string, content: string) => writeFileSync(filePath, content, 'utf-8'),
   exists: (filePath: string) => existsSync(filePath),
+  appPath: () => ipcRenderer.invoke('appPath'),
   join: (...paths: string[]) => join(...paths),
   basename: (path: string) => basename(path),
   dirname: (path: string) => dirname(path),

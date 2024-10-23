@@ -20,18 +20,28 @@
             </el-radio-group>
         </el-form-item>
         <el-form-item>
+            <el-button color="#1565c0" type="primary" @click="previewCode">预览</el-button>
             <el-button color="#1565c0" type="primary" @click="generateCode">生成代码</el-button>
         </el-form-item>
     </el-form>
+
+    <el-dialog title="代码预览" v-model="showPreviewDialog" width="80%">
+        <div v-html="previewContentHtml" style="height: 510px; overflow: auto;"></div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="showPreviewDialog = false">关闭</el-button>
+        </span>
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { reactive, watch, ref, computed } from 'vue'
 import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import { generateJavaCode } from '../code-generator'
 import type { Config } from '../types'
 import { FolderOpened } from '@element-plus/icons-vue'
+import MarkdownIt from 'markdown-it'
+import hljs from 'highlight.js'
 
 const store = useStore()
 
@@ -69,6 +79,45 @@ const selectOutputPath = async () => {
     })
     if (!canceled && filePaths && filePaths.length > 0) {
         config.outputPath = filePaths[0]
+    }
+}
+const previewContent = ref('')
+const showPreviewDialog = ref(false)
+
+const md: MarkdownIt = new MarkdownIt({
+    html: true,
+    linkify: true,
+    typographer: true,
+    highlight: (str, lang) => {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return (
+                    '<pre class="hljs"><code>' +
+                    hljs.highlight(str, { language: lang }).value +
+                    '</code></pre>'
+                )
+            } catch (_) { }
+        }
+        return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+    },
+})
+
+const previewContentHtml = computed(() => md.render(previewContent.value))
+
+const previewCode = async () => {
+    try {
+        const rasContent = store.generateRasContent()
+        const generatedFiles = await generateJavaCode(config, rasContent, true)
+        let markdownContent = ''
+        generatedFiles.forEach((file) => {
+            markdownContent += `### ${file.filePath}\n\n`
+            markdownContent += '```java\n' + file.content + '\n```\n\n'
+        })
+        previewContent.value = markdownContent
+        showPreviewDialog.value = true
+    } catch (error) {
+        console.error(error)
+        ElMessage.error('代码预览失败')
     }
 }
 </script>
