@@ -121,6 +121,8 @@ const saveScripts = async () => {
     const filePath = await window.api.showSaveDialog()
     if (filePath) {
       store.saveRasFile(filePath)
+      // 保存成功后，更新 loadedFilePath
+      store.loadedFilePath = filePath
     }
   }
 }
