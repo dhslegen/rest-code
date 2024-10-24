@@ -774,6 +774,7 @@ public interface {{domainName}}Converter {
      * todo: 待覆盖方法，命名规则是 fromXxxToYyy, 如果包含领域名称，可以忽略领域名称，甚至于from 、to 关键词，因为可以通过上下文推断
      * 如：fromUserRespDtoToUserRespVo 可以简写为：fromRespDtoToRespVo
      * 如：fromUserToUserRespVo 可以简写为：toRespVo
+     * 如：fromUserRespDtoToUser 可以简写为：fromRespDto
      *
      * @param source 待转换数据
      * @return 转换后的数据
