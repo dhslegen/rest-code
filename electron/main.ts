@@ -1,4 +1,4 @@
-import { app, ipcMain, dialog, BrowserWindow } from 'electron';
+import { app, ipcMain, dialog, BrowserWindow, Menu } from 'electron';
 import path from "path";
 import { fileURLToPath } from 'url';
 
@@ -19,6 +19,8 @@ function createWindow() {
       nodeIntegration: true
     }
   });
+
+  Menu.setApplicationMenu(null)
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
