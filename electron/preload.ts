@@ -1,4 +1,4 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { ipcRenderer, contextBridge, shell } from 'electron'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join, basename, dirname } from 'path'
 
@@ -17,5 +17,6 @@ contextBridge.exposeInMainWorld('api', {
     if (!existsSync(path)) {
       mkdirSync(path, { recursive: true })
     }
-  }
+  },
+  openExternal: (url: string) => shell.openExternal(url),
 })

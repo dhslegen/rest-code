@@ -3,7 +3,8 @@
         :header-cell-style="{ backgroundColor: '#f5f7fa', textAlign: 'center' }" :show-header="true" :max-height="265">
         <el-table-column label="内置模板" align="center">
             <template #default="{ row }">
-                <el-select v-model="row.template" @change="onTemplateChange(row)" :placeholder="'请选择模板'" filterable>
+                <el-select v-model="row.template" @change="onTemplateChange(row)" :placeholder="'请选择模板'" filterable
+                    clearable>
                     <el-option v-for="template in templates" :key="template.name" :label="template.name"
                         :value="template.name"></el-option>
                 </el-select>
@@ -135,13 +136,13 @@ const confirmCRUD = () => {
 
 const addScript = () => {
     store.addScript({
-        domain: '',
+        domain: domains.length > 0 ? domains[0].name : '',
         httpMethod: '',
         apiPath: '',
         operation: '',
         contract: '',
         description: '',
-        template: templates[0].name,
+        template: '',
     })
     nextTick(() => {
         const tableBodyWrapper = scriptTable.value?.$el.querySelector('.el-scrollbar__wrap')

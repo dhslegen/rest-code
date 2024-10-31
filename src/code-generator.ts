@@ -536,7 +536,7 @@ async function generateVoClass(
     preview: boolean,
     generatedFiles: GeneratedFile[]
 ) {
-    const packageName = `${config.basePackage}.model.${subPackage}`;
+    const packageName = `${config.basePackage}.model.vo.${subPackage}`;
     const filePath = window.api.join(config.outputPath, ...packageName.split('.'), `${voName}.java`);
 
     if (window.api.exists(filePath)) {
@@ -671,7 +671,7 @@ function needsPageQueryVo(apiMethods: ApiMethod[]): boolean {
 }
 
 async function generatePageQueryVo(config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
-    const packageName = `${config.basePackage}.model.req`;
+    const packageName = `${config.basePackage}.model.vo.req`;
     const filePath = window.api.join(config.outputPath, ...packageName.split('.'), `PageQueryVo.java`);
 
     if (window.api.exists(filePath)) {

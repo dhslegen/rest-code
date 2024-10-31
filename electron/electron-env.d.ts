@@ -18,6 +18,7 @@ interface CommonAPI {
   basename(path: string): string
   dirname(path: string): string
   mkdir(path: string): void
+  openExternal(url: string): void
 }
 
 interface Window {

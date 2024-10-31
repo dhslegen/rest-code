@@ -18,6 +18,8 @@
     </div>
   </div>
   <div style="text-align: center; margin-top: 10px;">
+    <el-button type="primary" @click.stop="showAboutDialog = true"
+      style="background-color: #c41d7f;border-color: #c41d7f;">关于</el-button>
     <el-button type="primary" @click.stop="showHelpDialog = true"
       style="background-color: #c41d7f;border-color: #c41d7f;">帮助</el-button>
     <el-button type="primary" @click.stop="validateScripts"
@@ -25,6 +27,25 @@
     <el-button type="primary" @click.stop="saveScripts"
       style="background-color: #c41d7f;border-color: #c41d7f;">保存</el-button>
   </div>
+
+  <el-dialog title="关于" v-model="showAboutDialog">
+    <el-descriptions :column="1" border>
+      <el-descriptions-item label="源码仓库">
+        <a href="javascript:void(0)"
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code.git')">点击访问</a>
+      </el-descriptions-item>
+      <el-descriptions-item label="最新版下载">
+        <a href="javascript:void(0)"
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases')">点击下载</a>
+      </el-descriptions-item>
+      <el-descriptions-item label="作者">
+        <a href="javascript:void(0)" @click="openLink('https://dahaoshen.com')">赵文昊</a>
+      </el-descriptions-item>
+    </el-descriptions>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="showAboutDialog = false">关闭</el-button>
+    </span>
+  </el-dialog>
 
   <el-dialog title="帮助" v-model="showHelpDialog" width="80%">
     <div v-html="helpContentHtml" style="height: 510px;  overflow: auto;"></div>
@@ -40,9 +61,14 @@ import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
-import helpContentRaw from '../docs/help.md?raw' // 直接导入帮助内容
+import helpContentRaw from '../docs/help.md?raw'
 
 const store = useStore()
+
+const openLink = (url: string) => {
+  window.api.openExternal(url)
+}
+
 const codeContent = ref<HTMLElement | null>(null)
 const rasContent = computed(() => {
   return store.generateRasContent()
@@ -57,6 +83,7 @@ const formattedErrors = computed(() => {
   return store.errors.map(error => `<div style="color: #d50000; font-size: 12px" >${error}</div>`).join('')
 })
 const showHelpDialog = ref(false)
+const showAboutDialog = ref(false)
 const helpContent = ref(helpContentRaw)
 
 const md: MarkdownIt = new MarkdownIt({

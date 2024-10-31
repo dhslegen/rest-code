@@ -95,8 +95,8 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.imports.add('javax.validation.Valid')
 
                 method.voNames.push(typeName)
-                method.imports.add(`${config.basePackage}.model.req.${typeName}`)
-                method.importsService.add(`${config.basePackage}.model.req.${typeName}`)
+                method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
+                method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
             }
         } else if (token.startsWith('?')) {
             // Query 参数
@@ -113,8 +113,8 @@ function parseParameterContract(config: Config, method: ApiMethod) {
             method.parameterNames.push(paramName)
 
             method.voNames.push(typeName)
-            method.imports.add(`${config.basePackage}.model.req.${typeName}`)
-            method.importsService.add(`${config.basePackage}.model.req.${typeName}`)
+            method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
+            method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
         } else if (token.startsWith('#')) {
             // @PathVariable 数值型
             const paramName = token.substring(1) || 'id'
@@ -155,9 +155,9 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     method.parameterNames.unshift('pageQueryVo')
                     method.responseType = `Result<Page<${typeName}>>`
                     method.hasResponseType = true
-                    method.imports.add(`${config.basePackage}.model.req.PageQueryVo`)
+                    method.imports.add(`${config.basePackage}.model.vo.req.PageQueryVo`)
                     method.imports.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
-                    method.importsService.add(`${config.basePackage}.model.req.PageQueryVo`)
+                    method.importsService.add(`${config.basePackage}.model.vo.req.PageQueryVo`)
                     method.importsService.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
                 } else if (operator === '<') {
                     // '><'
@@ -169,8 +169,8 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 }
 
                 method.voNames.push(typeName)
-                method.imports.add(`${config.basePackage}.model.resp.${typeName}`)
-                method.importsService.add(`${config.basePackage}.model.resp.${typeName}`)
+                method.imports.add(`${config.basePackage}.model.vo.resp.${typeName}`)
+                method.importsService.add(`${config.basePackage}.model.vo.resp.${typeName}`)
             }
         }
     }
@@ -192,7 +192,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
     }
 
     // 添加 Controller 常用的 imports
-    method.imports.add(`${config.frameworkBasePackage}.model.Result`)
+    method.imports.add(`${config.frameworkBasePackage}.model.vo.Result`)
     method.imports.add(`${config.basePackage}.service.${domainName}Service`)
     method.imports.add('io.swagger.v3.oas.annotations.Operation')
     method.imports.add('io.swagger.v3.oas.annotations.tags.Tag')
