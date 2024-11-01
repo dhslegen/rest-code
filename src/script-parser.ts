@@ -192,7 +192,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
     }
 
     // 添加 Controller 常用的 imports
-    method.imports.add(`${config.frameworkBasePackage}.model.vo.Result`)
+    method.imports.add(`${config.frameworkBasePackage}.common.model.Result`)
     method.imports.add(`${config.basePackage}.service.${domainName}Service`)
     method.imports.add('io.swagger.v3.oas.annotations.Operation')
     method.imports.add('io.swagger.v3.oas.annotations.tags.Tag')

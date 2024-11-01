@@ -32,7 +32,7 @@
     <el-descriptions :column="1" border>
       <el-descriptions-item label="当前版本">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.2')"> v1.0.2</a>
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.3')"> v1.0.3</a>
       </el-descriptions-item>
       <el-descriptions-item label="最新版下载">
         <a href="javascript:void(0)"
