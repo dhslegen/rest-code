@@ -30,13 +30,17 @@
 
   <el-dialog title="关于" v-model="showAboutDialog">
     <el-descriptions :column="1" border>
-      <el-descriptions-item label="源码仓库">
+      <el-descriptions-item label="当前版本">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code.git')">点击访问</a>
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.2')"> v1.0.2</a>
       </el-descriptions-item>
       <el-descriptions-item label="最新版下载">
         <a href="javascript:void(0)"
           @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases')">点击下载</a>
+      </el-descriptions-item>
+      <el-descriptions-item label="源码仓库">
+        <a href="javascript:void(0)"
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code.git')">点击访问</a>
       </el-descriptions-item>
       <el-descriptions-item label="作者">
         <a href="javascript:void(0)" @click="openLink('https://dahaoshen.com')">赵文昊</a>
