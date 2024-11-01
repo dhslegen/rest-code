@@ -16,7 +16,7 @@ export const useStore = defineStore('main', {
         triggerErrorDisplay: false,
     }),
     actions: {
-        parseRasFile(content: string) {
+        parseRcsFile(content: string) {
             // 清空当前的 domains 和 scripts
             this.domains.splice(0, this.domains.length)
             this.scripts.splice(0, this.scripts.length)
@@ -62,7 +62,7 @@ export const useStore = defineStore('main', {
                 }
             }
         },
-        generateRasContent() {
+        generateRcsContent() {
             let content = ''
 
             // 生成领域声明
@@ -169,8 +169,8 @@ export const useStore = defineStore('main', {
             }
             return isValid
         },
-        saveRasFile(filePath: string) {
-            const content = this.generateRasContent()
+        saveRcsFile(filePath: string) {
+            const content = this.generateRcsContent()
             try {
                 window.api.writeFile(filePath, content)
                 ElMessage.success('保存成功')

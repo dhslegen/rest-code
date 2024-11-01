@@ -41,5 +41,14 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
-  }
+  },
+  "fileAssociations": [
+    {
+      "ext": "rcs",
+      "name": "RestCode Script File",
+      "description": "RestCode 脚本文件",
+      "role": "Editor",
+      "icon": "build/icons/icon.ico"
+    }
+  ]
 }

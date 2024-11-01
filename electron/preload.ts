@@ -19,4 +19,7 @@ contextBridge.exposeInMainWorld('api', {
     }
   },
   openExternal: (url: string) => shell.openExternal(url),
+  onOpenFile: (callback: (event: Electron.IpcRendererEvent, filePath: string) => void) => {
+    ipcRenderer.on('open-file', callback);
+  },
 })

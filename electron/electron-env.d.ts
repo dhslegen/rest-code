@@ -19,6 +19,7 @@ interface CommonAPI {
   dirname(path: string): string
   mkdir(path: string): void
   openExternal(url: string): void
+  onOpenFile(callback: (event: Electron.IpcRendererEvent, filePath: string) => void): void
 }
 
 interface Window {

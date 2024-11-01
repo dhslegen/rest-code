@@ -69,8 +69,8 @@ const generateCode = async () => {
             ElMessage.error('脚本校验失败，无法生成代码')
             return
         }
-        const rasContent = store.generateRasContent()
-        await generateJavaCode(config, rasContent)
+        const rcsContent = store.generateRcsContent()
+        await generateJavaCode(config, rcsContent)
         ElMessage.success('代码生成成功')
     } catch (error) {
         console.error(error)
@@ -116,8 +116,8 @@ const previewCode = async () => {
             ElMessage.error('脚本校验失败，无法预览代码')
             return
         }
-        const rasContent = store.generateRasContent()
-        const generatedFiles = await generateJavaCode(config, rasContent, true)
+        const rcsContent = store.generateRcsContent()
+        const generatedFiles = await generateJavaCode(config, rcsContent, true)
         let markdownContent = ''
         generatedFiles.forEach((file) => {
             markdownContent += `### ${file.filePath}\n\n`

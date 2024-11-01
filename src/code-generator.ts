@@ -10,12 +10,12 @@ export interface GeneratedFile {
 
 export async function generateJavaCode(
     config: Config,
-    rasContent: string,
+    rcsContent: string,
     preview: boolean = false
 ): Promise<GeneratedFile[]> {
     const generatedFiles: GeneratedFile[] = []
     // 1. 解析脚本，得到领域和方法信息
-    const { domains, apiMethods } = parseScript(config, rasContent)
+    const { domains, apiMethods } = parseScript(config, rcsContent)
 
     // 2. 为每个领域生成代码
     for (const domain of domains) {

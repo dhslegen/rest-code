@@ -1,7 +1,7 @@
 <template>
     <div class="file-drop-area" :class="{ dragging: isDragging }" @dragover.prevent="onDragOver"
         @dragleave.prevent="onDragLeave" @drop.prevent="onFileDrop">
-        <p>点击下方按钮打开文件，或将 <code>.ras</code> 文件拖放到此区域</p>
+        <p>点击下方按钮打开文件，或将 <code>.rcs</code> 文件拖放到此区域</p>
         <el-button color="#1565c0" type="primary" @click="openFile">打开文件</el-button>
     </div>
 </template>
@@ -17,7 +17,7 @@ const isDragging = ref(false)
 
 const openFile = async () => {
     const { filePaths, canceled } = await window.api.showOpenDialog({
-        filters: [{ name: "Ras Files", extensions: ["ras"] }],
+        filters: [{ name: "Rcs Files", extensions: ["rcs"] }],
         properties: ['openFile']
     })
     if (!canceled && filePaths && filePaths.length > 0) {
@@ -25,7 +25,7 @@ const openFile = async () => {
         // 读取文件内容
         const content = window.api.readFile(filePath)
         if (content) {
-            store.parseRasFile(content)
+            store.parseRcsFile(content)
             store.loadedFilePath = filePath
             ElMessage.success('文件加载成功')
         } else {
@@ -52,12 +52,12 @@ const onFileDrop = (event: DragEvent) => {
     const files = event.dataTransfer?.files
     if (files && files.length > 0) {
         const file = files[0]
-        if (file.name.endsWith('.ras')) {
+        if (file.name.endsWith('.rcs')) {
             const reader = new FileReader()
             reader.onload = function (e) {
                 const content = e.target?.result as string
                 if (content) {
-                    store.parseRasFile(content)
+                    store.parseRcsFile(content)
                     store.loadedFilePath = ''
                     ElMessage.success('文件加载成功')
                 } else {
@@ -69,7 +69,7 @@ const onFileDrop = (event: DragEvent) => {
             }
             reader.readAsText(file)
         } else {
-            ElMessage.error('请拖入 .ras 文件')
+            ElMessage.error('请拖入 .rcs 文件')
         }
     }
 }

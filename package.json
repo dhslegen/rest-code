@@ -1,7 +1,7 @@
 {
   "name": "rest-code",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "zhaowenhao<https://dahaoshen.com>",
   "description": "Rest Code 是一款基于 Electron 的自动化工具，用于通过简洁的脚本快速生成 REST API 后端代码。",
   "type": "module",

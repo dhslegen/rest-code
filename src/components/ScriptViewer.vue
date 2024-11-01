@@ -13,7 +13,7 @@
         <pre>{{ lineNumbers }}</pre>
       </div>
       <div class="code-content" @click="showErrorPopover = false">
-        <pre>{{ rasContent }}</pre>
+        <pre>{{ rcsContent }}</pre>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@
     <el-descriptions :column="1" border>
       <el-descriptions-item label="当前版本">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.4')"> v1.0.4</a>
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.5')"> v1.0.5</a>
       </el-descriptions-item>
       <el-descriptions-item label="最新版下载">
         <a href="javascript:void(0)"
@@ -74,8 +74,8 @@ const openLink = (url: string) => {
 }
 
 const codeContent = ref<HTMLElement | null>(null)
-const rasContent = computed(() => {
-  return store.generateRasContent()
+const rcsContent = computed(() => {
+  return store.generateRcsContent()
 })
 
 const lineNumbers = ref('')
@@ -118,7 +118,7 @@ import type { ComponentPublicInstance } from 'vue'
 
 const errorButton = ref<ComponentPublicInstance | null>(null)
 
-watch(rasContent, (newValue) => {
+watch(rcsContent, (newValue) => {
   const lines = newValue.split('\n')
   lineNumbers.value = lines.map((_, index) => index + 1).join('\n')
 })
@@ -147,11 +147,11 @@ const saveScripts = async () => {
     return
   }
   if (store.loadedFilePath) {
-    store.saveRasFile(store.loadedFilePath)
+    store.saveRcsFile(store.loadedFilePath)
   } else {
     const filePath = await window.api.showSaveDialog()
     if (filePath) {
-      store.saveRasFile(filePath)
+      store.saveRcsFile(filePath)
       // 保存成功后，更新 loadedFilePath
       store.loadedFilePath = filePath
     }
