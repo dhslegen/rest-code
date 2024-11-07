@@ -162,6 +162,14 @@ const decryptFiles = async () => {
         // 移除 .json 后缀
         files.forEach(file => {
             const newFilePath = file + '.json'
+            try {
+                window.api.renameFile(file, newFilePath)
+            } catch (error) {
+                if ((error as any).code === 'EXDEV') {
+                    ElMessage.error('解密失败，请将程序安装到待解密文件夹的同磁盘驱动后重试')
+                    return
+                }
+            }
             window.api.renameFile(newFilePath, file)
         })
         decrypting.value = false
