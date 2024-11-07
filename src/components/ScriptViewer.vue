@@ -18,6 +18,9 @@
     </div>
   </div>
   <div style="text-align: center; margin-top: 10px;">
+    <el-button type="primary" @click.stop="showGptDialog = true"
+      style="background-color: #c41d7f;border-color: #c41d7f;"
+      :title="'此指令用于调教 GPT 成为 一个 RCS 脚本生成专家，将 Markdown 表格的中文伪代码解析为 RCS 文件。'">GPT指令</el-button>
     <el-button type="primary" @click.stop="showAboutDialog = true"
       style="background-color: #c41d7f;border-color: #c41d7f;">关于</el-button>
     <el-button type="primary" @click.stop="showHelpDialog = true"
@@ -28,11 +31,19 @@
       style="background-color: #c41d7f;border-color: #c41d7f;">保存</el-button>
   </div>
 
+  <el-dialog title="GPT 指令" v-model="showGptDialog" width="80%">
+    <div v-html="gptContentHtml" style="height: 510px; overflow: auto;"></div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="showGptDialog = false">关闭</el-button>
+    </span>
+  </el-dialog>
+
   <el-dialog title="关于" v-model="showAboutDialog">
     <el-descriptions :column="1" border>
       <el-descriptions-item label="当前版本">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.5')"> v1.0.5</a>
+          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.6')">
+          v1.0.6</a>
       </el-descriptions-item>
       <el-descriptions-item label="最新版下载">
         <a href="javascript:void(0)"
@@ -66,6 +77,7 @@ import { ElMessage } from 'element-plus'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import helpContentRaw from '../docs/help.md?raw'
+import gptContentRaw from '../docs/GPT.md?raw'
 
 const store = useStore()
 
@@ -90,6 +102,9 @@ const showHelpDialog = ref(false)
 const showAboutDialog = ref(false)
 const helpContent = ref(helpContentRaw)
 
+const showGptDialog = ref(false)
+const gptContent = ref(gptContentRaw)
+
 const md: MarkdownIt = new MarkdownIt({
   html: true,
   linkify: true,
@@ -111,6 +126,7 @@ md.renderer.rules.code_inline = (tokens, idx) => {
   return `<code class="hljs-code">${md.utils.escapeHtml(tokens[idx].content)}</code>`
 }
 
+const gptContentHtml = computed(() => md.render(gptContent.value))
 
 const helpContentHtml = computed(() => md.render(helpContent.value))
 

@@ -20,10 +20,22 @@
             </el-radio-group>
         </el-form-item>
         <el-form-item>
+            <el-button color="#1565c0" type="primary" @click.stop="decryptFiles"
+                :title="'已经联系亿赛通把 Rest Code 加入了白名单策略，此功能只用作备选方案，解密输出路径中的所有文件，适用于没有同步亿赛通白名单策略的 windows 电脑'">解密</el-button>
             <el-button color="#1565c0" type="primary" @click.stop="previewCode">预览</el-button>
             <el-button color="#1565c0" type="primary" @click.stop="generateCode">生成代码</el-button>
         </el-form-item>
     </el-form>
+
+    <el-dialog v-model="decrypting" title="解密中" :modal="true" :close-on-click-modal="false"
+        :close-on-press-escape="false" width="300px">
+        <div style="text-align: center;">
+            <el-icon>
+                <Loading />
+            </el-icon>
+            <p>正在解密，请稍候...</p>
+        </div>
+    </el-dialog>
 
     <el-dialog title="代码预览" v-model="showPreviewDialog" width="80%">
         <div v-html="previewContentHtml" style="height: 510px; overflow: auto;"></div>
@@ -39,7 +51,7 @@ import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import { generateJavaCode } from '../code-generator'
 import type { Config } from '../types'
-import { FolderOpened } from '@element-plus/icons-vue'
+import { FolderOpened, Loading } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 
@@ -128,6 +140,36 @@ const previewCode = async () => {
     } catch (error) {
         console.error(error)
         ElMessage.error('代码预览失败')
+    }
+}
+const decrypting = ref(false)
+
+const decryptFiles = async () => {
+    if (!config.outputPath || !window.api.exists(config.outputPath)) {
+        ElMessage.error('请先选择有效的输出路径')
+        return
+    }
+    decrypting.value = true
+    try {
+        // 遍历目录，添加 .json 后缀
+        const files = window.api.getAllFiles(config.outputPath)
+        files.forEach(file => {
+            const newFilePath = file + '.json'
+            window.api.renameFile(file, newFilePath)
+        })
+        // 等待 3 秒
+        await new Promise(resolve => setTimeout(resolve, 3000))
+        // 移除 .json 后缀
+        files.forEach(file => {
+            const newFilePath = file + '.json'
+            window.api.renameFile(newFilePath, file)
+        })
+        decrypting.value = false
+        ElMessage.success('解密成功')
+    } catch (error) {
+        console.error(error)
+        decrypting.value = false
+        ElMessage.error('解密失败')
     }
 }
 </script>
