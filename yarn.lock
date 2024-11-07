@@ -317,7 +317,7 @@
   resolved "https://registry.npmjs.org/@npmcli/move-file/-/move-file-2.0.1.tgz"
   integrity sha512-mJd2Z5TjYWq/ttPLLGqArdtnC74J6bOzg4rMDnN+p1xTacZ2yPRCk2y0oSWQtygLR9YVQXgOcONrwtnk3JupxQ==
   dependencies:
-    mkdirp "^1.0.5"
+    mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
 "@pkgjs/parseargs@^0.11.0":
@@ -1008,13 +1008,13 @@ cacache@^16.1.0:
     chownr "^2.0.0"
     fs-minipass "^2.1.0"
     glob "^8.0.1"
-    infer-owner "^1.0.5"
+    infer-owner "^1.0.4"
     lru-cache "^7.7.1"
     minipass "^3.1.6"
     minipass-collect "^1.0.2"
     minipass-flush "^1.0.5"
     minipass-pipeline "^1.2.4"
-    mkdirp "^1.0.5"
+    mkdirp "^1.0.4"
     p-map "^4.0.0"
     promise-inflight "^1.0.1"
     rimraf "^3.0.2"
@@ -1105,8 +1105,8 @@ clone-response@^1.0.2:
     mimic-response "^1.0.0"
 
 clone@^1.0.2:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/clone/-/clone-1.0.5.tgz"
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/clone/-/clone-1.0.4.tgz"
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
 color-convert@^2.0.1:
@@ -1217,8 +1217,8 @@ decompress-response@^6.0.0:
     mimic-response "^3.1.0"
 
 defaults@^1.0.3:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/defaults/-/defaults-1.0.5.tgz"
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/defaults/-/defaults-1.0.4.tgz"
   integrity sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==
   dependencies:
     clone "^1.0.2"
@@ -1528,9 +1528,9 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
-filelist@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/filelist/-/filelist-1.0.5.tgz"
+filelist@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/filelist/-/filelist-1.0.4.tgz"
   integrity sha512-w1cEuf3S+DrLCQL7ET6kz+gmlJdbq9J7yXCSjK/OZCPA+qEN1WyF4ZAf0YYJa4/shHJra2t/d/r8SV4Ji+x+8Q==
   dependencies:
     minimatch "^5.0.1"
@@ -1666,7 +1666,7 @@ glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
   integrity sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==
   dependencies:
     fs.realpath "^1.0.0"
-    inflight "^1.0.5"
+    inflight "^1.0.4"
     inherits "2"
     minimatch "^3.1.1"
     once "^1.3.0"
@@ -1678,7 +1678,7 @@ glob@^8.0.1:
   integrity sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==
   dependencies:
     fs.realpath "^1.0.0"
-    inflight "^1.0.5"
+    inflight "^1.0.4"
     inherits "2"
     minimatch "^5.0.1"
     once "^1.3.0"
@@ -1696,8 +1696,8 @@ global-agent@^3.0.0:
     serialize-error "^7.0.1"
 
 globalthis@^1.0.1:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/globalthis/-/globalthis-1.0.5.tgz"
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/globalthis/-/globalthis-1.0.4.tgz"
   integrity sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==
   dependencies:
     define-properties "^1.2.1"
@@ -1866,12 +1866,12 @@ indent-string@^4.0.0:
   resolved "https://registry.npmjs.org/indent-string/-/indent-string-4.0.0.tgz"
   integrity sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==
 
-infer-owner@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/infer-owner/-/infer-owner-1.0.5.tgz"
+infer-owner@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/infer-owner/-/infer-owner-1.0.4.tgz"
   integrity sha512-IClj+Xz94+d7irH5qRyfJonOdfTzuDaifE6ZPWfx0N0+/ATZCbuTPq2prFl526urkQd90WyUKIh1DfBQ2hMz9A==
 
-inflight@^1.0.5:
+inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz"
   integrity sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==
@@ -1950,7 +1950,7 @@ jake@^10.8.5:
   dependencies:
     async "^3.2.3"
     chalk "^4.0.2"
-    filelist "^1.0.5"
+    filelist "^1.0.4"
     minimatch "^3.1.2"
 
 js-yaml@^4.1.0:
@@ -2252,9 +2252,9 @@ minizlib@^2.1.1, minizlib@^2.1.2:
     minipass "^3.0.0"
     yallist "^4.0.0"
 
-mkdirp@^1.0.3, mkdirp@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.5.tgz"
+mkdirp@^1.0.3, mkdirp@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
 ms@^2.0.0, ms@^2.1.3:
