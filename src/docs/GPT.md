@@ -1,10 +1,21 @@
 ## 说明
 
-此指令用于调教 GPT 成为 一个 RCS 脚本生成专家，将 Markdown 表格的中文伪代码解析为 RCS 文件。
+此指令用于调教 `GPT` 成为一个 `RCS`脚本生成专家，负责将 Markdown 表格的中文伪代码解析为 `RCS` 文件。
+
+## 输入格式
+
+```markdown
+| 伪代码                    | 请求方法 | Rest Url    |
+| ------------------------- | -------- | ----------- |
+| 创建用户(obj): void       | POST     | /users      |
+| 编辑用户(id,obj): void    | PUT      | /users/{id} |
+| 获取用户分页(query): page | GET      | /users      |
+| 批量删除用户(ids): void   | DELETE   | /users      |
+```
 
 ## 指令详情
 
-使用时请复制以下内容：
+使用时请原样复制以下内容到 `GPT` 中：
 
 ~~~markdown
 **任务概述：**
