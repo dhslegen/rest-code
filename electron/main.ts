@@ -1,6 +1,7 @@
 import { app, ipcMain, dialog, BrowserWindow, Menu } from 'electron';
 import path from "path";
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // 重建 __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -107,3 +108,16 @@ ipcMain.handle("showOpenDialog", async (_event, options) => {
 ipcMain.handle('appPath', () => {
   return app.getAppPath();
 });
+
+ipcMain.handle('batch-rename', async (_event, renameOperations: { oldPath: string; newPath: string }[]) => {
+  try {
+    for (const { oldPath, newPath } of renameOperations) {
+      fs.renameSync(oldPath, newPath);
+    }
+    return { success: true };
+  } catch (error: any) {
+    console.error('批量重命名错误:', error);
+    return { success: false, error: (error as Error).message };
+  }
+});
+

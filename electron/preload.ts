@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge, shell } from 'electron'
-import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync, readdirSync, statSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'fs'
 import { join, basename, dirname } from 'path'
 
 // --------- Expose some API to the Renderer process ---------
@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld('api', {
   readFile: (filePath: string) => readFileSync(filePath, 'utf-8'),
   writeFile: (filePath: string, content: string) => writeFileSync(filePath, content, 'utf-8'),
   exists: (filePath: string) => existsSync(filePath),
-  renameFile: (oldPath: string, newPath: string) => renameSync(oldPath, newPath),
+  batchRename: (renameOperations: { oldPath: string; newPath: string }[]) => ipcRenderer.invoke('batch-rename', renameOperations),
   getAllFiles: (dir: string): string[] => {
     const files: string[] = []
     const readDir = (currentPath: string) => {

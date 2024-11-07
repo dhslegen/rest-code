@@ -146,38 +146,45 @@ const decrypting = ref(false)
 
 const decryptFiles = async () => {
     if (!config.outputPath || !window.api.exists(config.outputPath)) {
-        ElMessage.error('请先选择有效的输出路径')
-        return
+        ElMessage.error('请先选择有效的输出路径');
+        return;
     }
-    decrypting.value = true
+    decrypting.value = true;
     try {
-        // 遍历目录，添加 .json 后缀
-        const files = window.api.getAllFiles(config.outputPath)
-        files.forEach(file => {
-            const newFilePath = file + '.json'
-            window.api.renameFile(file, newFilePath)
-        })
+        // 获取所有文件
+        const files = window.api.getAllFiles(config.outputPath);
+        // 准备添加 .json 后缀的重命名操作列表
+        const renameOperations = files.map(file => ({
+            oldPath: file,
+            newPath: file + '.json',
+        }));
+        // 调用主进程进行批量重命名（添加后缀）
+        let result = await window.api.batchRename(renameOperations);
+        if (!result.success) {
+            ElMessage.error('解密失败：' + (result.error || '未知错误'));
+            decrypting.value = false;
+            return;
+        }
         // 等待 3 秒
-        await new Promise(resolve => setTimeout(resolve, 3000))
-        // 移除 .json 后缀
-        files.forEach(file => {
-            const newFilePath = file + '.json'
-            try {
-                window.api.renameFile(file, newFilePath)
-            } catch (error) {
-                if ((error as any).code === 'EXDEV') {
-                    ElMessage.error('解密失败，请将程序安装到待解密文件夹的同磁盘驱动后重试')
-                    return
-                }
-            }
-            window.api.renameFile(newFilePath, file)
-        })
-        decrypting.value = false
-        ElMessage.success('解密成功')
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        // 准备移除 .json 后缀的重命名操作列表
+        const renameOperationsBack = files.map(file => ({
+            oldPath: file + '.json',
+            newPath: file,
+        }));
+        // 调用主进程进行批量重命名（移除后缀）
+        result = await window.api.batchRename(renameOperationsBack);
+        if (!result.success) {
+            ElMessage.error('解密失败：' + (result.error || '未知错误'));
+            decrypting.value = false;
+            return;
+        }
+        decrypting.value = false;
+        ElMessage.success('解密成功');
     } catch (error) {
-        console.error(error)
-        decrypting.value = false
-        ElMessage.error('解密失败')
+        console.error(error);
+        decrypting.value = false;
+        ElMessage.error('解密失败');
     }
-}
+};
 </script>

@@ -13,7 +13,9 @@ interface CommonAPI {
   readFile(filePath: string): string
   writeFile(filePath: string, content: string): void
   exists(filePath: string): boolean
-  renameFile(oldPath: string, newPath: string): void
+  batchRename(renameOperations: { oldPath: string; newPath: string }[]): Promise<{
+    error: string; success: boolean
+  }>
   getAllFiles(dir: string): string[]
   appPath(): Promise<string>
   join(...paths: string[]): string
