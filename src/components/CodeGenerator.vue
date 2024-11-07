@@ -21,14 +21,14 @@
         </el-form-item>
         <el-form-item>
             <el-button color="#1565c0" type="primary" @click.stop="decryptFiles"
-                :title="'已经联系亿赛通把 Rest Code 加入了白名单策略，此功能只用作备选方案，解密输出路径中的所有文件，适用于没有同步亿赛通白名单策略的 windows 电脑'">解密</el-button>
+                :title="'解密输出路径中的所有文件，Rest Code 已加入加密软件白名单，因此此功能只用作备选方案，您也可以把它作为批量解密文件的小工具'">解密</el-button>
             <el-button color="#1565c0" type="primary" @click.stop="previewCode">预览</el-button>
             <el-button color="#1565c0" type="primary" @click.stop="generateCode">生成代码</el-button>
         </el-form-item>
     </el-form>
 
     <el-dialog v-model="decrypting" title="解密中" :modal="true" :close-on-click-modal="false"
-        :close-on-press-escape="false" width="300px">
+        :close-on-press-escape="false" width="300px" :show-close="false">
         <div style="text-align: center;">
             <el-icon>
                 <Loading />
@@ -151,7 +151,7 @@ const decryptFiles = async () => {
     }
     decrypting.value = true;
     try {
-         const result = await window.api.decryptFiles(config.outputPath);
+        const result = await window.api.decryptFiles(config.outputPath);
         if (!result.success) {
             ElMessage.error('解密失败：' + (result.error || '未知错误'));
             decrypting.value = false;

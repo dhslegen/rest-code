@@ -111,7 +111,14 @@ ipcMain.handle('appPath', () => {
 
 ipcMain.handle('decrypt-files', async (_event, directory: string) => {
   return new Promise((resolve) => {
-    const decryptExePath = path.join(__dirname, '../decrypt/decrypt.exe');
+    let decryptExePath;
+    if (app.isPackaged) {
+      // 生产环境
+      decryptExePath = path.join(process.resourcesPath, 'decrypt.exe');
+    } else {
+      // 开发环境
+      decryptExePath = path.join(__dirname, '../decrypt/decrypt.exe');
+    }
     execFile(decryptExePath, [directory], (error, _stdout) => {
       if (error) {
         console.error('解密失败:', error);

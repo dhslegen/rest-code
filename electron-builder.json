@@ -10,6 +10,12 @@
     "dist",
     "dist-electron"
   ],
+  "extraResources": [
+    {
+      "from": "decrypt/decrypt.exe",
+      "to": "./"
+    }
+  ],
   "mac": {
     "icon": "build/icons/icon.icns",
     "target": [
