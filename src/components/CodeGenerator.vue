@@ -151,29 +151,7 @@ const decryptFiles = async () => {
     }
     decrypting.value = true;
     try {
-        // 获取所有文件
-        const files = window.api.getAllFiles(config.outputPath);
-        // 准备添加 .json 后缀的重命名操作列表
-        const renameOperations = files.map(file => ({
-            oldPath: file,
-            newPath: file + '.json',
-        }));
-        // 调用主进程进行批量重命名（添加后缀）
-        let result = await window.api.batchRename(renameOperations);
-        if (!result.success) {
-            ElMessage.error('解密失败：' + (result.error || '未知错误'));
-            decrypting.value = false;
-            return;
-        }
-        // 等待 3 秒
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        // 准备移除 .json 后缀的重命名操作列表
-        const renameOperationsBack = files.map(file => ({
-            oldPath: file + '.json',
-            newPath: file,
-        }));
-        // 调用主进程进行批量重命名（移除后缀）
-        result = await window.api.batchRename(renameOperationsBack);
+         const result = await window.api.decryptFiles(config.outputPath);
         if (!result.success) {
             ElMessage.error('解密失败：' + (result.error || '未知错误'));
             decrypting.value = false;

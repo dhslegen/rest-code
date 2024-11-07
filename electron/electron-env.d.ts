@@ -13,10 +13,6 @@ interface CommonAPI {
   readFile(filePath: string): string
   writeFile(filePath: string, content: string): void
   exists(filePath: string): boolean
-  batchRename(renameOperations: { oldPath: string; newPath: string }[]): Promise<{
-    error: string; success: boolean
-  }>
-  getAllFiles(dir: string): string[]
   appPath(): Promise<string>
   join(...paths: string[]): string
   basename(path: string): string
@@ -24,6 +20,7 @@ interface CommonAPI {
   mkdir(path: string): void
   openExternal(url: string): void
   onOpenFile(callback: (event: Electron.IpcRendererEvent, filePath: string) => void): void
+  decryptFiles(directory: string): Promise<{ success: boolean; error?: string }>
 }
 
 interface Window {
