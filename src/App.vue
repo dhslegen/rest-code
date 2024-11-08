@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 91vh; flex-direction: column; background-color: #f0f2f5;">
+  <el-container style="height: 90vh; flex-direction: column; background-color: #f0f2f5;">
     <!-- 主内容区域 -->
     <el-main style="padding: 0; overflow: auto;">
       <!-- 第1行：文件加载区域和生成代码区域 -->

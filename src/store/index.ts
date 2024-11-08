@@ -48,6 +48,8 @@ export const useStore = defineStore('main', {
                             contract: match[5],
                             description: match[6],
                             template: '',
+                            tooltipContent: '',
+                            showTooltip: false,
                         }
                         // 尝试匹配模板
                         const matchedTemplate = this.templates.find(t =>

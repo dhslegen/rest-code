@@ -225,7 +225,7 @@ export function getControllerBasicTemplate(): string {
 /**
  * {{description}}开放接口
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 {{#classAnnotations}}
@@ -250,7 +250,7 @@ export function getServiceBasicTemplate(): string {
 /**
  * {{description}}服务
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 public interface {{domainName}}Service {
@@ -265,7 +265,7 @@ export function getServiceImplBasicTemplate(): string {
 /**
  * {{description}}服务实现
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 @Service

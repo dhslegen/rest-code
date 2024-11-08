@@ -10,7 +10,9 @@ export interface Script {
     operation: string
     contract: string
     description: string
-    template: string;
+    template: string
+    tooltipContent: string
+    showTooltip: boolean
 }
 
 export interface Template {
@@ -46,6 +48,7 @@ export interface ApiMethod {
 }
 
 export interface Config {
+    author: string
     frameworkBasePackage: string
     outputPath: string
     basePackage: string

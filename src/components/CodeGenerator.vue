@@ -1,5 +1,8 @@
 <template>
     <el-form :model="config" label-width="120px">
+        <el-form-item label="作者">
+            <el-input v-model="config.author" :placeholder="'例如：zhaowenhao'"></el-input>
+        </el-form-item>
         <el-form-item label="框架基本包名">
             <el-input v-model="config.frameworkBasePackage" :placeholder="'例如：com.wanji.software.tocc'"></el-input>
         </el-form-item>
@@ -59,6 +62,7 @@ const store = useStore()
 
 // 默认配置
 const defaultConfig: Config = {
+    author: '',
     frameworkBasePackage: '',
     outputPath: '',
     basePackage: '',

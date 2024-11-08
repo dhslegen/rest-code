@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="domains" style="width: 100%" border :max-height="300"
+    <el-table :data="domains" ref="domainTable" style="width: 100%" border :max-height="333"
         :header-cell-style="{ backgroundColor: '#f5f7fa', textAlign: 'center' }" :show-header="true">
         <el-table-column prop="name" label="领域名称" width="180" align="center">
             <template #default="{ row }">
@@ -25,12 +25,23 @@
 
 <script setup lang="ts">
 import { useStore } from '../store/'
+import { ref, nextTick } from 'vue'
+import type { ElTable } from 'element-plus'
+
+const domainTable = ref<InstanceType<typeof ElTable> | null>(null)
 
 const store = useStore()
 const domains = store.domains
 
 const addDomain = () => {
     store.addDomain({ name: '', description: '' })
+    nextTick(() => {
+        const tableBodyWrapper = domainTable.value?.$el.querySelector('.el-scrollbar__wrap')
+        if (tableBodyWrapper) {
+            tableBodyWrapper.scrollTop = tableBodyWrapper.scrollHeight
+        }
+        store.setScrollToBottom(true)
+    })
 }
 
 const deleteDomain = (index: number) => {

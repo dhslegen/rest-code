@@ -154,6 +154,7 @@ function generateBasicControllerClass(config: Config, domain: Domain): string {
         basePackage: config.basePackage,
         frameworkBasePackage: config.frameworkBasePackage,
         domainName: domain.name,
+        author: config.author,
         date: new Date().toISOString().split('T')[0],
         domainNameLower: domainNameLower,
         description: domain.description,
@@ -387,6 +388,7 @@ function generateBasicServiceInterface(config: Config, domain: Domain): string {
         basePackage: config.basePackage,
         domainName: domain.name,
         description: domain.description,
+        author: config.author,
         date: new Date().toISOString().split('T')[0],
     };
 
@@ -459,6 +461,7 @@ function generateBasicServiceImplClass(config: Config, domain: Domain): string {
         basePackage: config.basePackage,
         domainName: domain.name,
         description: domain.description,
+        author: config.author,
         date: new Date().toISOString().split('T')[0],
     };
 
@@ -553,6 +556,7 @@ async function generateVoClass(
         domainDescription: `${domain.description}`,
         businessSuffix: voName.replace(domain.name, '').replace(suffix, ''),
         voDescription: voDescription,
+        author: config.author,
         date: new Date().toISOString().split('T')[0],
     };
 
@@ -570,7 +574,7 @@ import java.io.Serializable;
 /**
  * {{domainDescription}} {{businessSuffix}} {{voDescription}}
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 @Schema(description = "{{domainDescription}} {{businessSuffix}} {{voDescription}}")
@@ -636,7 +640,7 @@ import java.io.Serializable;
 /**
  * {{domainDescription}} {{businessSuffix}} {{voDescription}}
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 @Schema(description = "{{domainDescription}} {{businessSuffix}} {{voDescription}}")
@@ -682,6 +686,7 @@ async function generatePageQueryVo(config: Config, preview: boolean, generatedFi
     const data = {
         basePackage: config.basePackage,
         packageName: packageName,
+        author: config.author,
         date: new Date().toISOString().split('T')[0],
     };
 
@@ -696,7 +701,7 @@ import java.io.Serializable;
 /**
  * 分页查询 VO
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 @Data
@@ -750,6 +755,7 @@ async function generateConverter(domain: Domain, config: Config, preview: boolea
         packageName: packageName,
         domainName: domain.name,
         description: `${domain.description}转换器`,
+        author: config.author,
         date: new Date().toISOString().split('T')[0],
     };
 
@@ -762,7 +768,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * {{description}}
  *
- * @author RestCodeGenerator
+ * @author {{author}}
  * @since {{date}}
  */
 @Mapper(builder = @Builder(disableBuilder = true))
