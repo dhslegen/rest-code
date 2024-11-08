@@ -35,7 +35,7 @@
         </el-table-column>
         <el-table-column label="操作名称" align="center">
             <template #default="{ row }">
-                <el-input v-model="row.operation" placeholder="操作名称"></el-input>
+                <el-input v-model="row.operation" placeholder="例如：update"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="参数契约" align="center">
@@ -44,14 +44,14 @@
                     <template #content>
                         <div v-html="row.tooltipContent"></div>
                     </template>
-                    <el-input v-model="row.contract" placeholder="输入 @?#$> 获取提示" @input="onContractInput(row)"
+                    <el-input v-model="row.contract" placeholder="输入 @?#$> 以获取提示" @input="onContractInput(row)"
                         @focus="onContractFocus(row)" @blur="onContractBlur(row)"></el-input>
                 </el-tooltip>
             </template>
         </el-table-column>
         <el-table-column label="描述" align="center">
             <template #default="{ row }">
-                <el-input v-model="row.description" placeholder="描述"></el-input>
+                <el-input v-model="row.description" placeholder="例如：编辑用户"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="100">
