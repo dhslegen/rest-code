@@ -622,7 +622,12 @@ public class {{voName}} extends AbstractTreeNode<Long, {{voName}}> implements Se
      * todo: 待覆盖字段，实际使用时请替换为真实字段，一般实践为从对应的数据库实体类中复制过来
      */
     @Schema(description = "待覆盖字段")
-    private static final long serialVersionUID = 1L;
+    private String todo;
+
+    /**
+     * 使用JDK 1.0.2 中的 serialVersionUID 实现互操作性。
+     */
+    private static final long serialVersionUID = -3042686055658047285L;
 }
 `;
     } else {
@@ -654,7 +659,12 @@ public class {{voName}} implements Serializable {
      * todo: 待覆盖字段，实际使用时请替换为真实字段，一般实践为从对应的数据库实体类中复制过来
      */
     @Schema(description = "待覆盖字段")
-    private static final long serialVersionUID = 1L;
+    private String todo;
+
+    /**
+     * 使用JDK 1.0.2 中的 serialVersionUID 实现互操作性。
+     */
+    private static final long serialVersionUID = -3042686055658047285L;
 }
 `;
     }
