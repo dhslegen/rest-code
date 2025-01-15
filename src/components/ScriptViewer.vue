@@ -3,7 +3,7 @@
   <el-popover v-model="showErrorPopover" placement="top" width="600" :visible="showErrorPopover">
     <div v-html="formattedErrors" style="height: 300px;overflow: auto;" @click.stop></div>
     <template #reference>
-      <el-alert ref="errorButton" center title="脚本查看" style="background-color:#c41d7f; height: 20px;" type="success"
+      <el-alert ref="errorButton" center title="脚本查看" style="background-color:#01a3a4; height: 20px;" type="success"
         effect="dark" :closable=false @click.stop />
     </template>
   </el-popover>
@@ -19,16 +19,16 @@
   </div>
   <div style="text-align: center; margin-top: 10px;">
     <el-button type="primary" @click.stop="showGptDialog = true"
-      style="background-color: #c41d7f;border-color: #c41d7f;"
+      style="background-color: #01a3a4;border-color: #01a3a4;"
       :title="'此指令用于调教 GPT 成为 一个 RCS 脚本生成专家，将 Markdown 表格的中文伪代码解析为 RCS 文件。'">GPT指令</el-button>
     <el-button type="primary" @click.stop="showAboutDialog = true"
-      style="background-color: #c41d7f;border-color: #c41d7f;">关于</el-button>
+      style="background-color: #01a3a4;border-color: #01a3a4;">关于</el-button>
     <el-button type="primary" @click.stop="showHelpDialog = true"
-      style="background-color: #c41d7f;border-color: #c41d7f;">帮助</el-button>
+      style="background-color: #01a3a4;border-color: #01a3a4;">帮助</el-button>
     <el-button type="primary" @click.stop="validateScripts"
-      style="background-color: #c41d7f;border-color: #c41d7f;">校验</el-button>
+      style="background-color: #01a3a4;border-color: #01a3a4;">校验</el-button>
     <el-button type="primary" @click.stop="saveScripts"
-      style="background-color: #c41d7f;border-color: #c41d7f;">保存</el-button>
+      style="background-color: #01a3a4;border-color: #01a3a4;">保存</el-button>
   </div>
 
   <el-dialog title="GPT 指令" v-model="showGptDialog" width="80%">
@@ -42,16 +42,16 @@
     <el-descriptions :column="1" border>
       <el-descriptions-item label="当前版本">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases/tag/v1.0.9')">
+          @click="openLink('http://gitea126.weightyware.com:16680/GENERAL-COMPONENT-BACKEND/rest-code/releases/tag/v1.0.9')">
           v1.0.9</a>
       </el-descriptions-item>
       <el-descriptions-item label="最新版下载">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code/releases')">点击下载</a>
+          @click="openLink('http://gitea126.weightyware.com:16680/GENERAL-COMPONENT-BACKEND/rest-code/releases')">点击下载</a>
       </el-descriptions-item>
       <el-descriptions-item label="源码仓库">
         <a href="javascript:void(0)"
-          @click="openLink('http://gitea126.weightyware.com:16680/CODE-GENERATOR/rest-code.git')">点击访问</a>
+          @click="openLink('http://gitea126.weightyware.com:16680/GENERAL-COMPONENT-BACKEND/rest-code.git')">点击访问</a>
       </el-descriptions-item>
       <el-descriptions-item label="作者">
         <a href="javascript:void(0)" @click="openLink('https://dahaoshen.com')">赵文昊</a>

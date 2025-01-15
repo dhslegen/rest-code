@@ -19,7 +19,7 @@
     </el-table>
 
     <div style="text-align: center; margin-top: 10px;">
-        <el-button color="#8e24aa" type="primary" @click="addDomain">新增领域</el-button>
+        <el-button color="#6c5ce7" type="primary" @click="addDomain">新增领域</el-button>
     </div>
 </template>
 

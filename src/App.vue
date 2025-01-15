@@ -29,14 +29,14 @@
 
         <!-- 第2行：领域编辑区域 -->
         <el-collapse-item name="2">
-          <template #title><el-alert center title="领域编辑" style="background-color:#8e24aa;height: 30px;" type="success"
+          <template #title><el-alert center title="领域编辑" style="background-color:#6c5ce7;height: 30px;" type="success"
               effect="dark" :closable=false /></template>
           <domain-editor />
         </el-collapse-item>
 
         <!-- 第3行：脚本编辑区域 -->
         <el-collapse-item name="3">
-          <template #title><el-alert center title="脚本编辑" style="background-color:#26a69a;height: 30px;" type="success"
+          <template #title><el-alert center title="脚本编辑" style="background-color:#00b894;height: 30px;" type="success"
               effect="dark" :closable=false /></template>
           <script-editor />
         </el-collapse-item>
