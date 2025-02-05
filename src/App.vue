@@ -36,7 +36,7 @@
 
         <!-- 第3行：脚本编辑区域 -->
         <el-collapse-item name="3">
-          <template #title><el-alert center title="脚本编辑" style="background-color:#01a3a4;height: 30px;" type="success"
+          <template #title><el-alert center title="脚本编辑" style="background-color:#009688;height: 30px;" type="success"
               effect="dark" :closable=false /></template>
           <script-editor />
         </el-collapse-item>

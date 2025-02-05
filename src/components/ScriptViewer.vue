@@ -3,7 +3,7 @@
   <el-popover v-model="showErrorPopover" placement="top" width="600" :visible="showErrorPopover">
     <div v-html="formattedErrors" style="height: 300px;overflow: auto;" @click.stop></div>
     <template #reference>
-      <el-alert ref="errorButton" center title="脚本查看" style="background-color:#00b894; height: 20px;" type="success"
+      <el-alert ref="errorButton" center title="脚本查看" style="background-color:#009688; height: 20px;" type="success"
         effect="dark" :closable=false @click.stop />
     </template>
   </el-popover>
@@ -19,16 +19,16 @@
   </div>
   <div style="text-align: center; margin-top: 10px;">
     <el-button type="primary" @click.stop="showGptDialog = true"
-      style="background-color: #00b894;border-color: #00b894;"
+      style="background-color: #009688;border-color: #009688;"
       :title="'此指令用于调教 GPT 成为 一个 RCS 脚本生成专家，将 Markdown 表格的中文伪代码解析为 RCS 文件。'">GPT指令</el-button>
     <el-button type="primary" @click.stop="showAboutDialog = true"
-      style="background-color: #00b894;border-color: #00b894;">关于</el-button>
+      style="background-color: #009688;border-color: #009688;">关于</el-button>
     <el-button type="primary" @click.stop="showHelpDialog = true"
-      style="background-color: #00b894;border-color: #00b894;">帮助</el-button>
+      style="background-color: #009688;border-color: #009688;">帮助</el-button>
     <el-button type="primary" @click.stop="validateScripts"
-      style="background-color: #00b894;border-color: #00b894;">校验</el-button>
+      style="background-color: #009688;border-color: #009688;">校验</el-button>
     <el-button type="primary" @click.stop="saveScripts"
-      style="background-color: #00b894;border-color: #00b894;">保存</el-button>
+      style="background-color: #009688;border-color: #009688;">保存</el-button>
   </div>
 
   <el-dialog title="GPT 指令" v-model="showGptDialog" width="80%">

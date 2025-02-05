@@ -62,8 +62,8 @@
     </el-table>
 
     <div style="text-align: center; margin-top: 10px;">
-        <el-button color="#01a3a4" type="primary" @click="oneClickCRUD">一键 CRUD</el-button>
-        <el-button color="#01a3a4" type="primary" @click="addScript">新增脚本</el-button>
+        <el-button color="#009688" type="primary" @click="oneClickCRUD">一键 CRUD</el-button>
+        <el-button color="#009688" type="primary" @click="addScript">新增脚本</el-button>
     </div>
     <el-dialog title="一键 CRUD" v-model="showCrudDialog">
         <el-form>
