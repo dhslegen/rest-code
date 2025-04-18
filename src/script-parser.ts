@@ -108,13 +108,14 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 requestType = typeName
             }
             const paramName = 'queryVo'
-            method.parameters.push(`${requestType} ${paramName}`)
+            method.parameters.push(`@ParameterObject ${requestType} ${paramName}`)
             method.parametersPure.push(`${requestType} ${paramName}`)
             method.parameterNames.push(paramName)
 
             method.voNames.push(typeName)
             method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
             method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
+            method.imports.add('org.springdoc.api.annotations.ParameterObject')
         } else if (token.startsWith('#')) {
             // @PathVariable 数值型
             const paramName = token.substring(1) || 'id'
@@ -150,7 +151,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     method.importsService.add('java.util.List')
                 } else if (operator === '+') {
                     // '>+'
-                    method.parameters.unshift('PageQueryVo pageQueryVo')
+                    method.parameters.unshift('@ParameterObject PageQueryVo pageQueryVo')
                     method.parametersPure.unshift('PageQueryVo pageQueryVo')
                     method.parameterNames.unshift('pageQueryVo')
                     method.responseType = `Result<Page<${typeName}>>`
@@ -159,6 +160,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     method.imports.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
                     method.importsService.add(`${config.basePackage}.model.vo.req.PageQueryVo`)
                     method.importsService.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
+                    method.imports.add('org.springdoc.api.annotations.ParameterObject')
                 } else if (operator === '<') {
                     // '><'
                     typeName = `${method.domainName}${capitalize(suffix)}TreeVo`

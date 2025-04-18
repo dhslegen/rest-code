@@ -159,7 +159,7 @@ function generateBasicControllerClass(config: Config, domain: Domain): string {
         domainNameLower: domainNameLower,
         description: domain.description,
         classAnnotations: [
-            `@Tag(name = "${domain.description}开放接口")`,
+            `@Tag(name = "${domain.name}", description = "${domain.description}开放接口")`,
             `@RestController`,
             `@RequestMapping("/${domainNameLower}s")`,
         ],
