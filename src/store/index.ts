@@ -23,7 +23,24 @@ export const useStore = defineStore('main', {
 
             const lines = content.split('\n')
 
-            for (const line of lines) {
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim()
+
+                // 跳过空行
+                if (line === '') continue
+
+                // 跳过以 # 开头的注释行
+                if (line.startsWith('#')) continue
+
+                // 处理行尾注释，寻找前面有空格的 # 作为注释开始
+                // 注释符号必须前面有空格或tab，以避免误截取参数契约中的 # 符号
+                const commentMatch = line.match(/\s+#/)
+                if (commentMatch && commentMatch.index !== undefined) {
+                    line = line.substring(0, commentMatch.index).trim()
+                    // 如果去掉注释后变成空行，则跳过
+                    if (line === '') continue
+                }
+
                 if (line.startsWith('/')) {
                     // 解析领域声明
                     const match = line.match(domainRegex)
@@ -34,9 +51,9 @@ export const useStore = defineStore('main', {
                         }
                         this.domains.push(domain)
                     } else {
-                        ElMessage.error(`领域声明格式错误：${line}`)
+                        ElMessage.error(`第${i + 1}行：领域声明格式错误：${line}`)
                     }
-                } else if (line.trim() !== '') {
+                } else {
                     // 解析脚本
                     const match = line.match(scriptRegex)
                     if (match) {
@@ -59,7 +76,7 @@ export const useStore = defineStore('main', {
                         script.template = matchedTemplate ? matchedTemplate.name : ''
                         this.scripts.push(script)
                     } else {
-                        ElMessage.error(`脚本格式错误：${line}`)
+                        ElMessage.error(`第${i + 1}行：API脚本格式错误：${line}`)
                     }
                 }
             }
@@ -91,7 +108,7 @@ export const useStore = defineStore('main', {
             const httpMethodRegex = /^(POST|GET|PUT|DELETE)$/
             const apiPathRegex = /^\/(?:[^/\.]+\/)*[^/\.]+$/
             const operationRegex = /^[a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*$/
-            const contractRegex = /^((?:@=?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:#(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\$(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
+            const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
             // 校验领域声明
             for (let i = 0; i < this.domains.length; i++) {
                 const domain = this.domains[i]
@@ -141,7 +158,7 @@ export const useStore = defineStore('main', {
                 }
 
                 if (!contractRegex.test(script.contract)) {
-                    errors.push(`第${lineNumber}行：【参数契约】不符合  @xxx?yyy#num$str>zzz 的随机组合`)
+                    errors.push(`第${lineNumber}行：【参数契约】不符合  @xxx?yyy%num%$str>zzz 的随机组合`)
                 }
 
                 if (!script.description || script.description.trim() === '') {

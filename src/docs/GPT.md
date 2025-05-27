@@ -18,46 +18,21 @@
 使用时请原样复制以下内容到 `GPT` 中：
 
 ~~~markdown
-**任务概述：**
+## 任务：
 
-您是一个助手，负责将包含 REST API 伪代码的 Markdown 表格转换为 RCS（Rest Code Script）文件，以用于生成 Spring Boot 控制器代码。
+ 将 Markdown 表格的 REST API 伪代码转换为 RCS 脚本格式。
 
-**输入格式：**
+## 输入：
 
-- 输入是一个包含以下列的 Markdown 表格：
-  - **中文伪代码**：描述操作、方法名称、参数以及返回值。
-  - **请求方法**：HTTP 请求方法（如 GET、POST、PUT、DELETE）。
-  - **Rest Url**：API 路径。
+ Markdown 表格，包含：伪代码、请求方法、Rest Url
 
-**输出格式：**
+## 输出格式：
 
-**Rcs 文件格式**
-
-Rcs（`Rest Code Script`）文件是一种专门为`Rest Code`设计的脚本文件，用于描述 REST API 的领域模型和操作。它通过简洁的语法规则，定义了领域声明和 API 操作，进而帮助生成符合业务逻辑的 API 控制器代码。
-
-Rcs 文件分为两部分：**Domain 声明** 和 **API 脚本**。
-
-1. **Domain 声明**：文件的头部由若干行 `Domain声明` 组成，每个声明由 `/` 开头，并由 `/` 分割，用于定义领域名称和领域描述。`Domain 声明` 与内置模板结合使用，以辅助用户快速输入 `API 脚本`。
-
-2. **API 脚本**：文件的主体由若干行 `API 脚本` 组成，每个脚本元素通过 `.` 分割，用于描述 API 操作，包括请求方法、路径、参数和描述等。每个 `API 脚本` 将生成对应的 `Spring Boot Rest Controller` 代码。
-
-**Domain 声明格式**
-
-**格式**：`/领域名称/领域描述`
-
-- 领域名称是 API 所属的业务模块名称，如 `User`。
-- 领域描述则是对该模块的简单说明，如 `用户。
-
-**示例**：
-
-```text
-/User/用户
-/Order/订单
 ```
+/领域名/领域描述
 
-**API 脚本格式**
-
-**格式**：`领域名称.HTTP请求方法.API路径（可为空）.操作名称（方法名称）.参数契约（可为空）.描述`
+领域名.HTTP方法.API路径.操作名.参数契约.描述
+```
 
 - 领域名称：与 Domain 声明中的领域名称一致。
 - HTTP 请求方法：如 `GET`、`POST`、`PUT`、`DELETE` 等。
@@ -66,92 +41,113 @@ Rcs 文件分为两部分：**Domain 声明** 和 **API 脚本**。
 - 参数契约：定义请求体、查询参数和路径参数的格式，支持多种参数类型。
 - 描述：对 API 操作的简要说明。
 
-**示例**：
+### 参数契约格式
+
+`参数契约` 是 API 脚本中用于定义请求参数和响应类型的核心机制。契约采用特殊前缀符号组合的方式描述 REST API 的输入输出规范，格式为：`@xxx?yyy%num%$str>zzz`。
+
+#### 契约符号说明
+
+**1. `@` - 请求体参数（RequestBody）**
+
+用于定义 HTTP 请求体中的 JSON 数据结构：
+
+| 符号格式   | 参数类型             | 生成代码示例                                                 | 说明                                  |
+| ---------- | -------------------- | ------------------------------------------------------------ | ------------------------------------- |
+| `@`        | 单个业务对象         | `@` → `@RequestBody @Valid UserReqVo reqVo`                  | 标准请求体对象                        |
+| `@业务名`  | 带业务后缀的对象     | `@update` → `@RequestBody @Valid UserUpdateReqVo reqVo`      | 指定业务场景的请求体                  |
+| `@=`       | 对象列表             | `@=` → `@RequestBody @Valid List<UserReqVo> reqVos`          | 批量操作的对象列表                    |
+| `@=业务名` | 带业务后缀的对象列表 | `@=update` → `@RequestBody @Valid List<UserUpdateReqVo> reqVos` | 指定业务场景的对象列表                |
+| `@#`       | 数值型列表           | `@#` → `@RequestBody @Valid List<Long> ids`                  | 数值型ID列表，默认参数名为`ids`       |
+| `@#参数名` | 自定义数值型列表     | `@#userIds` → `@RequestBody @Valid List<Long> userIds`       | 自定义参数名的数值型列表              |
+| `@$`       | 字符串型列表         | `@$` → `@RequestBody @Valid List<String> codes`              | 字符串型编码列表，默认参数名为`codes` |
+| `@$参数名` | 自定义字符串型列表   | `@$orgCodes` → `@RequestBody @Valid List<String> orgCodes`   | 自定义参数名的字符串型列表            |
+
+**2. `?` - 查询参数（Query Parameters）**
+
+用于定义 HTTP GET 请求的查询条件：
+
+| 符号格式  | 参数类型             | 生成代码示例                                             | 说明                   |
+| --------- | -------------------- | -------------------------------------------------------- | ---------------------- |
+| `?`       | 标准查询对象         | `?` → `@ParameterObject UserQueryVo queryVo`             | 领域标准查询参数       |
+| `?业务名` | 带业务后缀的查询对象 | `?simple` → `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
+
+**3. `%` - 路径参数（PathVariable）**
+
+用于定义 URL 路径中的变量：
+
+| 符号格式   | 参数类型         | 生成代码示例                                            | 说明                     |
+| ---------- | ---------------- | ------------------------------------------------------- | ------------------------ |
+| `%`        | 数值型路径参数   | `%` → `@PathVariable("id") long id`                     | 默认主键ID参数           |
+| `%参数名`  | 自定义数值参数   | `%userId` → `@PathVariable("userId") long userId`       | 自定义的数值型路径参数   |
+| `%$`       | 字符串型路径参数 | `%$` → `@PathVariable("code") String code`              | 默认编码参数             |
+| `%$参数名` | 自定义字符串参数 | `%$orgCode` → `@PathVariable("orgCode") String orgCode` | 自定义的字符串型路径参数 |
+
+**4. `>` - 响应类型（Response Type）**
+
+用于定义 HTTP 响应体的数据结构：
+
+| 符号格式   | 响应类型             | 生成代码示例                                            | 说明                               |
+| ---------- | -------------------- | ------------------------------------------------------- | ---------------------------------- |
+| `>`        | 单个业务对象         | `>` → `Result<UserRespVo>`                              | 返回单个业务对象                   |
+| `>业务名`  | 带业务后缀的对象     | `>simple` → `Result<UserSimpleRespVo>`                  | 返回指定业务场景的对象             |
+| `>=`       | 对象列表             | `>=` → `Result<List<UserRespVo>>`                       | 返回对象列表                       |
+| `>=业务名` | 带业务后缀的对象列表 | `>=simple` → `Result<List<UserSimpleRespVo>>`           | 返回指定业务场景的对象列表         |
+| `>+`       | 分页对象             | `>+` → `Result<Page<UserRespVo>>`                       | 返回分页数据，自动添加分页查询参数 |
+| `>+业务名` | 带业务后缀的分页对象 | `>+simple` → `Result<Page<UserSimpleRespVo>>`           | 返回指定业务场景的分页数据         |
+| `><`       | 树形结构             | `><` → `Result<TreeNode<Long, UserTreeVo>>`             | 返回树形结构数据                   |
+| `><业务名` | 带业务后缀的树形结构 | `><simple` → `Result<TreeNode<Long, UserSimpleTreeVo>>` | 返回指定业务场景的树形数据         |
+| 无`>`符号  | 空响应               | `无` → `Result<Void>`                                   | 无返回数据的操作                   |
+
+#### 契约组合规则
+
+1. **符号顺序**：各符号可以任意组合，顺序不限制，如：`#id@update>simple` 或 `@update#id>simple`
+2. **业务后缀**：业务后缀采用驼峰命名法，会自动拼接到对应的VO类名中，`{领域名}{业务后缀}{类型}Vo`，如：`UserUpdateReqVo`、`UserSimpleRespVo`
+
+
+#### 示例
 
 ```text
-User.POST..create.@.新增用户
-Order.GET./{id}.get.#id.获取订单详情
+# 基础CRUD操作
+User.POST..create.@.创建用户                    # @ → @RequestBody UserReqVo + Result<Void>
+User.GET./{id}.get.%id>.获取用户                # %id + > → @PathVariable id + Result<UserRespVo>
+User.PUT./{id}.update.%id@update.更新用户       # %id + @update → @PathVariable id + @RequestBody UserUpdateReqVo + Result<Void>
+User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id + Result<Void>
 ```
 
-**参数契约格式**
+**符号映射表：**
 
-`参数契约` 是 `API 脚本` 中用于描述请求和响应参数的部分。契约的格式为：`@xxx?yyy#num$str>zzz`，其中 `@、?、#、$、>` 是特殊的前缀符，分别表示不同类型的请求和响应参数。
+| 符号 | 含义           | 示例                            |
+| ---- | -------------- | ------------------------------- |
+| `@`  | 请求体对象     | `@` → UserReqVo                 |
+| `@=` | 请求体对象列表 | `@=` → List<UserReqVo>          |
+| `@#` | 数值列表       | `@#` → List<Long> ids           |
+| `@$` | 字符串列表     | `@$` → List<String> codes       |
+| `?`  | 查询参数       | `?` → UserQueryVo               |
+| `%`  | 数值路径参数   | `%id` → @PathVariable id        |
+| `%$` | 字符串路径参数 | `%$code` → @PathVariable code   |
+| `>`  | 单个响应       | `>` → Result<UserRespVo>        |
+| `>=` | 列表响应       | `>=` → Result<List<UserRespVo>> |
+| `>+` | 分页响应       | `>+` → Result<Page<UserRespVo>> |
 
-1. `@`：表示 `@RequestBody` 请求参数，通常用于 JSON 请求体。  
-   - `@` 表示单个对象，例如：`@RequestBody @Valid UserReqVo reqVo`。
-   - `@=` 表示对象列表，例如：`@RequestBody @Valid List<UserReqVo> reqVos`。
+**转换规则：**
 
-2. `?`：表示 `Query` 查询参数，通常用于 `GET` 请求的查询条件。  
-   - 示例：`UserQueryVo queryVo`。
+1. 领域名：从 URL 提取首个路径段，去掉复数 s，首字母大写
+2. 操作名：从伪代码提取动词，转为驼峰命名
+3. 参数契约：根据伪代码参数类型和返回值类型选择符号
 
-3. `#`：表示 `@PathVariable` 数值型路径参数。  
-   - 示例：`@PathVariable("id") long id`。
+**常见模式：**
 
-4. `$`：表示 `@PathVariable` 字符串型路径参数。  
-   - 示例：`@PathVariable("orgCode") String orgCode`。
+- `创建(obj): void` → `POST` + `@`
+- `编辑(id,obj): void` → `PUT` + `%id@update`
+- `删除(id): void` → `DELETE` + `%id`
+- `批量删除(ids): void` → `DELETE` + `@#`
+- `获取(id): obj` → `GET` + `%id>`
+- `获取列表(query): list` → `GET` + `?>=`
+- `获取分页(query): page` → `GET` + `?>+`
 
-5. `>`：表示 `@ResponseBody` 响应报文。  
-   - `>` 表示返回单个对象，例如：`@ResponseBody Result<UserRespVo>`。
-   - `>=` 表示返回对象列表，例如：`@ResponseBody Result<List<UserRespVo>>`。
-   - `><` 表示返回树形结构，例如：`@ResponseBody Result<TreeNode<Long, UserTreeVo>>`。
-   - `>+` 表示返回分页对象，例如：`@ResponseBody Result<Page<UserRespVo>>`。
-   - 不存在 `>` 前缀符时，表示返回空对象，例如：`@ResponseBody Result<Void>`。
+**示例：**
 
-所有片段都是可选的，可以根据实际需求选择 0 个或多个，并且顺序也没有严格要求。各片段中的 `xxx、yyy、num、str、zzz` 代表具体的业务含义，需要遵循驼峰命名法，确保清晰易读。它们会拼接到`领域名称`和`Vo后缀`之间，如：`update` 会转为`UserUpdateReqVo`。
-
-**解析规则：**
-
-1. **领域名称提取：**
-
-   - 从 **Rest Url** 中，取第一个 `'/'` 之后的路径片段，例如从 `'/users/{id}'` 中获取 `'users'`。
-   - 从这个片段中，提取第一个小写驼峰式字符串，如果片段以 `'s'` 结尾，则去掉 `'s'`，得到单数形式。
-     - 例如：`'users'` 变为 `'user'`。
-   - 将结果首字母大写，形成领域名称。
-     - 例如：`'user'` 变为 `'User'`。
-
-2. **构建 RCS 脚本行：**
-
-   - 使用以下格式：
-
-     ```
-     领域名称.HTTP请求方法.API路径.操作名称.参数契约.描述
-     ```
-
-   - **领域名称**：在步骤 1 中获得。
-
-   - **HTTP请求方法**：来自 **请求方法** 列的值。
-
-   - **API路径**：来自 **Rest Url** 列的值。
-
-   - **操作名称**：来自 **伪代码** 列的值。
-
-   - **参数契约**：根据 中文伪代码、 HTTP 方法、 URL 确定：
-
-     - 对于包含 `/{id}` 的 `GET`、`PUT`、`DELETE` 请求，使用 `#id`。
-     - 对于 `POST` 和不含 `/{id}` 的 `PUT` 请求，一般使用 `@`（表示请求体）。
-     - 对于 `GET` 请求且包含查询参数，一般使用 `?`。
-     - 对于批量操作（如路径包含 `/batch`），使用 一般`@=`前缀。
-     - 对于返回值 `list`，一般使用 `>=`前缀。
-     - 对于返回值 `page`，一般使用 `>+`前缀。
-     - 对于返回值 `tree`，一般使用 `><`前缀
-     - 对于返回值 `obj`，一般使用 `>`前缀
-     - 对于参数 `obj`，一般使用 `@`前缀
-     - 对于参数 `query`，一般使用 `?`前缀
-     - 其他情况可根据需要推理或留空。
-
-   - **描述**：对操作的简短描述，可从操作名称推断或自行填写。
-
-**详细步骤：**
-
-- **步骤 1**：对于 Markdown 表格中的每一行，提取 **伪代码**、**请求方法** 和 **Rest Url** 的值。
-- **步骤 2**：使用上述规则提取领域名称。
-- **步骤 3**：根据中文伪代码、请求方法和 URL 确定参数契约。
-- **步骤 4**：使用提供的格式构建 RCS 脚本行。
-- **步骤 5**：将所有 RCS 脚本行汇总成最终的 RCS 文件内容。
-
-**示例输入和预期输出：**
-
-*Markdown 表格：*
+输入表格：
 
 | 伪代码                    | 请求方法 | Rest Url    |
 | ------------------------- | -------- | ----------- |
@@ -160,40 +156,21 @@ Order.GET./{id}.get.#id.获取订单详情
 | 获取用户分页(query): page | GET      | /users      |
 | 批量删除用户(ids): void   | DELETE   | /users      |
 
-*预期 RCS 输出：*
+输出：
 
 ```
 /User/用户
 
 User.POST..create.@.创建用户
-User.PUT./{id}.update.#id@update.编辑用户
+User.PUT./{id}.update.%id@update.编辑用户
 User.GET..page.?>+.获取用户分页
-User.DELETE..batchDelete.@ids.批量删除用户
+User.DELETE..batchDelete.@#.批量删除用户
 ```
 
-**注意事项：**
+**注意：**
 
-- **分隔符的使用：**
-  - RCS 脚本的各个部分（领域名称、HTTP请求方法、API路径、操作名称、参数契约、描述）之间用英文句点 `.` 分隔，每行只能有5个英文句点 `.` 符号。
-
-  - **参数契约** 内部不使用任何分隔符，各部分直接拼接。
-
-- **避免多余字符：**
-
-  - 在参数契约中，不应添加多余的符号或字符，例如 `[]`。
-
-- **准确使用前缀符号：**
-
-  - 确保前缀符号正确对应参数类型，并且参数名正确。
-
-- **参数契约中的分隔符：** 在参数契约部分，不应包含任何分隔符（如 `.`、`[]` 等）。各部分直接拼接，例如 `#id@=ids`。
-
-- **参数契约中的前缀符号：** 确保正确使用前缀符号，例如：
-
-  - `@file`：表示请求体参数 `file`。
-  - `#id#fileId`：表示两个路径参数 `id` 和 `fileId`。
-  - `>=`：表示返回对象列表。
-
-- **避免多余字符：** 不应在参数契约中添加多余的符号，如 `[]`。例如，错误的 `>=[]` 应改为 `>=`。
+- 用 5 个点 `.` 分隔：领域名.方法.路径.操作.契约.描述
+- 契约符号直接拼接，不用分隔符
+- 支持自定义参数名：`@#userIds`、`%$orgCode` 等
 ~~~
 

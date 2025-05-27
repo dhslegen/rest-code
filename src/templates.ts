@@ -34,7 +34,7 @@ export const templates: Template[] = [
         "httpMethod": "DELETE",
         "apiPath": "/{id}",
         "operation": "delete",
-        "contract": "#id",
+        "contract": "%id",
         "description": "删除{领域描述}"
     },
     {
@@ -43,7 +43,7 @@ export const templates: Template[] = [
         "httpMethod": "DELETE",
         "apiPath": '',
         "operation": "batchDelete",
-        "contract": "@ids",
+        "contract": "@#",
         "description": "批量删除{领域描述}"
     },
     {
@@ -52,7 +52,7 @@ export const templates: Template[] = [
         "httpMethod": "PUT",
         "apiPath": "/{id}",
         "operation": "update",
-        "contract": "#id@update",
+        "contract": "%id@update",
         "description": "编辑{领域描述}"
     },
     {
@@ -70,7 +70,7 @@ export const templates: Template[] = [
         "httpMethod": "PUT",
         "apiPath": "/{id}/xxx",
         "operation": "xxx",
-        "contract": "#id@xxx",
+        "contract": "%id@xxx",
         "description": "xxx{领域描述}"
     },
     {
@@ -88,7 +88,7 @@ export const templates: Template[] = [
         "httpMethod": "PUT",
         "apiPath": "/{id}/xxx",
         "operation": "xxx",
-        "contract": "#id",
+        "contract": "%id",
         "description": "xxx{领域描述}"
     },
     {
@@ -97,7 +97,7 @@ export const templates: Template[] = [
         "httpMethod": "PUT",
         "apiPath": "/batchXxx",
         "operation": "batchXxx",
-        "contract": "@ids",
+        "contract": "@#",
         "description": "批量Xxx{领域描述}"
     },
     {
@@ -106,7 +106,7 @@ export const templates: Template[] = [
         "httpMethod": "GET",
         "apiPath": "/{id}",
         "operation": "get",
-        "contract": "#id>",
+        "contract": "%id>",
         "description": "获取{领域描述}"
     },
     {
@@ -115,7 +115,7 @@ export const templates: Template[] = [
         "httpMethod": "GET",
         "apiPath": "/{id}/simple",
         "operation": "getSimple",
-        "contract": "#id>simple",
+        "contract": "%id>simple",
         "description": "获取简单{领域描述}"
     },
     {
@@ -124,7 +124,7 @@ export const templates: Template[] = [
         "httpMethod": "GET",
         "apiPath": "/{id}/detail",
         "operation": "getDetail",
-        "contract": "#id>detail",
+        "contract": "%id>detail",
         "description": "获取{领域描述}详情"
     },
     {
@@ -133,7 +133,7 @@ export const templates: Template[] = [
         "httpMethod": "GET",
         "apiPath": "/{id}/xxx",
         "operation": "getXxx",
-        "contract": "#id>xxx",
+        "contract": "%id>xxx",
         "description": "获取{领域描述}xxx信息"
     },
     {

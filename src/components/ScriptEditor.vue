@@ -44,7 +44,7 @@
                     <template #content>
                         <div v-html="row.tooltipContent"></div>
                     </template>
-                    <el-input v-model="row.contract" placeholder="输入 @?#$> 以获取提示" @input="onContractInput(row)"
+                    <el-input v-model="row.contract" placeholder="输入 @?%> 以获取提示" @input="onContractInput(row)"
                         @focus="onContractFocus(row)" @blur="onContractBlur(row)"></el-input>
                 </el-tooltip>
             </template>
@@ -99,11 +99,51 @@ const showCrudDialog = ref(false)
 const selectedDomain = ref('')
 
 const tips = {
-    '@': `表示 @RequestBody 请求参数，通常用于 JSON 请求体。<br />@ 表示单个对象，例如：@RequestBody @Valid UserReqVo reqVo。<br />@= 表示对象列表，例如：@RequestBody @Valid List&lt;UserReqVo&gt; reqVos。`,
-    '?': "表示 Query 查询参数，通常用于 GET 请求的查询条件。<br />示例：UserQueryVo queryVo。",
-    '#': "表示 @PathVariable 数值型路径参数。<br />示例：@PathVariable(\"id\") long id。",
-    '$': "表示 @PathVariable 字符串型路径参数。<br />示例：@PathVariable(\"orgCode\") String orgCode。",
-    '>': "表示 @ResponseBody 响应报文。<br />&gt; 表示返回单个对象，例如：@ResponseBody Result&lt;UserRespVo&gt;。<br />&gt;= 表示返回对象列表，例如：@ResponseBody Result&lt;List&lt;UserRespVo&gt;&gt;。<br />>&lt; 表示返回树形结构，例如：@ResponseBody Result&lt;TreeNode&lt;Long, UserTreeVo&gt;&gt;。<br />&gt;+ 表示返回分页对象，例如：@ResponseBody Result&lt;Page&lt;UserRespVo&gt;&gt;。<br />不存在 &gt; 前缀符时，表示返回空对象，例如：@ResponseBody Result&lt;Void&gt;。"
+    '@': `<strong>@ - 请求体参数（RequestBody）</strong><br />
+          用于定义 HTTP 请求体中的 JSON 数据结构：<br /><br />
+          <strong>基础格式：</strong><br />
+          • <code>@</code> → <code>@RequestBody @Valid UserReqVo reqVo</code> (单个业务对象)<br />
+          • <code>@业务名</code> → <code>@RequestBody @Valid UserUpdateReqVo reqVo</code> (指定业务场景)<br /><br />
+          <strong>列表格式：</strong><br />
+          • <code>@=</code> → <code>@RequestBody @Valid List&lt;UserReqVo&gt; reqVos</code> (对象列表)<br />
+          • <code>@=业务名</code> → <code>@RequestBody @Valid List&lt;UserUpdateReqVo&gt; reqVos</code> (带业务后缀)<br /><br />
+          <strong>数值列表：</strong><br />
+          • <code>@#</code> → <code>@RequestBody @Valid List&lt;Long&gt; ids</code> (默认参数名)<br />
+          • <code>@#参数名</code> → <code>@RequestBody @Valid List&lt;Long&gt; userIds</code> (自定义参数名)<br /><br />
+          <strong>字符串列表：</strong><br />
+          • <code>@$</code> → <code>@RequestBody @Valid List&lt;String&gt; codes</code> (默认参数名)<br />
+          • <code>@$参数名</code> → <code>@RequestBody @Valid List&lt;String&gt; orgCodes</code> (自定义参数名)`,
+
+    '?': `<strong>? - 查询参数（Query Parameters）</strong><br />
+          用于定义 HTTP GET 请求的查询条件：<br /><br />
+          • <code>?</code> → <code>@ParameterObject UserQueryVo queryVo</code> (标准查询对象)<br />
+          • <code>?业务名</code> → <code>@ParameterObject UserSimpleQueryVo queryVo</code> (指定业务场景)`,
+
+    '%': `<strong>% - 路径参数（PathVariable）</strong><br />
+          用于定义 URL 路径中的变量：<br /><br />
+          <strong>数值型路径参数：</strong><br />
+          • <code>%</code> → <code>@PathVariable("id") long id</code> (默认主键ID)<br />
+          • <code>%参数名</code> → <code>@PathVariable("userId") long userId</code> (自定义数值参数)<br /><br />
+          <strong>字符串型路径参数：</strong><br />
+          • <code>%$</code> → <code>@PathVariable("code") String code</code> (默认编码参数)<br />
+          • <code>%$参数名</code> → <code>@PathVariable("orgCode") String orgCode</code> (自定义字符串参数)`,
+
+    '>': `<strong>&gt; - 响应类型（Response Type）</strong><br />
+          用于定义 HTTP 响应体的数据结构：<br /><br />
+          <strong>单个对象响应：</strong><br />
+          • <code>&gt;</code> → <code>Result&lt;UserRespVo&gt;</code> (单个业务对象)<br />
+          • <code>&gt;业务名</code> → <code>Result&lt;UserSimpleRespVo&gt;</code> (指定业务场景)<br /><br />
+          <strong>列表响应：</strong><br />
+          • <code>&gt;=</code> → <code>Result&lt;List&lt;UserRespVo&gt;&gt;</code> (对象列表)<br />
+          • <code>&gt;=业务名</code> → <code>Result&lt;List&lt;UserSimpleRespVo&gt;&gt;</code> (指定业务场景)<br /><br />
+          <strong>分页响应：</strong><br />
+          • <code>&gt;+</code> → <code>Result&lt;Page&lt;UserRespVo&gt;&gt;</code> (自动添加分页查询参数)<br />
+          • <code>&gt;+业务名</code> → <code>Result&lt;Page&lt;UserSimpleRespVo&gt;&gt;</code> (指定业务场景)<br /><br />
+          <strong>树形响应：</strong><br />
+          • <code>&gt;&lt;</code> → <code>Result&lt;TreeNode&lt;Long, UserTreeVo&gt;&gt;</code> (树形结构)<br />
+          • <code>&gt;&lt;业务名</code> → <code>Result&lt;TreeNode&lt;Long, UserSimpleTreeVo&gt;&gt;</code> (指定业务场景)<br /><br />
+          <strong>空响应：</strong><br />
+          • 无 <code>&gt;</code> 符号 → <code>Result&lt;Void&gt;</code> (无返回数据的操作)`
 }
 
 const onContractInput = (row: any) => {

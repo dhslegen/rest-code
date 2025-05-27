@@ -63,7 +63,7 @@ export function parseScript(config: Config, content: string): { domains: Domain[
 
 function parseParameterContract(config: Config, method: ApiMethod) {
     const contract = method.parameterContract
-    const tokens = contract.match(/[@?#$>][=+<]?([A-Za-z][A-Za-z0-9]*)?/g) || []
+    const tokens = contract.match(/[@?%>][=+<#$]?([A-Za-z][A-Za-z0-9]*)?/g) || []
 
     const domainName = method.domainName
     const domainNameLower = domainName.charAt(0).toLowerCase() + domainName.slice(1)
@@ -73,7 +73,34 @@ function parseParameterContract(config: Config, method: ApiMethod) {
         if (token.startsWith('@')) {
             // @RequestBody
             const requestBodyMatch = token.match(/^@([=]?)([A-Za-z][A-Za-z0-9]*)?$/)
-            if (requestBodyMatch) {
+            const simpleLongListMatch = token.match(/^@#([A-Za-z][A-Za-z0-9]*)?$/)
+            const simpleStringListMatch = token.match(/^@\$([A-Za-z][A-Za-z0-9]*)?$/)
+
+            if (simpleLongListMatch) {
+                // '@#' 或 '@#参数名' - List<Long> 类型的 RequestBody
+                const requestType = 'List<Long>'
+                const paramName = simpleLongListMatch[1] || 'ids'  // 支持自定义参数名，默认为 ids
+                method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
+                method.parametersPure.push(`${requestType} ${paramName}`)
+                method.parameterNames.push(paramName)
+
+                method.imports.add('org.springframework.web.bind.annotation.RequestBody')
+                method.imports.add('javax.validation.Valid')
+                method.imports.add('java.util.List')
+                method.importsService.add('java.util.List')
+            } else if (simpleStringListMatch) {
+                // '@$' 或 '@$参数名' - List<String> 类型的 RequestBody
+                const requestType = 'List<String>'
+                const paramName = simpleStringListMatch[1] || 'codes'  // 支持自定义参数名，默认为 codes
+                method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
+                method.parametersPure.push(`${requestType} ${paramName}`)
+                method.parameterNames.push(paramName)
+
+                method.imports.add('org.springframework.web.bind.annotation.RequestBody')
+                method.imports.add('javax.validation.Valid')
+                method.imports.add('java.util.List')
+                method.importsService.add('java.util.List')
+            } else if (requestBodyMatch) {
                 const operator = requestBodyMatch[1] // 可能是 '=' 或空字符串
                 const suffix = requestBodyMatch[2] || '' // 业务后缀，可能为空
 
@@ -116,20 +143,23 @@ function parseParameterContract(config: Config, method: ApiMethod) {
             method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
             method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
             method.imports.add('org.springdoc.api.annotations.ParameterObject')
-        } else if (token.startsWith('#')) {
-            // @PathVariable 数值型
-            const paramName = token.substring(1) || 'id'
-            method.parameters.push(`@PathVariable("${paramName}") long ${paramName}`)
-            method.parametersPure.push(`long ${paramName}`)
-            method.parameterNames.push(paramName)
-            method.imports.add('org.springframework.web.bind.annotation.PathVariable')
-        } else if (token.startsWith('$')) {
-            // @PathVariable 字符串型
-            const paramName = token.substring(1) || 'code'
-            method.parameters.push(`@PathVariable("${paramName}") String ${paramName}`)
-            method.parametersPure.push(`String ${paramName}`)
-            method.parameterNames.push(paramName)
-            method.imports.add('org.springframework.web.bind.annotation.PathVariable')
+        } else if (token.startsWith('%')) {
+            // @PathVariable 路径参数
+            if (token.startsWith('%$')) {
+                // %$ - @PathVariable 字符串型
+                const paramName = token.substring(2) || 'code'
+                method.parameters.push(`@PathVariable("${paramName}") String ${paramName}`)
+                method.parametersPure.push(`String ${paramName}`)
+                method.parameterNames.push(paramName)
+                method.imports.add('org.springframework.web.bind.annotation.PathVariable')
+            } else {
+                // % - @PathVariable 数值型
+                const paramName = token.substring(1) || 'id'
+                method.parameters.push(`@PathVariable("${paramName}") long ${paramName}`)
+                method.parametersPure.push(`long ${paramName}`)
+                method.parameterNames.push(paramName)
+                method.imports.add('org.springframework.web.bind.annotation.PathVariable')
+            }
         } else if (token.startsWith('>')) {
             // 响应类型，考虑业务后缀
             const responseMatch = token.match(/^>([=+<]?)([A-Za-z][A-Za-z0-9]*)?$/)
