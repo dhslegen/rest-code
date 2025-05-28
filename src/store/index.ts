@@ -105,7 +105,7 @@ export const useStore = defineStore('main', {
             const operationContractMap: Map<string, number[]> = new Map()
 
             const domainRegex = /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*$/
-            const httpMethodRegex = /^(POST|GET|PUT|DELETE)$/
+            const httpMethodRegex = /^(POST|GET|PATCH|DELETE)$/
             const apiPathRegex = /^\/(?:[^/\.]+\/)*[^/\.]+$/
             const operationRegex = /^[a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*$/
             const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
@@ -146,7 +146,7 @@ export const useStore = defineStore('main', {
                 }
 
                 if (!httpMethodRegex.test(script.httpMethod)) {
-                    errors.push(`第${lineNumber}行：【HTTP请求方法】不符合 POST、GET、PUT、DELETE 中的一个`)
+                    errors.push(`第${lineNumber}行：【HTTP请求方法】不符合 POST、GET、PATCH、DELETE 中的一个`)
                 }
 
                 if (script.apiPath && !apiPathRegex.test(script.apiPath)) {

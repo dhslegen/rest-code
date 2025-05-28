@@ -29,6 +29,42 @@ export const templates: Template[] = [
         "description": "批量创建{领域描述}"
     },
     {
+        "name": "POST-自定义操作",
+        "domain": "{领域名称}",
+        "httpMethod": "POST",
+        "apiPath": "/{id}/xxx",
+        "operation": "xxx",
+        "contract": "%id@xxx",
+        "description": "xxx{领域描述}"
+    },
+    {
+        "name": "POST-批量自定义操作",
+        "domain": "{领域名称}",
+        "httpMethod": "POST",
+        "apiPath": "/batchXxx",
+        "operation": "batchXxx",
+        "contract": "@=xxx",
+        "description": "批量Xxx{领域描述}"
+    },
+    {
+        "name": "POST-自定义操作，无详情",
+        "domain": "{领域名称}",
+        "httpMethod": "POST",
+        "apiPath": "/{id}/xxx",
+        "operation": "xxx",
+        "contract": "%id",
+        "description": "xxx{领域描述}"
+    },
+    {
+        "name": "POST-批量自定义操作，无详情",
+        "domain": "{领域名称}",
+        "httpMethod": "POST",
+        "apiPath": "/batchXxx",
+        "operation": "batchXxx",
+        "contract": "@#",
+        "description": "批量Xxx{领域描述}"
+    },
+    {
         "name": "DELETE-删除",
         "domain": "{领域名称}",
         "httpMethod": "DELETE",
@@ -47,58 +83,22 @@ export const templates: Template[] = [
         "description": "批量删除{领域描述}"
     },
     {
-        "name": "PUT-编辑",
+        "name": "PATCH-编辑",
         "domain": "{领域名称}",
-        "httpMethod": "PUT",
+        "httpMethod": "PATCH",
         "apiPath": "/{id}",
         "operation": "update",
         "contract": "%id@update",
         "description": "编辑{领域描述}"
     },
     {
-        "name": "PUT-批量编辑",
+        "name": "PATCH-批量编辑",
         "domain": "{领域名称}",
-        "httpMethod": "PUT",
+        "httpMethod": "PATCH",
         "apiPath": '',
         "operation": "batchUpdate",
         "contract": "@=update",
         "description": "批量编辑{领域描述}"
-    },
-    {
-        "name": "PUT-自定义操作",
-        "domain": "{领域名称}",
-        "httpMethod": "PUT",
-        "apiPath": "/{id}/xxx",
-        "operation": "xxx",
-        "contract": "%id@xxx",
-        "description": "xxx{领域描述}"
-    },
-    {
-        "name": "PUT-批量自定义操作",
-        "domain": "{领域名称}",
-        "httpMethod": "PUT",
-        "apiPath": "/batchXxx",
-        "operation": "batchXxx",
-        "contract": "@=xxx",
-        "description": "批量Xxx{领域描述}"
-    },
-    {
-        "name": "PUT-自定义操作，无详情",
-        "domain": "{领域名称}",
-        "httpMethod": "PUT",
-        "apiPath": "/{id}/xxx",
-        "operation": "xxx",
-        "contract": "%id",
-        "description": "xxx{领域描述}"
-    },
-    {
-        "name": "PUT-批量自定义操作，无详情",
-        "domain": "{领域名称}",
-        "httpMethod": "PUT",
-        "apiPath": "/batchXxx",
-        "operation": "batchXxx",
-        "contract": "@#",
-        "description": "批量Xxx{领域描述}"
     },
     {
         "name": "GET-获取单个",

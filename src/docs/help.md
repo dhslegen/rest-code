@@ -76,7 +76,7 @@ Rcs 文件分为两部分：**Domain 声明** 和 **API 脚本**。
 **格式**：`领域名称.HTTP请求方法.API路径（可为空）.操作名称（方法名称）.参数契约（可为空）.描述`
 
 - 领域名称：与 Domain 声明中的领域名称一致。
-- HTTP 请求方法：如 `GET`、`POST`、`PUT`、`DELETE` 等。
+- HTTP 请求方法：如 `GET`、`POST`、`PATCH`、`DELETE` 等。
 - API 路径：可以为空，若不为空，则指定 API 的路径。
 - 操作名称：即生成的控制器中对应方法的名称。
 - 参数契约：定义请求体、查询参数和路径参数的格式，支持多种参数类型。
@@ -157,7 +157,7 @@ Order.GET./{id}.get.#id.获取订单详情
 # 基础CRUD操作
 User.POST..create.@.创建用户                    # @ → @RequestBody UserReqVo + Result<Void>
 User.GET./{id}.get.%id>.获取用户                # %id + > → @PathVariable id + Result<UserRespVo>
-User.PUT./{id}.update.%id@update.更新用户       # %id + @update → @PathVariable id + @RequestBody UserUpdateReqVo + Result<Void>
+User.PATCH./{id}.update.%id@update.更新用户       # %id + @update → @PathVariable id + @RequestBody UserUpdateReqVo + Result<Void>
 User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id + Result<Void>
 
 # 批量操作

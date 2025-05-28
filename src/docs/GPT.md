@@ -8,7 +8,7 @@
 | 伪代码                    | 请求方法 | Rest Url    |
 | ------------------------- | -------- | ----------- |
 | 创建用户(obj): void       | POST     | /users      |
-| 编辑用户(id,obj): void    | PUT      | /users/{id} |
+| 编辑用户(id,obj): void    | PATCH      | /users/{id} |
 | 获取用户分页(query): page | GET      | /users      |
 | 批量删除用户(ids): void   | DELETE   | /users      |
 ```
@@ -35,7 +35,7 @@
 ```
 
 - 领域名称：与 Domain 声明中的领域名称一致。
-- HTTP 请求方法：如 `GET`、`POST`、`PUT`、`DELETE` 等。
+- HTTP 请求方法：如 `GET`、`POST`、`PATCH`、`DELETE` 等。
 - API 路径：可以为空，若不为空，则指定 API 的路径。
 - 操作名称：即生成的控制器中对应方法的名称。
 - 参数契约：定义请求体、查询参数和路径参数的格式，支持多种参数类型。
@@ -110,7 +110,7 @@
 # 基础CRUD操作
 User.POST..create.@.创建用户                    # @ → @RequestBody UserReqVo + Result<Void>
 User.GET./{id}.get.%id>.获取用户                # %id + > → @PathVariable id + Result<UserRespVo>
-User.PUT./{id}.update.%id@update.更新用户       # %id + @update → @PathVariable id + @RequestBody UserUpdateReqVo + Result<Void>
+User.PATCH./{id}.update.%id@update.更新用户       # %id + @update → @PathVariable id + @RequestBody UserUpdateReqVo + Result<Void>
 User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id + Result<Void>
 ```
 
@@ -138,7 +138,7 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 **常见模式：**
 
 - `创建(obj): void` → `POST` + `@`
-- `编辑(id,obj): void` → `PUT` + `%id@update`
+- `编辑(id,obj): void` → `PATCH` + `%id@update`
 - `删除(id): void` → `DELETE` + `%id`
 - `批量删除(ids): void` → `DELETE` + `@#`
 - `获取(id): obj` → `GET` + `%id>`
@@ -152,7 +152,7 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 | 伪代码                    | 请求方法 | Rest Url    |
 | ------------------------- | -------- | ----------- |
 | 创建用户(obj): void       | POST     | /users      |
-| 编辑用户(id,obj): void    | PUT      | /users/{id} |
+| 编辑用户(id,obj): void    | PATCH      | /users/{id} |
 | 获取用户分页(query): page | GET      | /users      |
 | 批量删除用户(ids): void   | DELETE   | /users      |
 
@@ -162,7 +162,7 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 /User/用户
 
 User.POST..create.@.创建用户
-User.PUT./{id}.update.%id@update.编辑用户
+User.PATCH./{id}.update.%id@update.编辑用户
 User.GET..page.?>+.获取用户分页
 User.DELETE..batchDelete.@#.批量删除用户
 ```

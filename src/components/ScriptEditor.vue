@@ -23,7 +23,7 @@
                 <el-select v-model="row.httpMethod" :placeholder="'请选择'">
                     <el-option label="GET" value="GET"></el-option>
                     <el-option label="POST" value="POST"></el-option>
-                    <el-option label="PUT" value="PUT"></el-option>
+                    <el-option label="PATCH" value="PATCH"></el-option>
                     <el-option label="DELETE" value="DELETE"></el-option>
                 </el-select>
             </template>
@@ -180,7 +180,7 @@ const confirmCRUD = () => {
     const domainName = selectedDomain.value
     const domainDesc = domains.find((d) => d.name === domainName)?.description || ''
 
-    const crudTemplates = ['POST-创建', 'PUT-编辑', 'GET-获取分页', 'DELETE-批量删除']
+    const crudTemplates = ['POST-创建', 'PATCH-编辑', 'GET-获取分页', 'DELETE-批量删除']
     crudTemplates.forEach((templateName) => {
         const template = templates.find((t) => t.name === templateName)
         if (template) {
