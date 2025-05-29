@@ -116,8 +116,15 @@ const tips = {
 
     '?': `<strong>? - 查询参数（Query Parameters）</strong><br />
           用于定义 HTTP GET 请求的查询条件：<br /><br />
+          <strong>对象查询：</strong><br />
           • <code>?</code> → <code>@ParameterObject UserQueryVo queryVo</code> (标准查询对象)<br />
-          • <code>?业务名</code> → <code>@ParameterObject UserSimpleQueryVo queryVo</code> (指定业务场景)`,
+          • <code>?业务名</code> → <code>@ParameterObject UserSimpleQueryVo queryVo</code> (指定业务场景)<br /><br />
+          <strong>字符串查询：</strong><br />
+          • <code>?\$</code> → <code>@RequestParam("code") String code</code> (默认字符串参数)<br />
+          • <code>?\$参数名</code> → <code>@RequestParam("参数名") String 参数名</code> (自定义字符串参数)<br /><br />
+          <strong>数值查询：</strong><br />
+          • <code>?#</code> → <code>@RequestParam("number") Long number</code> (默认数值参数)<br />
+          • <code>?#参数名</code> → <code>@RequestParam("参数名") Long 参数名</code> (自定义数值参数)`,
 
     '%': `<strong>% - 路径参数（PathVariable）</strong><br />
           用于定义 URL 路径中的变量：<br /><br />

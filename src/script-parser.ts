@@ -127,22 +127,43 @@ function parseParameterContract(config: Config, method: ApiMethod) {
             }
         } else if (token.startsWith('?')) {
             // Query 参数
-            let typeName = `${domainName}QueryVo`
-            let requestType = typeName
-            if (token.length > 1) {
-                const suffix = token.substring(1)
-                typeName = `${domainName}${capitalize(suffix)}QueryVo`
-                requestType = typeName
-            }
-            const paramName = 'queryVo'
-            method.parameters.push(`@ParameterObject ${requestType} ${paramName}`)
-            method.parametersPure.push(`${requestType} ${paramName}`)
-            method.parameterNames.push(paramName)
+            const queryStringMatch = token.match(/^\?\$([A-Za-z][A-Za-z0-9]*)?$/)
+            const queryNumberMatch = token.match(/^\?#([A-Za-z][A-Za-z0-9]*)?$/)
 
-            method.voNames.push(typeName)
-            method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
-            method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
-            method.imports.add('org.springdoc.api.annotations.ParameterObject')
+            // 新增的查询参数类型：?$ 和 ?#
+            if (queryStringMatch) {
+                // '?$' 或 '?$参数名' - String 类型的查询参数
+                const paramName = token.substring(2) || 'code'  // 支持自定义参数名，默认为 code
+                method.parameters.push(`@RequestParam("${paramName}") String ${paramName}`)
+                method.parametersPure.push(`String ${paramName}`)
+                method.parameterNames.push(paramName)
+                method.imports.add('org.springframework.web.bind.annotation.RequestParam')
+            } else if (queryNumberMatch) {
+                // '?#' 或 '?#参数名' - Long 类型的查询参数
+                const paramName = token.substring(2) || 'number'  // 支持自定义参数名，默认为 number
+                method.parameters.push(`@RequestParam("${paramName}") Long ${paramName}`)
+                method.parametersPure.push(`Long ${paramName}`)
+                method.parameterNames.push(paramName)
+                method.imports.add('org.springframework.web.bind.annotation.RequestParam')
+            } else {
+                // 原有的查询对象逻辑
+                let typeName = `${domainName}QueryVo`
+                let requestType = typeName
+                if (token.length > 1) {
+                    const suffix = token.substring(1)
+                    typeName = `${domainName}${capitalize(suffix)}QueryVo`
+                    requestType = typeName
+                }
+                const paramName = 'queryVo'
+                method.parameters.push(`@ParameterObject ${requestType} ${paramName}`)
+                method.parametersPure.push(`${requestType} ${paramName}`)
+                method.parameterNames.push(paramName)
+
+                method.voNames.push(typeName)
+                method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
+                method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
+                method.imports.add('org.springdoc.api.annotations.ParameterObject')
+            }
         } else if (token.startsWith('%')) {
             // @PathVariable 路径参数
             if (token.startsWith('%$')) {

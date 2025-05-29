@@ -70,6 +70,10 @@
 | --------- | -------------------- | -------------------------------------------------------- | ---------------------- |
 | `?`       | 标准查询对象         | `?` → `@ParameterObject UserQueryVo queryVo`             | 领域标准查询参数       |
 | `?业务名` | 带业务后缀的查询对象 | `?simple` → `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
+| `?$` | 字符串型查询参数 | `?$` → `@RequestParam("code") String code` | 默认字符串查询参数 |
+| `?$参数名` | 自定义字符串查询参数 | `?$orgCode` → `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
+| `?#` | 数值型查询参数 | `?#` → `@RequestParam("number") Long number` | 默认数值查询参数 |
+| `?#参数名` | 自定义数值查询参数 | `?#userId` → `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
 
 **3. `%` - 路径参数（PathVariable）**
 
@@ -123,6 +127,8 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 | `@#` | 数值列表       | `@#` → List<Long> ids           |
 | `@$` | 字符串列表     | `@$` → List<String> codes       |
 | `?`  | 查询参数       | `?` → UserQueryVo               |
+| `?$` | 字符串查询参数 | `?$` → @RequestParam String code |
+| `?#` | 数值查询参数   | `?#` → @RequestParam Long number |
 | `%`  | 数值路径参数   | `%id` → @PathVariable id        |
 | `%$` | 字符串路径参数 | `%$code` → @PathVariable code   |
 | `>`  | 单个响应       | `>` → Result<UserRespVo>        |
