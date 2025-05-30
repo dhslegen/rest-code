@@ -283,6 +283,9 @@ export function getControllerMethodsTemplate(): string {
      * @apiNote {{{apiNote}}}
      */
     @Operation(summary = "{{{description}}}")
+    {{#parameterAnnotations}}
+    {{{annotation}}}
+    {{/parameterAnnotations}}
     @{{httpMethod}}Mapping("{{{apiPath}}}")
     public {{#hasResponseType}}{{{responseType}}}{{/hasResponseType}}{{^hasResponseType}}Result<Void>{{/hasResponseType}} {{operationName}}({{{parameters}}}) {
         {{{methodBody}}}

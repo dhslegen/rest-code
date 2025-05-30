@@ -1,42 +1,59 @@
+# Rest Code 使用指南
+
+Rest Code 是一个可视化的API脚本生成工具，帮助开发者快速生成标准的Spring Boot后端代码。
+
+## 主要功能区域
+
+- **操作区域**：包含文件加载和代码生成功能。
+- **领域设计**：用于定义和管理API的业务领域。
+- **脚本设计**：提供表格形式的API脚本编辑功能。
+- **脚本编辑器**：可直接编辑 `.rcs` 脚本内容，支持实时校验和与表格的双向联动。
+
 ## 操作指南
 
 ### 界面介绍
 
 - **文件加载**：用于打开已有的 `.rcs` 脚本文件。
 - **生成代码**：配置生成代码的相关参数，如输出路径、包名等。
-- **领域编辑**：编辑领域名称和描述，领域是业务模块的划分。
-- **脚本编辑**：编辑 API 脚本，包括操作名称、请求方法、参数契约等。
-- **脚本查看**：实时查看生成的 `.rcs` 脚本内容。
+- **领域设计**：设计领域名称和描述，领域是业务模块的划分。
+- **脚本设计**：设计 API 脚本，包括操作名称、请求方法、参数契约等。
+- **脚本编辑器**：可直接编辑 `.rcs` 脚本内容，支持实时校验和与表格的双向联动。
 - **帮助**：查看帮助文档，了解工具的使用方法和脚本格式。
 
 ### 基本操作
 
 1. **添加领域**：
-   - 在领域编辑区域，点击`新增领域`按钮。
+   - 在领域设计区域，点击`新增领域`按钮。
    - 输入领域名称和描述。
 
 2. **添加脚本**：
-   - 在脚本编辑区域，点击`新增脚本`按钮。
+   - 在脚本设计区域，点击`新增脚本`按钮。
    - 选择领域名称和内置模板，模板会自动填充脚本内容。
    - 根据需要修改脚本的各个部分。
 
 3. **一键 CRUD**：
-   - 在脚本编辑区域，点击`一键 CRUD`按钮。
+   - 在脚本设计区域，点击`一键 CRUD`按钮。
    - 选择需要生成 CRUD 脚本的领域，自动添加常用的增删改查脚本。
 
-4. **校验脚本**：
-   - 在脚本查看区域，点击`校验`按钮。
+4. **直接编辑脚本**：
+   - 在脚本编辑器区域，可以直接编辑 `.rcs` 脚本内容。
+   - 编辑器支持实时校验，会自动检查脚本格式和内容。
+   - 编辑器与上方的表格实时联动，修改脚本内容会同步更新表格。
+
+5. **校验脚本**：
+   - 在脚本编辑器区域，点击`校验`按钮。
    - 检查脚本的格式和内容，提示可能的错误和重复。
 
-5. **保存脚本**：
-   - 在脚本查看区域，点击"保存"按钮。
+6. **保存脚本**：
+   - 在脚本编辑器区域，点击"保存"按钮。
    - 将编辑好的 `.rcs` 脚本保存到文件。
 
-6. **生成代码**：
+7. **生成代码**：
    - 在生成代码区域，配置框架基本包名、源码输出路径、源码基本包名等参数。
+   - 选择 Spring Boot 版本（2 或 3），系统会自动适配相应的依赖和注解。
    - 点击"生成代码"按钮，生成后端代码。
 
-7. **预览代码**：
+8. **预览代码**：
    - 在生成代码区域，点击"预览"按钮。
    - 查看生成的代码内容，检查是否符合预期。
 
@@ -180,3 +197,108 @@ User.GET..tree.?><.获取用户树                   # ? + >< → @ParameterObje
 User.GET./{id}/profile.getProfile.%id>profile.获取用户档案    # %id + >profile → @PathVariable id + Result<UserProfileRespVo>
 User.POST../importByCodes.importByCodes.@$.按编码导入用户      # @$ → @RequestBody List<String> codes + Result<Void>
 ```
+
+### 自动生成的 Swagger v3 参数说明注解
+
+系统会为各种参数类型自动生成 OpenAPI 3.0 规范的参数说明注解，提供完整的 API 文档支持：
+
+#### 路径参数（PathVariable）
+- `%` → 自动生成数值路径参数的说明注解
+- `%$` → 自动生成字符串路径参数的说明注解
+
+```java
+@Parameter(name = "id", description = "数值路径参数", in = ParameterIn.PATH, required = true, schema = @Schema(type = "integer", format = "int64"))
+@Parameter(name = "code", description = "字符串路径参数", in = ParameterIn.PATH, required = true, schema = @Schema(type = "string"))
+```
+
+#### 查询参数（Query Parameters）
+- `?$` → 自动生成字符串查询参数的说明注解
+- `?#` → 自动生成数值查询参数的说明注解
+
+```java
+@Parameter(name = "keyword", description = "字符串查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
+@Parameter(name = "age", description = "数值查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "integer", format = "int64"))
+```
+
+#### 请求体参数（RequestBody）
+- `@#` → 自动生成数值列表的说明注解
+- `@$` → 自动生成字符串列表的说明注解
+- `@` → 自动生成单个对象的说明注解
+- `@=` → 自动生成对象列表的说明注解
+
+```java
+@Parameter(description = "数值型ID列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = Long.class)))
+@Parameter(description = "字符串型编码列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = String.class)))
+@Parameter(description = "请求体对象", required = true, content = @Content(schema = @Schema(implementation = UserReqVo.class)))
+```
+
+#### 生成的完整示例
+
+```java
+@Operation(summary = "按关键字搜索用户")
+@Parameters({
+        @Parameter(name = "keyword", description = "字符串查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
+})
+@GetMapping("/search")
+public Result<List<UserRespVo>> search(@RequestParam("keyword") String keyword) {
+    return Result.ok(userService.search(keyword));
+}
+```
+
+注意：查询对象（如 `?` → `@ParameterObject UserQueryVo`）不会生成额外的 `@Parameter` 注解，因为 `@ParameterObject` 已经提供了足够的文档信息。
+
+## Spring Boot 版本支持
+
+Rest Code 支持 Spring Boot 2 和 Spring Boot 3 两个主要版本，在代码生成配置中可以选择目标版本。系统会自动适配不同版本间的差异：
+
+### 版本差异对比
+
+| 组件 | Spring Boot 2 | Spring Boot 3 |
+|------|---------------|---------------|
+| **@ParameterObject** | `org.springdoc.api.annotations.ParameterObject` | `org.springdoc.core.annotations.ParameterObject` |
+| **@Resource** | `javax.annotation.Resource` | `jakarta.annotation.Resource` |
+| **@Valid** | `javax.validation.Valid` | `jakarta.validation.Valid` |
+| **serialVersionUID** | 普通字段声明 | 使用 `@Serial` 注解 |
+
+### Spring Boot 2 示例
+
+```java
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import org.springdoc.api.annotations.ParameterObject;
+
+public class UserReqVo implements Serializable {
+    /**
+     * 使用JDK 1.0.2 中的 serialVersionUID 实现互操作性。
+     */
+    private static final long serialVersionUID = -3042686055658047285L;
+}
+```
+
+### Spring Boot 3 示例
+
+```java
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import java.io.Serial;
+
+public class UserReqVo implements Serializable {
+    /**
+     * 使用JDK 1.0.2 中的 serialVersionUID 实现互操作性。
+     */
+    @Serial
+    private static final long serialVersionUID = -3042686055658047285L;
+}
+```
+
+### 配置说明
+
+在代码生成配置中：
+1. **Spring Boot版本**：选择 "Spring Boot 2" 或 "Spring Boot 3"
+2. 系统会自动：
+   - 使用对应版本的 import 语句
+   - 为 Spring Boot 3 添加 `@Serial` 注解
+   - 适配 javax 到 jakarta 的包名变更
+
+**4. `>` - 响应类型（Response Type）**

@@ -6,6 +6,30 @@ function capitalize(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+/**
+ * 根据Spring Boot版本获取正确的import语句
+ */
+function getVersionSpecificImport(config: Config, importType: string): string {
+    const isSpringBoot3 = config.springBootVersion === '3'
+
+    switch (importType) {
+        case 'ParameterObject':
+            return isSpringBoot3
+                ? 'org.springdoc.core.annotations.ParameterObject'
+                : 'org.springdoc.api.annotations.ParameterObject'
+        case 'Resource':
+            return isSpringBoot3
+                ? 'jakarta.annotation.Resource'
+                : 'javax.annotation.Resource'
+        case 'Valid':
+            return isSpringBoot3
+                ? 'jakarta.validation.Valid'
+                : 'javax.validation.Valid'
+        default:
+            return importType
+    }
+}
+
 export function parseScript(config: Config, content: string): { domains: Domain[]; apiMethods: ApiMethod[] } {
     const lines = content.split('\n')
 
@@ -48,6 +72,7 @@ export function parseScript(config: Config, content: string): { domains: Domain[
                     voNames: [],
                     methodBody: '',
                     methodBodyServiceImpl: '',
+                    parameterAnnotations: [],
                 }
                 // 解析参数契约
                 parseParameterContract(config, method)
@@ -68,6 +93,9 @@ function parseParameterContract(config: Config, method: ApiMethod) {
     const domainName = method.domainName
     const domainNameLower = domainName.charAt(0).toLowerCase() + domainName.slice(1)
 
+    // 初始化参数注解数组
+    method.parameterAnnotations = []
+
     for (const token of tokens) {
         console.log("token: ", token)
         if (token.startsWith('@')) {
@@ -84,9 +112,15 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parametersPure.push(`${requestType} ${paramName}`)
                 method.parameterNames.push(paramName)
 
+                // 添加参数说明注解
+                method.parameterAnnotations.push(`@Parameter(description = "数值型ID列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = Long.class)))`)
+
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
-                method.imports.add('javax.validation.Valid')
+                method.imports.add(getVersionSpecificImport(config, 'Valid'))
                 method.imports.add('java.util.List')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Content')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
                 method.importsService.add('java.util.List')
             } else if (simpleStringListMatch) {
                 // '@$' 或 '@$参数名' - List<String> 类型的 RequestBody
@@ -96,9 +130,15 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parametersPure.push(`${requestType} ${paramName}`)
                 method.parameterNames.push(paramName)
 
+                // 添加参数说明注解
+                method.parameterAnnotations.push(`@Parameter(description = "字符串型编码列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = String.class)))`)
+
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
-                method.imports.add('javax.validation.Valid')
+                method.imports.add(getVersionSpecificImport(config, 'Valid'))
                 method.imports.add('java.util.List')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Content')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
                 method.importsService.add('java.util.List')
             } else if (requestBodyMatch) {
                 const operator = requestBodyMatch[1] // 可能是 '=' 或空字符串
@@ -113,17 +153,26 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     paramName = 'reqVos'
                     method.imports.add('java.util.List')
                     method.importsService.add('java.util.List')
+                    // 添加列表类型的参数说明注解
+                    method.parameterAnnotations.push(`@Parameter(description = "请求体对象列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = ${typeName}.class)))`)
+                } else {
+                    // 添加单个对象的参数说明注解
+                    method.parameterAnnotations.push(`@Parameter(description = "请求体对象", required = true, content = @Content(schema = @Schema(implementation = ${typeName}.class)))`)
                 }
                 method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
                 method.parametersPure.push(`${requestType} ${paramName}`)
                 method.parameterNames.push(paramName)
 
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
-                method.imports.add('javax.validation.Valid')
+                method.imports.add(getVersionSpecificImport(config, 'Valid'))
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Content')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
 
                 method.voNames.push(typeName)
                 method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
                 method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
+                method.imports.add(getVersionSpecificImport(config, 'ParameterObject'))
             }
         } else if (token.startsWith('?')) {
             // Query 参数
@@ -137,14 +186,28 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parameters.push(`@RequestParam("${paramName}") String ${paramName}`)
                 method.parametersPure.push(`String ${paramName}`)
                 method.parameterNames.push(paramName)
+
+                // 添加查询参数说明注解
+                method.parameterAnnotations.push(`@Parameter(name = "${paramName}", description = "字符串查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string"))`)
+
                 method.imports.add('org.springframework.web.bind.annotation.RequestParam')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.enums.ParameterIn')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
             } else if (queryNumberMatch) {
                 // '?#' 或 '?#参数名' - Long 类型的查询参数
                 const paramName = token.substring(2) || 'number'  // 支持自定义参数名，默认为 number
                 method.parameters.push(`@RequestParam("${paramName}") Long ${paramName}`)
                 method.parametersPure.push(`Long ${paramName}`)
                 method.parameterNames.push(paramName)
+
+                // 添加查询参数说明注解
+                method.parameterAnnotations.push(`@Parameter(name = "${paramName}", description = "数值查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "integer", format = "int64"))`)
+
                 method.imports.add('org.springframework.web.bind.annotation.RequestParam')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.enums.ParameterIn')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
             } else {
                 // 原有的查询对象逻辑
                 let typeName = `${domainName}QueryVo`
@@ -159,10 +222,13 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parametersPure.push(`${requestType} ${paramName}`)
                 method.parameterNames.push(paramName)
 
+                // 查询对象不需要添加 @Parameter 注解，@ParameterObject 已经足够
+                method.parameterAnnotations.push('') // 添加空占位符保持数组索引对应
+
                 method.voNames.push(typeName)
                 method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
                 method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
-                method.imports.add('org.springdoc.api.annotations.ParameterObject')
+                method.imports.add(getVersionSpecificImport(config, 'ParameterObject'))
             }
         } else if (token.startsWith('%')) {
             // @PathVariable 路径参数
@@ -172,14 +238,28 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parameters.push(`@PathVariable("${paramName}") String ${paramName}`)
                 method.parametersPure.push(`String ${paramName}`)
                 method.parameterNames.push(paramName)
+
+                // 添加路径参数说明注解
+                method.parameterAnnotations.push(`@Parameter(name = "${paramName}", description = "字符串路径参数", in = ParameterIn.PATH, required = true, schema = @Schema(type = "string"))`)
+
                 method.imports.add('org.springframework.web.bind.annotation.PathVariable')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.enums.ParameterIn')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
             } else {
                 // % - @PathVariable 数值型
                 const paramName = token.substring(1) || 'id'
                 method.parameters.push(`@PathVariable("${paramName}") long ${paramName}`)
                 method.parametersPure.push(`long ${paramName}`)
                 method.parameterNames.push(paramName)
+
+                // 添加路径参数说明注解
+                method.parameterAnnotations.push(`@Parameter(name = "${paramName}", description = "数值路径参数", in = ParameterIn.PATH, required = true, schema = @Schema(type = "integer", format = "int64"))`)
+
                 method.imports.add('org.springframework.web.bind.annotation.PathVariable')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.enums.ParameterIn')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
             }
         } else if (token.startsWith('>')) {
             // 响应类型，考虑业务后缀
@@ -205,20 +285,27 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     method.parameters.unshift('@ParameterObject PageQueryVo pageQueryVo')
                     method.parametersPure.unshift('PageQueryVo pageQueryVo')
                     method.parameterNames.unshift('pageQueryVo')
+                    // 分页查询对象不需要添加额外的参数注解，@ParameterObject 已经足够
+                    method.parameterAnnotations.unshift('') // 为分页参数添加空占位符，保持数组索引对应
                     method.responseType = `Result<Page<${typeName}>>`
                     method.hasResponseType = true
                     method.imports.add(`${config.basePackage}.model.vo.req.PageQueryVo`)
                     method.imports.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
                     method.importsService.add(`${config.basePackage}.model.vo.req.PageQueryVo`)
                     method.importsService.add('com.baomidou.mybatisplus.extension.plugins.pagination.Page')
-                    method.imports.add('org.springdoc.api.annotations.ParameterObject')
+                    method.imports.add(getVersionSpecificImport(config, 'ParameterObject'))
                 } else if (operator === '<') {
                     // '><'
                     typeName = `${method.domainName}${capitalize(suffix)}TreeVo`
                     method.responseType = `Result<TreeNode<Long, ${typeName}>>`
                     method.hasResponseType = true
-                    method.imports.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
-                    method.importsService.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
+                    if (config.frameworkBasePackage) {
+                        method.imports.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
+                        method.importsService.add(`${config.frameworkBasePackage}.common.utils.tree.TreeNode`)
+                    } else {
+                        method.imports.add(`${config.basePackage}.core.tree.TreeNode`)
+                        method.importsService.add(`${config.basePackage}.core.tree.TreeNode`)
+                    }
                 }
 
                 method.voNames.push(typeName)
@@ -245,12 +332,16 @@ function parseParameterContract(config: Config, method: ApiMethod) {
     }
 
     // 添加 Controller 常用的 imports
-    method.imports.add(`${config.frameworkBasePackage}.common.model.Result`)
+    if (config.frameworkBasePackage) {
+        method.imports.add(`${config.frameworkBasePackage}.common.model.Result`)
+    } else {
+        method.imports.add(`${config.basePackage}.core.Result`)
+    }
     method.imports.add(`${config.basePackage}.service.${domainName}Service`)
     method.imports.add('io.swagger.v3.oas.annotations.Operation')
     method.imports.add('io.swagger.v3.oas.annotations.tags.Tag')
     method.imports.add('org.springframework.web.bind.annotation.*')
-    method.imports.add('javax.annotation.Resource')
+    method.imports.add(getVersionSpecificImport(config, 'Resource'))
 
     // 添加 ServiceImpl 常用的 imports，包括 Service 的 imports，以及 @Service 注解
     method.importsService.forEach((importItem) => {

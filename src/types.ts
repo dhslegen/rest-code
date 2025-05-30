@@ -39,6 +39,7 @@ export interface ApiMethod {
     parameters: string[]
     parametersPure: string[]
     parameterNames: string[]
+    parameterAnnotations: string[]
     responseType: string
     hasResponseType: boolean
     returnType: string
@@ -53,4 +54,5 @@ export interface Config {
     outputPath: string
     basePackage: string
     mode: 'overwrite' | 'incremental'
+    springBootVersion: '2' | '3'
 }

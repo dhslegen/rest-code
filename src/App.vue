@@ -8,7 +8,7 @@
           <template #title><el-alert center title="操作区域" style="background-color:#1565c0;height: 30px;" type="success"
               effect="dark" :closable=false /></template>
           <el-row :gutter="20">
-            <el-col :span="12">
+            <el-col :span="10">
               <el-card shadow="hover">
                 <template #header>
                   <span>文件加载</span>
@@ -16,36 +16,36 @@
                 <file-loader />
               </el-card>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="14">
               <el-card shadow="hover">
                 <template #header>
                   <span>生成代码</span>
                 </template>
-                <code-generator />
+                <code-generator :script-editor-ref="scriptViewerRef" />
               </el-card>
             </el-col>
           </el-row>
         </el-collapse-item>
 
-        <!-- 第2行：领域编辑区域 -->
+        <!-- 第2行：领域设计区域 -->
         <el-collapse-item name="2">
-          <template #title><el-alert center title="领域编辑" style="background-color:#6c5ce7;height: 30px;" type="success"
+          <template #title><el-alert center title="领域设计" style="background-color:#6c5ce7;height: 30px;" type="success"
               effect="dark" :closable=false /></template>
           <domain-editor />
         </el-collapse-item>
 
-        <!-- 第3行：脚本编辑区域 -->
+        <!-- 第3行：脚本设计区域 -->
         <el-collapse-item name="3">
-          <template #title><el-alert center title="脚本编辑" style="background-color:#009688;height: 30px;" type="success"
+          <template #title><el-alert center title="脚本设计" style="background-color:#009688;height: 30px;" type="success"
               effect="dark" :closable=false /></template>
           <script-editor />
         </el-collapse-item>
       </el-collapse>
     </el-main>
 
-    <!-- 脚本查看区域 -->
+    <!-- 脚本编辑器区域 -->
     <el-footer style="height: 208px; padding: 0;">
-      <script-viewer />
+      <script-viewer ref="scriptViewerRef" />
     </el-footer>
   </el-container>
 </template>
@@ -57,7 +57,9 @@ import ScriptEditor from './components/ScriptEditor.vue'
 import ScriptViewer from './components/ScriptViewer.vue'
 import CodeGenerator from './components/CodeGenerator.vue'
 import { ref } from 'vue'
+
 const activeCollapseOperation = ref(['3'])
+const scriptViewerRef = ref()
 </script>
 
 <style scoped>
