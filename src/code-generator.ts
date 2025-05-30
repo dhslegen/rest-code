@@ -1813,15 +1813,15 @@ async function generateController(domain: Domain, apiMethods: ApiMethod[], confi
             const nonEmptyAnnotations = method.parameterAnnotations.filter(annotation => annotation.trim() !== '')
 
             return {
-                description: method.description,
-                apiNote: method.apiNote,
-                httpMethod: method.httpMethod.charAt(0) + method.httpMethod.slice(1).toLowerCase(),
-                apiPath: method.apiPath || '',
-                hasResponseType: method.hasResponseType,
-                responseType: method.responseType,
-                operationName: method.operationName,
-                parameters: method.parameters.join(', '),
-                methodBody: method.methodBody,
+            description: method.description,
+            apiNote: method.apiNote,
+            httpMethod: method.httpMethod.charAt(0) + method.httpMethod.slice(1).toLowerCase(),
+            apiPath: method.apiPath || '',
+            hasResponseType: method.hasResponseType,
+            responseType: method.responseType,
+            operationName: method.operationName,
+            parameters: method.parameters.join(', '),
+            methodBody: method.methodBody,
                 // 参数注解相关字段
                 hasParameterAnnotations: nonEmptyAnnotations.length > 0,
                 parameterAnnotations: nonEmptyAnnotations.map((annotation, index, array) => ({

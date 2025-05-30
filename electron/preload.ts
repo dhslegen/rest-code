@@ -23,4 +23,7 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('open-file', callback);
   },
   decryptFiles: (directory: string) => ipcRenderer.invoke('decrypt-files', directory),
+  minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
+  maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
+  closeWindow: () => ipcRenderer.invoke('close-window'),
 })

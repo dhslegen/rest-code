@@ -1,10 +1,18 @@
 <template>
-    <el-table :data="scripts" ref="scriptTable" style="width: 100%" border
-        :header-cell-style="{ backgroundColor: '#f5f7fa', textAlign: 'center' }" :show-header="true" :max-height="333">
+    <div class="script-editor">
+        <div class="table-container">
+            <el-table 
+                :data="scripts" 
+                ref="scriptTable" 
+                class="modern-table"
+                :header-cell-style="{ backgroundColor: 'rgba(248, 249, 250, 0.8)', textAlign: 'center', color: '#2c3e50', fontWeight: '600' }" 
+                :show-header="true" 
+                :max-height="300"
+            >
         <el-table-column label="内置模板" align="center">
             <template #default="{ row }">
-                <el-select v-model="row.template" @change="onTemplateChange(row)" :placeholder="'请选择模板'" filterable
-                    clearable>
+                        <el-select v-model="row.template" @change="onTemplateChange(row)" placeholder="请选择模板" filterable
+                            clearable class="table-select">
                     <el-option v-for="template in templates" :key="template.name" :label="template.name"
                         :value="template.name"></el-option>
                 </el-select>
@@ -12,30 +20,31 @@
         </el-table-column>
         <el-table-column label="领域名称" align="center">
             <template #default="{ row }">
-                <el-select v-model="row.domain" @change="onTemplateChange(row)" :placeholder="'请选择领域名称'" filterable>
+                        <el-select v-model="row.domain" @change="onTemplateChange(row)" placeholder="请选择领域名称" filterable
+                            class="table-select">
                     <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
                         :value="domain.name"></el-option>
                 </el-select>
             </template>
         </el-table-column>
-        <el-table-column label="HTTP请求方法" align="center" width="100">
+                <el-table-column label="HTTP请求方法" align="center" width="120">
             <template #default="{ row }">
-                <el-select v-model="row.httpMethod" :placeholder="'请选择'">
+                        <el-select v-model="row.httpMethod" placeholder="请选择" class="table-select">
                     <el-option label="GET" value="GET"></el-option>
                     <el-option label="POST" value="POST"></el-option>
-                    <el-option label="PATCH" value="PATCH"></el-option>
+                            <el-option label="PATCH" value="PATCH"></el-option>
                     <el-option label="DELETE" value="DELETE"></el-option>
                 </el-select>
             </template>
         </el-table-column>
         <el-table-column label="API路径" align="center">
             <template #default="{ row }">
-                <el-input v-model="row.apiPath" placeholder="例如：/{id}"></el-input>
+                        <el-input v-model="row.apiPath" placeholder="例如：/{id}" class="table-input"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="操作名称" align="center">
             <template #default="{ row }">
-                <el-input v-model="row.operation" placeholder="例如：update"></el-input>
+                        <el-input v-model="row.operation" placeholder="例如：update" class="table-input"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="参数契约" align="center">
@@ -44,40 +53,52 @@
                     <template #content>
                         <div v-html="row.tooltipContent"></div>
                     </template>
-                    <el-input v-model="row.contract" placeholder="输入 @?%> 以获取提示" @input="onContractInput(row)"
-                        @focus="onContractFocus(row)" @blur="onContractBlur(row)"></el-input>
+                            <el-input v-model="row.contract" placeholder="输入 @?%> 以获取提示" @input="onContractInput(row)"
+                                @focus="onContractFocus(row)" @blur="onContractBlur(row)" class="table-input"></el-input>
                 </el-tooltip>
             </template>
         </el-table-column>
         <el-table-column label="描述" align="center">
             <template #default="{ row }">
-                <el-input v-model="row.description" placeholder="例如：编辑用户"></el-input>
+                        <el-input v-model="row.description" placeholder="例如：编辑用户" class="table-input"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="100">
             <template #default="{ $index }">
-                <el-button type="danger" @click="deleteScript($index)">删除</el-button>
+                        <el-button class="delete-btn" @click="deleteScript($index)">
+                            <el-icon><Delete /></el-icon>
+                            删除
+                        </el-button>
             </template>
         </el-table-column>
     </el-table>
+        </div>
 
-    <div style="text-align: center; margin-top: 10px;">
-        <el-button color="#009688" type="primary" @click="oneClickCRUD">一键 CRUD</el-button>
-        <el-button color="#009688" type="primary" @click="addScript">新增脚本</el-button>
+        <div class="action-container">
+            <el-button class="crud-btn" @click="oneClickCRUD">
+                <el-icon><Operation /></el-icon>
+                一键 CRUD
+            </el-button>
+            <el-button class="add-btn" @click="addScript">
+                <el-icon><Plus /></el-icon>
+                新增脚本
+            </el-button>
+        </div>
     </div>
-    <el-dialog title="一键 CRUD" v-model="showCrudDialog">
+    
+    <el-dialog title="一键 CRUD" v-model="showCrudDialog" class="modern-dialog" center>
         <el-form>
             <el-form-item label="领域名称">
-                <el-select v-model="selectedDomain" placeholder="请选择领域名称">
+                <el-select v-model="selectedDomain" placeholder="请选择领域名称" class="dialog-select">
                     <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
                         :value="domain.name"></el-option>
                 </el-select>
             </el-form-item>
         </el-form>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="showCrudDialog = false">取消</el-button>
-            <el-button type="primary" @click="confirmCRUD">确定</el-button>
-        </span>
+        <template #footer>
+            <el-button class="cancel-btn" @click="showCrudDialog = false">取消</el-button>
+            <el-button class="confirm-btn" @click="confirmCRUD">确定</el-button>
+        </template>
     </el-dialog>
 </template>
 
@@ -85,6 +106,7 @@
 import { useStore } from '../store/'
 import { ref, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Delete, Plus, Operation } from '@element-plus/icons-vue'
 
 const store = useStore()
 const scripts = store.scripts
@@ -257,3 +279,257 @@ const onTemplateChange = (row: any) => {
     }
 }
 </script>
+
+<style scoped>
+.script-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+}
+
+.table-container {
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 122, 255, 0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 122, 255, 0.08);
+}
+
+:deep(.modern-table) {
+    background: transparent;
+    border-radius: 12px;
+}
+
+:deep(.modern-table .el-table__header-wrapper) {
+    border-radius: 12px 12px 0 0;
+}
+
+:deep(.modern-table .el-table__body-wrapper) {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+:deep(.modern-table .el-table__row) {
+    background: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+:deep(.modern-table .el-table__row:hover) {
+    background: rgba(0, 122, 255, 0.08);
+}
+
+:deep(.modern-table td) {
+    border-color: rgba(0, 0, 0, 0.05);
+    padding: 8px 6px;
+}
+
+:deep(.modern-table th) {
+    border-color: rgba(0, 0, 0, 0.05);
+    padding: 12px 6px;
+    font-size: 13px;
+}
+
+:deep(.table-input) {
+    border: none;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+}
+
+:deep(.table-input .el-input__wrapper) {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 12px;
+}
+
+:deep(.table-input .el-input__wrapper:hover) {
+    border-color: rgba(0, 122, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.1);
+}
+
+:deep(.table-input .el-input__wrapper.is-focus) {
+    border-color: #007AFF;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+:deep(.table-select) {
+    width: 100%;
+}
+
+:deep(.table-select .el-select__wrapper) {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 12px;
+}
+
+:deep(.table-select .el-select__wrapper:hover) {
+    border-color: rgba(0, 122, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.1);
+}
+
+:deep(.table-select .el-select__wrapper.is-focused) {
+    border-color: #007AFF;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #ee5a52, #e74c3c);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.action-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.crud-btn {
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.crud-btn:hover {
+    background: linear-gradient(135deg, #5AC8FA, #64D2FF);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.add-btn {
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.add-btn:hover {
+    background: linear-gradient(135deg, #5AC8FA, #64D2FF);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* 对话框样式 */
+:deep(.modern-dialog) {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+:deep(.modern-dialog .el-dialog__header) {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(90, 200, 250, 0.1));
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+:deep(.modern-dialog .el-dialog__body) {
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+:deep(.modern-dialog .el-dialog__footer) {
+    background: rgba(248, 249, 250, 0.9);
+    padding: 16px 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+:deep(.dialog-select) {
+    width: 100%;
+}
+
+:deep(.dialog-select .el-select__wrapper) {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+:deep(.dialog-select .el-select__wrapper:hover) {
+    border-color: rgba(0, 122, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.1);
+}
+
+.cancel-btn {
+    background: rgba(108, 117, 125, 0.1);
+    border: 1px solid rgba(108, 117, 125, 0.3);
+    color: #6c757d;
+    padding: 8px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-right: 12px;
+}
+
+.cancel-btn:hover {
+    background: rgba(108, 117, 125, 0.2);
+    border-color: rgba(108, 117, 125, 0.5);
+    color: #5a6268;
+}
+
+.confirm-btn {
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    border: none;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.confirm-btn:hover {
+    background: linear-gradient(135deg, #0051D5, #32A3F7);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .editor-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+  
+  .action-btn {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 11px;
+    gap: 2px;
+  }
+}
+</style>

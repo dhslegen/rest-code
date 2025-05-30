@@ -70,11 +70,19 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1250,
     height: 870,
+    frame: false, // 无边框窗口
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : undefined, // macOS隐藏标题栏但保留交通灯
+    trafficLightPosition: process.platform === 'darwin' ? { x: 20, y: 15 } : undefined, // macOS交通灯位置，稍微向上调整
+    transparent: false, // 保持不透明，避免性能问题
+    vibrancy: process.platform === 'darwin' ? 'under-window' : undefined, // macOS毛玻璃效果
+    backgroundMaterial: process.platform === 'win32' ? 'acrylic' : undefined, // Windows亚克力效果
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
       contextIsolation: true,
       allowRunningInsecureContent: false,
-      nodeIntegration: true
+      nodeIntegration: true,
+      // 启用开发者工具
+      devTools: true
     }
   });
 
@@ -82,9 +90,21 @@ function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
+    // 开发环境自动打开开发者工具
+    win.webContents.openDevTools();
   } else {
     win.loadFile(path.join(__dirname, "../dist/index.html"));
   }
+
+  // 添加快捷键支持
+  win.webContents.on('before-input-event', (event, input) => {
+    // F12 或 Cmd/Ctrl+Shift+I 打开开发者工具
+    if (input.key === 'F12' || 
+        (input.control && input.shift && input.key === 'I') ||
+        (input.meta && input.alt && input.key === 'I')) {
+      win!.webContents.toggleDevTools();
+    }
+  });
 
   win.on("closed", () => {
     win = null;
@@ -129,4 +149,27 @@ ipcMain.handle('decrypt-files', async (_event, directory: string) => {
       resolve({ success: true });
     });
   });
+});
+
+// 窗口控制IPC处理器
+ipcMain.handle('minimize-window', () => {
+  if (win && !win.isDestroyed()) {
+    win.minimize();
+  }
+});
+
+ipcMain.handle('maximize-window', () => {
+  if (win && !win.isDestroyed()) {
+    if (win.isMaximized()) {
+      win.unmaximize();
+    } else {
+      win.maximize();
+    }
+  }
+});
+
+ipcMain.handle('close-window', () => {
+  if (win && !win.isDestroyed()) {
+    win.close();
+  }
 });

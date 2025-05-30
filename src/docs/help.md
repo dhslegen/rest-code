@@ -236,9 +236,7 @@ User.POST../importByCodes.importByCodes.@$.按编码导入用户      # @$ → @
 
 ```java
 @Operation(summary = "按关键字搜索用户")
-@Parameters({
-        @Parameter(name = "keyword", description = "字符串查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
-})
+@Parameter(name = "keyword", description = "字符串查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
 @GetMapping("/search")
 public Result<List<UserRespVo>> search(@RequestParam("keyword") String keyword) {
     return Result.ok(userService.search(keyword));
@@ -300,5 +298,3 @@ public class UserReqVo implements Serializable {
    - 使用对应版本的 import 语句
    - 为 Spring Boot 3 添加 `@Serial` 注解
    - 适配 javax 到 jakarta 的包名变更
-
-**4. `>` - 响应类型（Response Type）**
