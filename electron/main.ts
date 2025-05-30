@@ -81,8 +81,8 @@ function createWindow() {
       contextIsolation: true,
       allowRunningInsecureContent: false,
       nodeIntegration: true,
-      // 启用开发者工具
-      devTools: true
+      // 禁用开发者工具
+      devTools: false
     }
   });
 
@@ -90,21 +90,21 @@ function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
-    // 开发环境自动打开开发者工具
-    win.webContents.openDevTools();
+    // 禁用开发环境自动打开开发者工具
+    // win.webContents.openDevTools();
   } else {
     win.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 
-  // 添加快捷键支持
-  win.webContents.on('before-input-event', (event, input) => {
-    // F12 或 Cmd/Ctrl+Shift+I 打开开发者工具
-    if (input.key === 'F12' || 
-        (input.control && input.shift && input.key === 'I') ||
-        (input.meta && input.alt && input.key === 'I')) {
-      win!.webContents.toggleDevTools();
-    }
-  });
+  // 禁用快捷键支持开发者工具
+  // win.webContents.on('before-input-event', (event, input) => {
+  //   // F12 或 Cmd/Ctrl+Shift+I 打开开发者工具
+  //   if (input.key === 'F12' || 
+  //       (input.control && input.shift && input.key === 'I') ||
+  //       (input.meta && input.alt && input.key === 'I')) {
+  //     win!.webContents.toggleDevTools();
+  //   }
+  // });
 
   win.on("closed", () => {
     win = null;
@@ -141,11 +141,11 @@ ipcMain.handle('decrypt-files', async (_event, directory: string) => {
     }
     execFile(decryptExePath, [directory], (error, _stdout) => {
       if (error) {
-        console.error('解密失败:', error);
+        // console.error('解密失败:', error);
         resolve({ success: false, error: error.message });
         return;
       }
-      console.log('解密成功');
+      // console.log('解密成功');
       resolve({ success: true });
     });
   });
