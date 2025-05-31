@@ -10,47 +10,39 @@
             <span class="app-name">Rest Code</span>
           </div>
         </div>
-        
+
         <!-- 更新检查按钮 -->
         <div class="titlebar-actions" v-if="isDarwin">
-          <el-button 
-            text 
-            size="small" 
-            @click="checkForUpdates"
-            :loading="checkingUpdate"
-            class="update-check-btn"
-            title="检查更新"
-          >
-            <el-icon><Refresh /></el-icon>
+          <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
+            title="检查更新">
+            <el-icon>
+              <Refresh />
+            </el-icon>
             <span class="update-btn-text">检查更新</span>
           </el-button>
         </div>
-        
+
         <div class="window-controls" v-if="!isDarwin">
-          <el-button 
-            text 
-            size="small" 
-            @click="checkForUpdates"
-            :loading="checkingUpdate"
-            class="update-check-btn"
-            title="检查更新"
-          >
-            <el-icon><Refresh /></el-icon>
+          <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
+            title="检查更新">
+            <el-icon>
+              <Refresh />
+            </el-icon>
             <span class="update-btn-text">检查更新</span>
           </el-button>
           <button class="control-btn minimize-btn" @click="minimizeWindow">
             <svg width="12" height="12" viewBox="0 0 12 12">
-              <rect x="2" y="5.5" width="8" height="1" fill="currentColor"/>
+              <rect x="2" y="5.5" width="8" height="1" fill="currentColor" />
             </svg>
           </button>
           <button class="control-btn maximize-btn" @click="maximizeWindow">
             <svg width="12" height="12" viewBox="0 0 12 12">
-              <rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1" fill="none"/>
+              <rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1" fill="none" />
             </svg>
           </button>
           <button class="control-btn close-btn" @click="closeWindow">
             <svg width="12" height="12" viewBox="0 0 12 12">
-              <path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.5" />
             </svg>
           </button>
         </div>
@@ -63,12 +55,8 @@
           <div class="section-header" @click="toggleSection('operation')">
             <div class="section-icon">⚡</div>
             <span class="section-title">操作区域</span>
-            <el-button 
-              text 
-              class="collapse-btn"
-              @click.stop="toggleSection('operation')"
-              :icon="sectionCollapsed.operation ? 'ArrowDown' : 'ArrowUp'"
-            />
+            <el-button text class="collapse-btn" @click.stop="toggleSection('operation')"
+              :icon="sectionCollapsed.operation ? 'ArrowDown' : 'ArrowUp'" />
           </div>
           <el-collapse-transition>
             <div v-show="!sectionCollapsed.operation" class="section-content">
@@ -101,12 +89,8 @@
           <div class="section-header" @click="toggleSection('domain')">
             <div class="section-icon">🎯</div>
             <span class="section-title">领域设计</span>
-            <el-button 
-              text 
-              class="collapse-btn"
-              @click.stop="toggleSection('domain')"
-              :icon="sectionCollapsed.domain ? 'ArrowDown' : 'ArrowUp'"
-            />
+            <el-button text class="collapse-btn" @click.stop="toggleSection('domain')"
+              :icon="sectionCollapsed.domain ? 'ArrowDown' : 'ArrowUp'" />
           </div>
           <el-collapse-transition>
             <div v-show="!sectionCollapsed.domain" class="section-content">
@@ -120,12 +104,8 @@
           <div class="section-header" @click="toggleSection('script')">
             <div class="section-icon">⚙️</div>
             <span class="section-title">脚本设计</span>
-            <el-button 
-              text 
-              class="collapse-btn"
-              @click.stop="toggleSection('script')"
-              :icon="sectionCollapsed.script ? 'ArrowDown' : 'ArrowUp'"
-            />
+            <el-button text class="collapse-btn" @click.stop="toggleSection('script')"
+              :icon="sectionCollapsed.script ? 'ArrowDown' : 'ArrowUp'" />
           </div>
           <el-collapse-transition>
             <div v-show="!sectionCollapsed.script" class="section-content">
@@ -141,10 +121,8 @@
             <span class="section-title">脚本编辑器</span>
           </div>
           <div class="section-content editor-content">
-            <script-viewer ref="scriptViewerRef" 
-              @open-gpt-dialog="showGptDialog = true"
-              @open-about-dialog="showAboutDialog = true"
-              @open-help-dialog="showHelpDialog = true" />
+            <script-viewer ref="scriptViewerRef" @open-gpt-dialog="showGptDialog = true"
+              @open-about-dialog="showAboutDialog = true" @open-help-dialog="showHelpDialog = true" />
           </div>
         </div>
       </div>
@@ -161,11 +139,11 @@
           </div>
           <button class="close-btn" @click="updateDialogVisible = false">
             <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
-        
+
         <div class="update-dialog-content">
           <div class="version-comparison">
             <div class="version-card current">
@@ -178,20 +156,21 @@
               <div class="version-number">{{ updateInfo.latestVersion }}</div>
             </div>
           </div>
-          
+
           <div class="release-notes" v-if="updateInfo.releaseNotes">
             <h4>更新内容</h4>
             <div class="notes-content">{{ updateInfo.releaseNotes }}</div>
           </div>
         </div>
-        
+
         <div class="update-dialog-footer">
           <button class="btn-secondary" @click="updateDialogVisible = false">
             稍后提醒
           </button>
           <button class="btn-primary" @click="downloadUpdate">
             <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;">
-              <path d="M8 1v10M4 7l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 1v10M4 7l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
             立即下载
           </button>
@@ -210,19 +189,19 @@
           </div>
           <button class="dialog-close-btn" @click="showGptDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
-        
+
         <div class="dialog-content">
           <div class="scrollable-content" v-html="gptContentHtml"></div>
         </div>
-        
+
         <div class="dialog-footer">
           <button class="btn-primary" @click="showGptDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;">
-              <path d="M8 12L3 7l1.5-1.5L8 9l5.5-3.5L15 7l-7 5z" fill="currentColor"/>
+              <path d="M8 12L3 7l1.5-1.5L8 9l5.5-3.5L15 7l-7 5z" fill="currentColor" />
             </svg>
             知道了
           </button>
@@ -241,11 +220,11 @@
           </div>
           <button class="dialog-close-btn" @click="showAboutDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
-        
+
         <div class="dialog-content">
           <div class="info-grid">
             <div class="info-card version-card">
@@ -285,20 +264,18 @@
               <div class="card-icon">👨‍💻</div>
               <div class="card-content">
                 <label>作者</label>
-                <a href="javascript:void(0)"
-                  @click="openLink('https://dahaoshen.com')"
-                  class="link-btn">
+                <a href="javascript:void(0)" @click="openLink('https://dahaoshen.com')" class="link-btn">
                   赵文昊
                 </a>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="dialog-footer">
           <button class="btn-secondary" @click="showAboutDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
             关闭
           </button>
@@ -317,19 +294,20 @@
           </div>
           <button class="dialog-close-btn" @click="showHelpDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
-        
+
         <div class="dialog-content">
           <div class="scrollable-content" v-html="helpContentHtml"></div>
         </div>
-        
+
         <div class="dialog-footer">
           <button class="btn-primary" @click="showHelpDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;">
-              <path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
             明白了
           </button>
@@ -348,19 +326,19 @@
           </div>
           <button class="dialog-close-btn" @click="showPreviewDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
         </div>
-        
+
         <div class="dialog-content">
           <div class="scrollable-content" v-html="previewContentHtml"></div>
         </div>
-        
+
         <div class="dialog-footer">
           <button class="btn-primary" @click="showPreviewDialog = false">
             <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
             关闭
           </button>
@@ -454,14 +432,14 @@ const openLink = (url: string) => {
 
 // 获取平台信息
 onMounted(async () => {
-  platform.value = navigator.platform.toLowerCase().includes('mac') ? 'darwin' : 
-                   navigator.platform.toLowerCase().includes('win') ? 'win32' : 'linux'
-  
+  platform.value = navigator.platform.toLowerCase().includes('mac') ? 'darwin' :
+    navigator.platform.toLowerCase().includes('win') ? 'win32' : 'linux'
+
   // 获取当前版本
   if ((window.api as any)?.getCurrentVersion) {
     updateInfo.value.currentVersion = await (window.api as any).getCurrentVersion()
   }
-  
+
   // 监听自动更新检查结果
   if ((window.api as any)?.onUpdateAvailable) {
     (window.api as any).onUpdateAvailable((updateData: any) => {
@@ -499,10 +477,10 @@ const checkForUpdates = async () => {
       ElMessage.warning('更新功能不可用')
       return
     }
-    
+
     const result = await api.checkForUpdates()
     console.log('手动检查更新结果:', result)
-    
+
     if (result.hasUpdate) {
       updateInfo.value = {
         currentVersion: await api.getCurrentVersion(),
@@ -578,7 +556,8 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center; /* 居中显示 */
+  justify-content: center;
+  /* 居中显示 */
 }
 
 .titlebar-actions {
@@ -593,8 +572,7 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
   padding: 8px 16px !important;
   border-radius: 10px !important;
   transition: all 0.3s ease !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
@@ -733,7 +711,8 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
   backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 0;
-  margin: 0 20px 20px 20px; /* 添加左右margin */
+  margin: 0 20px 20px 20px;
+  /* 添加左右margin */
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -887,11 +866,11 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
   .app-container {
     padding: 16px;
   }
-  
+
   .section-content {
     padding: 20px;
   }
-  
+
   .card-content {
     padding: 16px;
   }
@@ -939,225 +918,225 @@ body {
 
 /* Element Plus 下拉框现代化样式 - 全局作用域 */
 .el-select__popper {
-    z-index: 2020 !important;
-    border-radius: 16px !important;
-    overflow: hidden !important;
-    border: 1px solid rgba(0, 122, 255, 0.15) !important;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.98) 0%, 
+  z-index: 2020 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(0, 122, 255, 0.15) !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.98) 0%,
       rgba(248, 250, 252, 0.95) 100%) !important;
-    backdrop-filter: blur(25px) !important;
+  backdrop-filter: blur(25px) !important;
 }
 
 .el-select__popper .el-select-dropdown {
-    background: transparent !important;
-    backdrop-filter: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    padding: 12px 0 !important;
-    margin: 0 !important;
-    min-width: 200px !important;
-    animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border: none !important;
-    height: 100% !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 12px 0 !important;
+  margin: 0 !important;
+  min-width: 200px !important;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: none !important;
+  height: 100% !important;
 }
 
 .el-select__popper[data-popper-placement*="top"] .el-select-dropdown {
-    transform: translateY(4px) !important;
+  transform: translateY(4px) !important;
 }
 
 .el-select__popper[data-popper-placement*="bottom"] .el-select-dropdown {
-    transform: translateY(-4px) !important;
+  transform: translateY(-4px) !important;
 }
 
 @keyframes dropdownSlideIn {
-    0% {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.95);
-    }
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
 
-    100% {
-        opacity: 1;
-        transform: translateY(-4px) scale(1);
-    }
+  100% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
 }
 
 .el-select-dropdown__item {
-    padding: 12px 20px !important;
-    font-size: 14px !important;
-    color: #2c3e50 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border-radius: 12px !important;
-    margin: 3px 12px !important;
-    background: transparent !important;
-    position: relative !important;
-    font-weight: 500 !important;
-    letter-spacing: -0.1px !important;
-    border: none !important;
-    line-height: 1.2 !important;
-    min-height: auto !important;
-    display: flex !important;
-    align-items: center !important;
+  padding: 12px 20px !important;
+  font-size: 14px !important;
+  color: #2c3e50 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 12px !important;
+  margin: 3px 12px !important;
+  background: transparent !important;
+  position: relative !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.1px !important;
+  border: none !important;
+  line-height: 1.2 !important;
+  min-height: auto !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .el-select-dropdown__item span {
-    position: relative !important;
-    z-index: 2 !important;
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    line-height: 1.2 !important;
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
 }
 
 .el-select-dropdown__item::before {
-    content: '' !important;
-    position: absolute !important;
-    left: 8px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    width: 3px !important;
-    height: 0 !important;
-    background: linear-gradient(135deg, #007AFF, #5AC8FA) !important;
-    border-radius: 2px !important;
-    transition: height 0.3s ease !important;
-    z-index: 1 !important;
+  content: '' !important;
+  position: absolute !important;
+  left: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 3px !important;
+  height: 0 !important;
+  background: linear-gradient(135deg, #007AFF, #5AC8FA) !important;
+  border-radius: 2px !important;
+  transition: height 0.3s ease !important;
+  z-index: 1 !important;
 }
 
 .el-select-dropdown__item:hover {
-    background: linear-gradient(135deg, 
-        rgba(0, 122, 255, 0.12) 0%, 
+  background: linear-gradient(135deg,
+      rgba(0, 122, 255, 0.12) 0%,
       rgba(90, 200, 250, 0.08) 100%) !important;
-    color: #007AFF !important;
-    transform: translateX(4px) scale(1.02) !important;
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.15) !important;
+  color: #007AFF !important;
+  transform: translateX(4px) scale(1.02) !important;
+  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.15) !important;
 }
 
 .el-select-dropdown__item:hover::before {
-    height: 20px !important;
+  height: 20px !important;
 }
 
 .el-select-dropdown__item:hover span {
-    color: #007AFF !important;
-    font-weight: 600 !important;
+  color: #007AFF !important;
+  font-weight: 600 !important;
 }
 
 .el-select-dropdown__item.is-selected {
-    background: linear-gradient(135deg, 
-        rgba(0, 122, 255, 0.18) 0%, 
+  background: linear-gradient(135deg,
+      rgba(0, 122, 255, 0.18) 0%,
       rgba(90, 200, 250, 0.12) 100%) !important;
-    color: #007AFF !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.2) !important;
+  color: #007AFF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.2) !important;
 }
 
 .el-select-dropdown__item.is-selected::before {
-    height: 24px !important;
-    background: linear-gradient(135deg, #007AFF, #5AC8FA, #34C759) !important;
+  height: 24px !important;
+  background: linear-gradient(135deg, #007AFF, #5AC8FA, #34C759) !important;
 }
 
 .el-select-dropdown__item.is-selected span {
-    color: #007AFF !important;
-    font-weight: 700 !important;
+  color: #007AFF !important;
+  font-weight: 700 !important;
 }
 
 .el-select-dropdown__item.is-selected::after {
-    content: '✨' !important;
-    position: absolute !important;
-    right: 16px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    font-size: 16px !important;
-    animation: selectedGlow 1.5s ease-in-out infinite !important;
-    z-index: 2 !important;
+  content: '✨' !important;
+  position: absolute !important;
+  right: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 16px !important;
+  animation: selectedGlow 1.5s ease-in-out infinite !important;
+  z-index: 2 !important;
 }
 
 @keyframes selectedGlow {
 
   0%,
   100% {
-        opacity: 0.8;
-        transform: translateY(-50%) scale(1);
-    }
+    opacity: 0.8;
+    transform: translateY(-50%) scale(1);
+  }
 
-    50% {
-        opacity: 1;
-        transform: translateY(-50%) scale(1.1);
-    }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+  }
 }
 
 /* 滚动条美化 */
 .el-select-dropdown .el-scrollbar__wrap {
-    scrollbar-width: thin !important;
-    scrollbar-color: rgba(0, 122, 255, 0.4) transparent !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(0, 122, 255, 0.4) transparent !important;
 }
 
 .el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar {
-    width: 8px !important;
+  width: 8px !important;
 }
 
 .el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.03) !important;
-    border-radius: 4px !important;
-    margin: 12px 0 !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-radius: 4px !important;
+  margin: 12px 0 !important;
 }
 
 .el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, 
-        rgba(0, 122, 255, 0.5), 
+  background: linear-gradient(135deg,
+      rgba(0, 122, 255, 0.5),
       rgba(90, 200, 250, 0.4)) !important;
-    border-radius: 4px !important;
-    border: 2px solid transparent !important;
-    background-clip: padding-box !important;
+  border-radius: 4px !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
 }
 
 .el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, 
-        rgba(0, 122, 255, 0.7), 
+  background: linear-gradient(135deg,
+      rgba(0, 122, 255, 0.7),
       rgba(90, 200, 250, 0.6)) !important;
 }
 
 /* 代码生成区域下拉框 - 橙色主题 */
 .code-generator-card .el-select__popper {
-    border: 1px solid rgba(255, 149, 0, 0.15) !important;
+  border: 1px solid rgba(255, 149, 0, 0.15) !important;
 }
 
 .code-generator-card .el-select-dropdown__item::before {
-    background: linear-gradient(135deg, #FF9500, #FFCC02) !important;
+  background: linear-gradient(135deg, #FF9500, #FFCC02) !important;
 }
 
 .code-generator-card .el-select-dropdown__item:hover {
-    background: linear-gradient(135deg, 
-        rgba(255, 149, 0, 0.12) 0%, 
+  background: linear-gradient(135deg,
+      rgba(255, 149, 0, 0.12) 0%,
       rgba(255, 204, 2, 0.08) 100%) !important;
-    color: #FF9500 !important;
-    box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15) !important;
+  color: #FF9500 !important;
+  box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15) !important;
 }
 
 .code-generator-card .el-select-dropdown__item:hover span {
-    color: #FF9500 !important;
+  color: #FF9500 !important;
 }
 
 .code-generator-card .el-select-dropdown__item.is-selected {
-    background: linear-gradient(135deg, 
-        rgba(255, 149, 0, 0.18) 0%, 
+  background: linear-gradient(135deg,
+      rgba(255, 149, 0, 0.18) 0%,
       rgba(255, 204, 2, 0.12) 100%) !important;
-    color: #FF9500 !important;
-    box-shadow: 0 4px 20px rgba(255, 149, 0, 0.2) !important;
+  color: #FF9500 !important;
+  box-shadow: 0 4px 20px rgba(255, 149, 0, 0.2) !important;
 }
 
 .code-generator-card .el-select-dropdown__item.is-selected::before {
-    background: linear-gradient(135deg, #FF9500, #FFCC02, #34C759) !important;
+  background: linear-gradient(135deg, #FF9500, #FFCC02, #34C759) !important;
 }
 
 .code-generator-card .el-select-dropdown__item.is-selected span {
-    color: #FF9500 !important;
+  color: #FF9500 !important;
 }
 
 .code-generator-card .el-select-dropdown__item.is-selected::after {
-    content: '🔥' !important;
+  content: '🔥' !important;
 }
 
 /* 现代化消息提示美化 - 与对话框设计语言一致 */
@@ -1168,17 +1147,17 @@ body {
   transform: translateX(-50%) !important;
   padding: 20px 28px !important;
   border-radius: 20px !important;
-    border: none !important;
+  border: none !important;
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(25px) !important;
-    box-shadow: 
+  box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
   font-weight: 600 !important;
-    font-size: 15px !important;
-    letter-spacing: -0.1px !important;
-    z-index: 3000 !important;
-    line-height: 1.4 !important;
+  font-size: 15px !important;
+  letter-spacing: -0.1px !important;
+  z-index: 3000 !important;
+  line-height: 1.4 !important;
   min-width: 320px !important;
   max-width: 520px !important;
   overflow: hidden !important;
@@ -1209,16 +1188,19 @@ body {
     transform: translateX(-50%) translateY(-30px) scale(0.9) rotateX(10deg);
     filter: blur(8px);
   }
+
   30% {
     opacity: 0.6;
     transform: translateX(-50%) translateY(-10px) scale(0.98) rotateX(5deg);
     filter: blur(4px);
   }
+
   70% {
     opacity: 0.9;
     transform: translateX(-50%) translateY(5px) scale(1.02) rotateX(-2deg);
     filter: blur(1px);
   }
+
   100% {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1) rotateX(0deg);
@@ -1230,12 +1212,11 @@ body {
 .el-message--success {
   color: #1a1a1a !important;
   border: 1px solid rgba(34, 197, 94, 0.2) !important;
-    background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(240, 253, 244, 0.95) 50%,
-    rgba(34, 197, 94, 0.08) 100%
-    ) !important;
-  box-shadow: 
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(240, 253, 244, 0.95) 50%,
+      rgba(34, 197, 94, 0.08) 100%) !important;
+  box-shadow:
     0 25px 80px rgba(34, 197, 94, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
 }
@@ -1284,12 +1265,11 @@ body {
 .el-message--error {
   color: #1a1a1a !important;
   border: 1px solid rgba(239, 68, 68, 0.2) !important;
-    background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(254, 242, 242, 0.95) 50%,
-    rgba(239, 68, 68, 0.08) 100%
-    ) !important;
-  box-shadow: 
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(254, 242, 242, 0.95) 50%,
+      rgba(239, 68, 68, 0.08) 100%) !important;
+  box-shadow:
     0 25px 80px rgba(239, 68, 68, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
 }
@@ -1338,12 +1318,11 @@ body {
 .el-message--warning {
   color: #1a1a1a !important;
   border: 1px solid rgba(245, 158, 11, 0.2) !important;
-    background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 251, 235, 0.95) 50%,
-    rgba(245, 158, 11, 0.08) 100%
-    ) !important;
-  box-shadow: 
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 251, 235, 0.95) 50%,
+      rgba(245, 158, 11, 0.08) 100%) !important;
+  box-shadow:
     0 25px 80px rgba(245, 158, 11, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
 }
@@ -1392,12 +1371,11 @@ body {
 .el-message--info {
   color: #1a1a1a !important;
   border: 1px solid rgba(59, 130, 246, 0.2) !important;
-    background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(239, 246, 255, 0.95) 50%,
-    rgba(59, 130, 246, 0.08) 100%
-    ) !important;
-  box-shadow: 
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(239, 246, 255, 0.95) 50%,
+      rgba(59, 130, 246, 0.08) 100%) !important;
+  box-shadow:
     0 25px 80px rgba(59, 130, 246, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
 }
@@ -1445,7 +1423,7 @@ body {
 /* 消息提示的悬停效果 */
 .el-message:hover {
   transform: translateX(-50%) translateY(-3px) scale(1.02) !important;
-  box-shadow: 
+  box-shadow:
     0 35px 100px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -1502,10 +1480,13 @@ body {
 
 /* 图标脉冲动画 */
 @keyframes iconPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.7;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 0.3;
@@ -1520,13 +1501,13 @@ body {
     padding: 16px 20px !important;
     font-size: 14px !important;
   }
-  
+
   .el-message .el-message__icon {
     font-size: 18px !important;
     width: 20px !important;
     height: 20px !important;
   }
-  
+
   .el-message .el-message__closeBtn {
     top: 12px !important;
     right: 12px !important;
@@ -1540,7 +1521,8 @@ body {
 .window-container {
   width: 100vw;
   height: 100vh;
-  padding: 0; /* 移除padding */
+  padding: 0;
+  /* 移除padding */
   background: transparent;
   box-sizing: border-box;
 }
@@ -1548,10 +1530,13 @@ body {
 .window-container .app-container {
   width: 100%;
   height: 100%;
-  border-radius: 0; /* 移除圆角 */
+  border-radius: 0;
+  /* 移除圆角 */
   overflow: hidden;
-  box-shadow: none; /* 移除阴影 */
-  backdrop-filter: none; /* 移除模糊效果 */
+  box-shadow: none;
+  /* 移除阴影 */
+  backdrop-filter: none;
+  /* 移除模糊效果 */
   display: flex;
   flex-direction: column;
 }
@@ -1560,7 +1545,8 @@ body {
 .app-content {
   flex: 1;
   overflow-y: auto;
-  padding: 0 0 20px 0; /* 移除左右padding，只保留底部padding */
+  padding: 0 0 20px 0;
+  /* 移除左右padding，只保留底部padding */
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
@@ -1602,6 +1588,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1612,7 +1599,7 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(25px);
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -1626,6 +1613,7 @@ body {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -1645,11 +1633,10 @@ body {
 
 .update-dialog-header {
   padding: 24px 28px 20px;
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.08) 0%, 
-    rgba(191, 90, 242, 0.08) 50%, 
-    rgba(218, 112, 214, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.08) 0%,
+      rgba(191, 90, 242, 0.08) 50%,
+      rgba(218, 112, 214, 0.08) 100%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
@@ -1730,10 +1717,9 @@ body {
 
 .version-card.latest {
   border-color: rgba(34, 197, 94, 0.2);
-  background: linear-gradient(135deg, 
-    rgba(34, 197, 94, 0.05) 0%, 
-    rgba(16, 185, 129, 0.03) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(34, 197, 94, 0.05) 0%,
+      rgba(16, 185, 129, 0.03) 100%);
 }
 
 .version-label {
@@ -1763,10 +1749,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.1);
     opacity: 1;
@@ -1785,10 +1774,9 @@ body {
 }
 
 .notes-content {
-  background: linear-gradient(135deg, 
-    rgba(248, 250, 252, 0.9) 0%, 
-    rgba(241, 245, 249, 0.8) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(248, 250, 252, 0.9) 0%,
+      rgba(241, 245, 249, 0.8) 100%);
   padding: 16px;
   border-radius: 12px;
   font-size: 14px;
@@ -1816,10 +1804,9 @@ body {
 
 .update-dialog-footer {
   padding: 20px 28px 24px;
-  background: linear-gradient(135deg, 
-    rgba(248, 250, 252, 0.95) 0%, 
-    rgba(255, 255, 255, 0.9) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(248, 250, 252, 0.95) 0%,
+      rgba(255, 255, 255, 0.9) 100%);
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   gap: 12px;
@@ -1889,20 +1876,20 @@ body {
     width: 90vw;
     margin: 20px;
   }
-  
+
   .version-comparison {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .version-arrow {
     transform: rotate(90deg);
   }
-  
+
   .update-dialog-footer {
     flex-direction: column;
   }
-  
+
   .btn-primary,
   .btn-secondary {
     width: 100%;
@@ -1930,6 +1917,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1939,7 +1927,7 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(25px);
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -1968,6 +1956,7 @@ body {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -1987,11 +1976,10 @@ body {
 
 .dialog-header {
   padding: 24px 28px 20px;
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.08) 0%, 
-    rgba(191, 90, 242, 0.08) 50%, 
-    rgba(218, 112, 214, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.08) 0%,
+      rgba(191, 90, 242, 0.08) 50%,
+      rgba(218, 112, 214, 0.08) 100%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
@@ -2056,10 +2044,9 @@ body {
 
 .dialog-footer {
   padding: 20px 28px 24px;
-  background: linear-gradient(135deg, 
-    rgba(248, 250, 252, 0.95) 0%, 
-    rgba(255, 255, 255, 0.9) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(248, 250, 252, 0.95) 0%,
+      rgba(255, 255, 255, 0.9) 100%);
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   gap: 12px;
@@ -2187,29 +2174,26 @@ body {
 
 /* 不同对话框的主题色彩 */
 .gpt-dialog .dialog-header {
-  background: linear-gradient(135deg, 
-    rgba(0, 122, 255, 0.08) 0%, 
-    rgba(90, 200, 250, 0.08) 50%, 
-    rgba(100, 210, 255, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(0, 122, 255, 0.08) 0%,
+      rgba(90, 200, 250, 0.08) 50%,
+      rgba(100, 210, 255, 0.08) 100%);
   border-bottom-color: rgba(0, 122, 255, 0.1);
 }
 
 .about-dialog .dialog-header {
-  background: linear-gradient(135deg, 
-    rgba(108, 117, 125, 0.08) 0%, 
-    rgba(90, 97, 105, 0.08) 50%, 
-    rgba(73, 80, 87, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(108, 117, 125, 0.08) 0%,
+      rgba(90, 97, 105, 0.08) 50%,
+      rgba(73, 80, 87, 0.08) 100%);
   border-bottom-color: rgba(108, 117, 125, 0.1);
 }
 
 .help-dialog .dialog-header {
-  background: linear-gradient(135deg, 
-    rgba(34, 197, 94, 0.08) 0%, 
-    rgba(16, 185, 129, 0.08) 50%, 
-    rgba(5, 150, 105, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(34, 197, 94, 0.08) 0%,
+      rgba(16, 185, 129, 0.08) 50%,
+      rgba(5, 150, 105, 0.08) 100%);
   border-bottom-color: rgba(34, 197, 94, 0.1);
 }
 
@@ -2269,16 +2253,15 @@ body {
 
 /* 代码块样式 - 现代化设计 */
 .scrollable-content :deep(.code-block) {
-  background: linear-gradient(135deg, 
-    #f8fafc 0%, 
-    #f1f5f9 50%, 
-    #e2e8f0 100%
-  );
+  background: linear-gradient(135deg,
+      #f8fafc 0%,
+      #f1f5f9 50%,
+      #e2e8f0 100%);
   border-radius: 16px;
   padding: 0;
   margin: 20px 0;
   border: 1px solid rgba(175, 82, 222, 0.1);
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.05),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   overflow: hidden;
@@ -2410,10 +2393,9 @@ body {
 
 /* 行内代码样式 */
 .scrollable-content :deep(.inline-code) {
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.1) 0%, 
-    rgba(191, 90, 242, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.1) 0%,
+      rgba(191, 90, 242, 0.08) 100%);
   color: #AF52DE;
   padding: 4px 8px;
   border-radius: 8px;
@@ -2426,10 +2408,9 @@ body {
 }
 
 .scrollable-content :deep(.inline-code:hover) {
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.15) 0%, 
-    rgba(191, 90, 242, 0.12) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.15) 0%,
+      rgba(191, 90, 242, 0.12) 100%);
   border-color: rgba(175, 82, 222, 0.25);
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(175, 82, 222, 0.15);
@@ -2453,10 +2434,9 @@ body {
 }
 
 .scrollable-content :deep(th) {
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.08) 0%, 
-    rgba(191, 90, 242, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.08) 0%,
+      rgba(191, 90, 242, 0.08) 100%);
   font-weight: 600;
   color: #2c3e50;
 }
@@ -2482,40 +2462,40 @@ body {
     max-width: none !important;
     margin: 20px;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
     gap: 12px;
     padding: 20px;
   }
-  
+
   .info-card {
     padding: 16px;
     gap: 12px;
   }
-  
+
   .card-icon {
     font-size: 20px;
   }
-  
+
   .dialog-header {
     padding: 16px 20px;
   }
-  
+
   .dialog-icon {
     font-size: 24px;
     margin-right: 12px;
   }
-  
+
   .scrollable-content {
     padding: 20px;
   }
-  
+
   .dialog-footer {
     flex-direction: column;
     padding: 16px 20px 20px;
   }
-  
+
   .btn-primary,
   .btn-secondary {
     width: 100%;
@@ -2529,21 +2509,19 @@ body {
 }
 
 .help-dialog .dialog-header {
-  background: linear-gradient(135deg, 
-    rgba(34, 197, 94, 0.08) 0%, 
-    rgba(16, 185, 129, 0.08) 50%, 
-    rgba(5, 150, 105, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(34, 197, 94, 0.08) 0%,
+      rgba(16, 185, 129, 0.08) 50%,
+      rgba(5, 150, 105, 0.08) 100%);
   border-bottom-color: rgba(34, 197, 94, 0.1);
 }
 
 /* 预览弹窗特殊样式 */
 .preview-dialog .dialog-header {
-  background: linear-gradient(135deg, 
-    rgba(255, 149, 0, 0.08) 0%, 
-    rgba(255, 204, 2, 0.08) 50%, 
-    rgba(52, 199, 89, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 149, 0, 0.08) 0%,
+      rgba(255, 204, 2, 0.08) 50%,
+      rgba(52, 199, 89, 0.08) 100%);
   border-bottom-color: rgba(255, 149, 0, 0.1);
 }
 
@@ -2572,10 +2550,9 @@ body {
   font-weight: 700;
   margin: 32px 0 16px 0;
   padding: 12px 20px;
-  background: linear-gradient(135deg, 
-    rgba(255, 149, 0, 0.08) 0%, 
-    rgba(255, 204, 2, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 149, 0, 0.08) 0%,
+      rgba(255, 204, 2, 0.08) 100%);
   border-radius: 12px;
   border-left: 4px solid #FF9500;
   position: relative;

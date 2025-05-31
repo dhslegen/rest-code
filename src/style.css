@@ -19,6 +19,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -44,9 +45,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -76,9 +79,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
@@ -96,17 +101,16 @@ button:focus-visible {
   --el-message-close-size: 18px;
   --el-message-close-icon-color: rgba(0, 0, 0, 0.45);
   --el-message-close-hover-color: rgba(0, 0, 0, 0.75);
-  
+
   min-width: 320px !important;
   max-width: 500px !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
-  background: linear-gradient(135deg, 
-    var(--el-message-bg-color) 0%, 
-    rgba(248, 250, 252, 0.95) 100%
-  ) !important;
+  background: linear-gradient(135deg,
+      var(--el-message-bg-color) 0%,
+      rgba(248, 250, 252, 0.95) 100%) !important;
   border: 1px solid var(--el-message-border-color) !important;
   border-radius: 16px !important;
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.08),
     0 8px 16px rgba(0, 0, 0, 0.04),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
@@ -121,7 +125,7 @@ button:focus-visible {
 .el-message-fade-leave-active .el-message:hover,
 .el-message:hover {
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.12),
     0 12px 24px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
@@ -203,13 +207,12 @@ button:focus-visible {
 .el-notification {
   width: 360px !important;
   backdrop-filter: blur(25px) saturate(180%) !important;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.98) 0%, 
-    rgba(248, 250, 252, 0.95) 100%
-  ) !important;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(248, 250, 252, 0.95) 100%) !important;
   border: 1px solid rgba(0, 0, 0, 0.06) !important;
   border-radius: 20px !important;
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.15),
     0 8px 16px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.7) inset !important;
@@ -228,11 +231,10 @@ button:focus-visible {
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  background: linear-gradient(45deg, 
-    transparent 30%, 
-    rgba(255, 255, 255, 0.1) 50%, 
-    transparent 70%
-  ) !important;
+  background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 70%) !important;
   transform: translateX(-100%) !important;
   transition: transform 0.6s ease !important;
   pointer-events: none !important;
@@ -244,7 +246,7 @@ button:focus-visible {
 
 .el-notification:hover {
   transform: translateY(-4px) scale(1.02) !important;
-  box-shadow: 
+  box-shadow:
     0 35px 70px rgba(0, 0, 0, 0.2),
     0 12px 24px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(255, 255, 255, 0.9) inset !important;
@@ -302,43 +304,38 @@ button:focus-visible {
 /* 通知类型样式 */
 .el-notification.el-notification--success {
   border-left: 5px solid var(--el-color-success) !important;
-  background: linear-gradient(135deg, 
-    rgba(240, 253, 244, 0.98) 0%, 
-    rgba(233, 250, 240, 0.95) 100%
-  ) !important;
+  background: linear-gradient(135deg,
+      rgba(240, 253, 244, 0.98) 0%,
+      rgba(233, 250, 240, 0.95) 100%) !important;
 }
 
 .el-notification.el-notification--warning {
   border-left: 5px solid var(--el-color-warning) !important;
-  background: linear-gradient(135deg, 
-    rgba(255, 251, 235, 0.98) 0%, 
-    rgba(254, 243, 199, 0.95) 100%
-  ) !important;
+  background: linear-gradient(135deg,
+      rgba(255, 251, 235, 0.98) 0%,
+      rgba(254, 243, 199, 0.95) 100%) !important;
 }
 
 .el-notification.el-notification--error {
   border-left: 5px solid var(--el-color-danger) !important;
-  background: linear-gradient(135deg, 
-    rgba(254, 242, 242, 0.98) 0%, 
-    rgba(252, 231, 243, 0.95) 100%
-  ) !important;
+  background: linear-gradient(135deg,
+      rgba(254, 242, 242, 0.98) 0%,
+      rgba(252, 231, 243, 0.95) 100%) !important;
 }
 
 .el-notification.el-notification--info {
   border-left: 5px solid var(--el-color-info) !important;
-  background: linear-gradient(135deg, 
-    rgba(240, 249, 255, 0.98) 0%, 
-    rgba(239, 246, 255, 0.95) 100%
-  ) !important;
+  background: linear-gradient(135deg,
+      rgba(240, 249, 255, 0.98) 0%,
+      rgba(239, 246, 255, 0.95) 100%) !important;
 }
 
 .el-notification.el-notification--primary {
   border-left: 5px solid var(--el-color-primary) !important;
-  background: linear-gradient(135deg, 
-    rgba(239, 246, 255, 0.98) 0%, 
-    rgba(219, 234, 254, 0.95) 100%
-  ) !important;
-} 
+  background: linear-gradient(135deg,
+      rgba(239, 246, 255, 0.98) 0%,
+      rgba(219, 234, 254, 0.95) 100%) !important;
+}
 
 /* ==== 响应式设计 ==== */
 @media (max-width: 768px) {
@@ -349,7 +346,7 @@ button:focus-visible {
     padding: 14px 16px !important;
     border-radius: 12px !important;
   }
-  
+
   .el-notification {
     width: 90vw !important;
     max-width: 340px !important;
@@ -357,11 +354,11 @@ button:focus-visible {
     padding: 16px 20px !important;
     border-radius: 16px !important;
   }
-  
+
   .el-notification .el-notification__title {
     font-size: 15px !important;
   }
-  
+
   .el-notification .el-notification__content {
     font-size: 13px !important;
   }
@@ -374,47 +371,284 @@ button:focus-visible {
     --el-message-border-color: rgba(255, 255, 255, 0.12);
     --el-message-close-icon-color: rgba(255, 255, 255, 0.65);
     --el-message-close-hover-color: rgba(255, 255, 255, 0.9);
-    
-    background: linear-gradient(135deg, 
-      var(--el-message-bg-color) 0%, 
-      rgba(24, 24, 27, 0.95) 100%
-    ) !important;
+
+    background: linear-gradient(135deg,
+        var(--el-message-bg-color) 0%,
+        rgba(24, 24, 27, 0.95) 100%) !important;
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.25),
+      0 8px 16px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  }
+
+  .el-message .el-message__content {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .el-notification {
+    background: linear-gradient(135deg,
+        rgba(30, 30, 30, 0.98) 0%,
+        rgba(24, 24, 27, 0.95) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow:
+      0 25px 50px rgba(0, 0, 0, 0.3),
+      0 8px 16px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  }
+
+  .el-notification .el-notification__title {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .el-notification .el-notification__content {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .el-notification .el-notification__closeBtn {
+    color: rgba(255, 255, 255, 0.65) !important;
+  }
+
+  .el-notification .el-notification__closeBtn:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* ==== Element Plus Input Group Append 样式覆盖 ==== */
+.el-input-group__append {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  padding: 0 25px;
+  /* 禁用所有可能的阴影效果 */
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  /* 确保在不同状态下都生效 */
+  border-color: inherit !important;
+}
+
+.el-input-group__append:hover {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+.el-input-group__append:focus {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+.el-input-group__append:active {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+.el-input-group__append button.el-button {
+  color: none !important;
+}
+
+.el-button--small {
+  border-radius: 8px !important;
+}
+
+/* ==== Element Plus Select Dropdown Item 现代化美化 ==== */
+.el-select-dropdown {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
+  padding: 8px 0 !important;
+  margin-top: 4px !important;
+  overflow: hidden !important;
+}
+
+/* ==== Element Plus Select Popper 样式覆盖 ==== */
+.el-select__popper.el-popper {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.el-popper__arrow:before {
+  display: none !important;
+  content: none !important;
+  border: none !important;
+  background: none !important;
+}
+
+.el-popper__arrow {
+  display: none !important;
+}
+
+.el-select-dropdown__item {
+  --select-item-padding: 12px 16px;
+  --select-item-margin: 4px 8px;
+  --select-item-border-radius: 8px;
+  --select-item-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  padding: var(--select-item-padding) !important;
+  margin: var(--select-item-margin) !important;
+  border-radius: var(--select-item-border-radius) !important;
+  transition: var(--select-item-transition) !important;
+  background: transparent !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.el-select-dropdown__item::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.05) 0%, 
+    rgba(99, 102, 241, 0.05) 100%
+  ) !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
+  pointer-events: none !important;
+  border-radius: var(--select-item-border-radius) !important;
+}
+
+.el-select-dropdown__item:hover {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%, 
+    rgba(99, 102, 241, 0.08) 100%
+  ) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+  transform: translateX(2px) !important;
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.el-select-dropdown__item:hover::before {
+  opacity: 1 !important;
+}
+
+.el-select-dropdown__item.selected {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.12) 0%, 
+    rgba(99, 102, 241, 0.12) 100%
+  ) !important;
+  color: var(--el-color-primary) !important;
+  font-weight: 600 !important;
+  position: relative !important;
+  border-left: 3px solid var(--el-color-primary) !important;
+  margin-left: 5px !important;
+  padding-left: 13px !important;
+}
+
+.el-select-dropdown__item.selected::after {
+  content: '✓' !important;
+  position: absolute !important;
+  right: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--el-color-primary) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+
+.el-select-dropdown__item:active {
+  transform: translateX(2px) scale(0.98) !important;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.15) 0%, 
+    rgba(99, 102, 241, 0.15) 100%
+  ) !important;
+}
+
+.el-select-dropdown__item.is-disabled {
+  background: transparent !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.el-select-dropdown__item.is-disabled:hover {
+  background: transparent !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ==== Select Dropdown 暗色模式适配 ==== */
+@media (prefers-color-scheme: dark) {
+  .el-select-dropdown {
+    background: rgba(30, 30, 30, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     box-shadow: 
       0 20px 40px rgba(0, 0, 0, 0.25),
       0 8px 16px rgba(0, 0, 0, 0.15),
       0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
   }
-  
-  .el-message .el-message__content {
+
+  .el-select-dropdown__item {
     color: rgba(255, 255, 255, 0.9) !important;
   }
-  
-  .el-notification {
+
+  .el-select-dropdown__item::before {
     background: linear-gradient(135deg, 
-      rgba(30, 30, 30, 0.98) 0%, 
-      rgba(24, 24, 27, 0.95) 100%
+      rgba(99, 102, 241, 0.08) 0%, 
+      rgba(139, 92, 246, 0.08) 100%
     ) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .el-select-dropdown__item:hover {
+    background: linear-gradient(135deg, 
+      rgba(99, 102, 241, 0.12) 0%, 
+      rgba(139, 92, 246, 0.12) 100%
+    ) !important;
+    color: rgba(255, 255, 255, 1) !important;
     box-shadow: 
-      0 25px 50px rgba(0, 0, 0, 0.3),
-      0 8px 16px rgba(0, 0, 0, 0.2),
-      0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+      0 4px 12px rgba(99, 102, 241, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.1) !important;
   }
-  
-  .el-notification .el-notification__title {
-    color: rgba(255, 255, 255, 0.95) !important;
+
+  .el-select-dropdown__item.selected {
+    background: linear-gradient(135deg, 
+      rgba(99, 102, 241, 0.18) 0%, 
+      rgba(139, 92, 246, 0.18) 100%
+    ) !important;
+    color: #818cf8 !important;
   }
-  
-  .el-notification .el-notification__content {
-    color: rgba(255, 255, 255, 0.8) !important;
+
+  .el-select-dropdown__item.selected::after {
+    color: #818cf8 !important;
   }
-  
-  .el-notification .el-notification__closeBtn {
-    color: rgba(255, 255, 255, 0.65) !important;
+
+  .el-select-dropdown__item:active {
+    background: linear-gradient(135deg, 
+      rgba(99, 102, 241, 0.2) 0%, 
+      rgba(139, 92, 246, 0.2) 100%
+    ) !important;
   }
-  
-  .el-notification .el-notification__closeBtn:hover {
-    color: rgba(255, 255, 255, 0.9) !important;
-    background: rgba(255, 255, 255, 0.1) !important;
+
+  .el-select-dropdown__item.is-disabled {
+    color: rgba(255, 255, 255, 0.25) !important;
+  }
+
+  .el-select-dropdown__item.is-disabled:hover {
+    color: rgba(255, 255, 255, 0.25) !important;
   }
 }
