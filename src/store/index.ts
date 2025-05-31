@@ -11,13 +11,35 @@ export const useStore = defineStore('main', {
         templates: templates as Template[],
         loadedFilePath: '',
         scrollToBottom: false,
-        errors: [] as string[],
         showErrorPopover: false,
         triggerErrorDisplay: false,
+        originalFileContent: '', // 存储原始文件内容，用于校验失败时保持编辑器内容
     }),
     actions: {
         parseRcsFile(content: string) {
-            // 清空当前的 domains 和 scripts
+            // 存储原始文件内容
+            this.originalFileContent = content
+            
+            // 使用统一的校验逻辑
+            const validation = this.validateRcsContent(content)
+            
+            // 如果校验失败，显示错误信息但保持编辑器显示原始内容
+            if (!validation.isValid) {
+                const errorCount = validation.errors.filter(e => e.severity === 'error').length
+                const warningCount = validation.errors.filter(e => e.severity === 'warning').length
+                ElMessage.error(`文件校验失败：发现 ${errorCount} 个错误${warningCount > 0 ? `, ${warningCount} 个警告` : ''}`)
+                this.showErrorPopover = true
+                this.triggerErrorDisplay = true
+                
+                // 校验失败时，清空数组但保持原始内容
+                this.domains.splice(0, this.domains.length)
+                this.scripts.splice(0, this.scripts.length)
+                return // 直接返回，不进行解析
+            } else {
+                this.showErrorPopover = false
+            }
+
+            // 只有校验通过时才清空并重新解析
             this.domains.splice(0, this.domains.length)
             this.scripts.splice(0, this.scripts.length)
 
@@ -50,8 +72,6 @@ export const useStore = defineStore('main', {
                             description: match[2],
                         }
                         this.domains.push(domain)
-                    } else {
-                        ElMessage.error(`第${i + 1}行：领域声明格式错误：${line}`)
                     }
                 } else {
                     // 解析脚本
@@ -75,8 +95,6 @@ export const useStore = defineStore('main', {
                         )
                         script.template = matchedTemplate ? matchedTemplate.name : ''
                         this.scripts.push(script)
-                    } else {
-                        ElMessage.error(`第${i + 1}行：API脚本格式错误：${line}`)
                     }
                 }
             }
@@ -97,96 +115,37 @@ export const useStore = defineStore('main', {
 
             return content
         },
+        // 获取当前应该在编辑器中显示的内容
+        getCurrentDisplayContent() {
+            // 如果有原始文件内容且数组为空（说明解析失败），返回原始内容
+            if (this.originalFileContent && this.domains.length === 0 && this.scripts.length === 0) {
+                return this.originalFileContent
+            }
+            // 否则返回生成的内容
+            return this.generateRcsContent()
+        },
         validateScripts(): boolean {
-            this.errors = []
-            const errors = this.errors
-            const domainNames = this.domains.map(d => d.name)
-            // 检查 operation + contract 的重复
-            const operationContractMap: Map<string, number[]> = new Map()
-
-            const domainRegex = /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*$/
-            const httpMethodRegex = /^(POST|GET|PATCH|DELETE)$/
-            const apiPathRegex = /^\/(?:[^/\.]+\/)*[^/\.]+$/
-            const operationRegex = /^[a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*$/
-            const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
-            // 校验领域声明
-            for (let i = 0; i < this.domains.length; i++) {
-                const domain = this.domains[i]
-                const lineNumber = i + 1 // 领域声明在最前面
-
-                if (!domainRegex.test(domain.name)) {
-                    errors.push(`第${lineNumber}行：【领域名称】不符合大写字母开头的驼峰命名法`)
-                }
-
-                if (!domain.description || domain.description.trim() === '') {
-                    errors.push(`第${lineNumber}行：【领域描述】不能为空`)
-                }
-            }
-
-            // 校验脚本
-            const scriptLineOffset = this.domains.length
-            for (let i = 0; i < this.scripts.length; i++) {
-                const script = this.scripts[i]
-                const lineNumber = scriptLineOffset + i + 1
-
-                // 记录 operation + contract 组合
-                const key = `${script.domain}.${script.operation}.${script.contract}`
-                if (operationContractMap.has(key)) {
-                    operationContractMap.get(key)!.push(lineNumber)
-                } else {
-                    operationContractMap.set(key, [lineNumber])
-                }
-
-                if (!domainRegex.test(script.domain)) {
-                    errors.push(`第${lineNumber}行：【领域名称】不符合 大写字母开头的驼峰命名法`)
-                }
-
-                if (!domainNames.includes(script.domain)) {
-                    errors.push(`第${lineNumber}行：【领域名称】${script.domain}未在领域声明中定义`)
-                }
-
-                if (!httpMethodRegex.test(script.httpMethod)) {
-                    errors.push(`第${lineNumber}行：【HTTP请求方法】不符合 POST、GET、PATCH、DELETE 中的一个`)
-                }
-
-                if (script.apiPath && !apiPathRegex.test(script.apiPath)) {
-                    errors.push(`第${lineNumber}行：【API路径】不符合 /xx/xx 的写法`)
-                }
-
-                if (!operationRegex.test(script.operation)) {
-                    errors.push(`第${lineNumber}行：【操作名称】不符合 小写字母开头的驼峰命名法`)
-                }
-
-                if (!contractRegex.test(script.contract)) {
-                    errors.push(`第${lineNumber}行：【参数契约】不符合  @xxx?yyy%num%$str>zzz 的随机组合`)
-                }
-
-                if (!script.description || script.description.trim() === '') {
-                    errors.push(`第${lineNumber}行：【描述】非空字符串`)
-                }
-            }
-
-            // 添加重复的错误信息
-            operationContractMap.forEach((lineNumbers, key) => {
-                if (lineNumbers.length > 1) {
-                    errors.push(`脚本重复：${key}，行号：${lineNumbers.join(', ')}`)
-                }
-            })
-
-            return errors.length === 0
+            // 使用统一的校验逻辑
+            const content = this.generateRcsContent()
+            const validation = this.validateRcsContent(content)
+            
+            return validation.isValid
         },
         showValidationErrors() {
             this.showErrorPopover = true
         },
         validateAndShowErrors(): boolean {
-            const isValid = this.validateScripts()
-            if (!isValid) {
+            // 使用统一的校验逻辑
+            const content = this.generateRcsContent()
+            const validation = this.validateRcsContent(content)
+            
+            if (!validation.isValid) {
                 this.showErrorPopover = true
                 this.triggerErrorDisplay = true
             } else {
                 this.showErrorPopover = false
             }
-            return isValid
+            return validation.isValid
         },
         saveRcsFile(filePath: string) {
             const content = this.generateRcsContent()
@@ -218,10 +177,12 @@ export const useStore = defineStore('main', {
         },
         updateRcsContent(content: string) {
             try {
+                // 用户开始编辑时，清除原始文件内容状态，转为正常的编辑模式
+                this.originalFileContent = ''
+                
                 // 清空当前的 domains 和 scripts
                 this.domains.splice(0, this.domains.length)
                 this.scripts.splice(0, this.scripts.length)
-                this.errors = []
 
                 const lines = content.split('\n')
 
@@ -293,9 +254,11 @@ export const useStore = defineStore('main', {
 
             const domainNameRegex = /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*$/
             const httpMethodRegex = /^(POST|GET|PATCH|DELETE)$/
-            const apiPathRegex = /^\/(?:[^/\.]+\/)*[^/\.]+$/
+            // 更严格的API路径正则：只允许字母、数字、下划线、连字符和路径参数{xxx}
+            // 不允许空格、中文、特殊字符等
+            const apiPathRegex = /^\/(?:[a-zA-Z0-9_-]+|\{[a-zA-Z0-9_]+\})(?:\/(?:[a-zA-Z0-9_-]+|\{[a-zA-Z0-9_]+\}))*\/?$/
             const operationRegex = /^[a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*$/
-            const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
+            const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?#?(?:[0-9]*)?)|(?:\?\$?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim()
@@ -432,7 +395,7 @@ export const useStore = defineStore('main', {
                     if (apiPath && apiPath.trim() !== '' && !apiPathRegex.test(apiPath)) {
                         errors.push({
                             line: lineNumber,
-                            message: 'API路径格式错误，应为 /xx/xx 的形式（如：/{id}、/users/{id}/profile）',
+                            message: 'API路径格式错误，只允许字母、数字、下划线、连字符和路径参数{xxx}，如：/users、/{id}、/users/{userId}/profile',
                             severity: 'error'
                         })
                     }

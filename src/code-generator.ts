@@ -226,9 +226,6 @@ async function generateResultClass(config: Config): Promise<string> {
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import {{basePackage}}.core.code.ResponseCode;
 import {{basePackage}}.core.exception.BusinessException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -239,9 +236,7 @@ import java.util.Objects;
  * @author {{author}}
  * @since {{date}}
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@SuppressWarnings({"LombokSetterMayBeUsed", "LombokGetterMayBeUsed"})
 public class Result<T> implements Serializable {
 
     /**
@@ -259,6 +254,42 @@ public class Result<T> implements Serializable {
      */
     @SuppressWarnings("java:S1948")
     private T data;
+
+    // 无参构造函数
+    public Result() {
+    }
+
+    // 全参构造函数
+    public Result(Integer code, String msg, T data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+
+    // Getter 和 Setter 方法
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
 
     /**
      * 获取当前时间戳，单位为毫秒
@@ -297,7 +328,7 @@ public class Result<T> implements Serializable {
         return of(responseCode.getCode(), responseCode.getMsg(), null);
     }
 
-    public static <T> Result<T> of(int code, String msg, T data) {
+    public static <T> Result<T> of(Integer code, String msg, T data) {
         return new Result<>(code, msg, data);
     }
 
@@ -1813,15 +1844,15 @@ async function generateController(domain: Domain, apiMethods: ApiMethod[], confi
             const nonEmptyAnnotations = method.parameterAnnotations.filter(annotation => annotation.trim() !== '')
 
             return {
-            description: method.description,
-            apiNote: method.apiNote,
-            httpMethod: method.httpMethod.charAt(0) + method.httpMethod.slice(1).toLowerCase(),
-            apiPath: method.apiPath || '',
-            hasResponseType: method.hasResponseType,
-            responseType: method.responseType,
-            operationName: method.operationName,
-            parameters: method.parameters.join(', '),
-            methodBody: method.methodBody,
+                description: method.description,
+                apiNote: method.apiNote,
+                httpMethod: method.httpMethod.charAt(0) + method.httpMethod.slice(1).toLowerCase(),
+                apiPath: method.apiPath || '',
+                hasResponseType: method.hasResponseType,
+                responseType: method.responseType,
+                operationName: method.operationName,
+                parameters: method.parameters.join(', '),
+                methodBody: method.methodBody,
                 // 参数注解相关字段
                 hasParameterAnnotations: nonEmptyAnnotations.length > 0,
                 parameterAnnotations: nonEmptyAnnotations.map((annotation, index, array) => ({

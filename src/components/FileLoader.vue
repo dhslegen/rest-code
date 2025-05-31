@@ -97,7 +97,7 @@ const onFileDrop = (event: DragEvent) => {
                 const content = e.target?.result as string
                 if (content) {
                     store.parseRcsFile(content)
-                    store.loadedFilePath = ''
+                    store.loadedFilePath = file.name
                     ElMessage.success('文件加载成功')
                 } else {
                     ElMessage.error('文件读取失败')

@@ -11,6 +11,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 a {
@@ -22,16 +23,8 @@ a:hover {
   color: #535bf2;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  min-width: 320px;
-}
-
 body {
+  margin: 0;
   display: block;
 }
 
@@ -88,5 +81,340 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Element Plus 消息组件现代化美化样式 */
+
+/* ==== ElMessage 消息提示美化 ==== */
+.el-message-fade-enter-active .el-message,
+.el-message-fade-leave-active .el-message,
+.el-message {
+  --el-message-bg-color: rgba(255, 255, 255, 0.98);
+  --el-message-border-color: rgba(0, 0, 0, 0.08);
+  --el-message-padding: 16px 20px;
+  --el-message-close-size: 18px;
+  --el-message-close-icon-color: rgba(0, 0, 0, 0.45);
+  --el-message-close-hover-color: rgba(0, 0, 0, 0.75);
+  
+  min-width: 320px !important;
+  max-width: 500px !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  background: linear-gradient(135deg, 
+    var(--el-message-bg-color) 0%, 
+    rgba(248, 250, 252, 0.95) 100%
+  ) !important;
+  border: 1px solid var(--el-message-border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
+  padding: var(--el-message-padding) !important;
+  margin: 8px 0 !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  animation: messageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform-origin: center top !important;
+}
+
+.el-message-fade-enter-active .el-message:hover,
+.el-message-fade-leave-active .el-message:hover,
+.el-message:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.12),
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
+}
+
+/* 消息类型样式 */
+.el-message.el-message--success {
+  --el-message-bg-color: rgba(240, 253, 244, 0.98);
+  --el-message-border-color: rgba(34, 197, 94, 0.2);
+  border-left: 4px solid var(--el-color-success) !important;
+}
+
+.el-message.el-message--warning {
+  --el-message-bg-color: rgba(255, 251, 235, 0.98);
+  --el-message-border-color: rgba(245, 158, 11, 0.2);
+  border-left: 4px solid var(--el-color-warning) !important;
+}
+
+.el-message.el-message--error {
+  --el-message-bg-color: rgba(254, 242, 242, 0.98);
+  --el-message-border-color: rgba(239, 68, 68, 0.2);
+  border-left: 4px solid var(--el-color-danger) !important;
+}
+
+.el-message.el-message--info {
+  --el-message-bg-color: rgba(240, 249, 255, 0.98);
+  --el-message-border-color: rgba(59, 130, 246, 0.2);
+  border-left: 4px solid var(--el-color-info) !important;
+}
+
+.el-message.el-message--primary {
+  --el-message-bg-color: rgba(239, 246, 255, 0.98);
+  --el-message-border-color: rgba(59, 130, 246, 0.2);
+  border-left: 4px solid var(--el-color-primary) !important;
+}
+
+/* 消息图标美化 */
+.el-message .el-message__icon {
+  margin-right: 12px !important;
+  font-size: 18px !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)) !important;
+}
+
+/* 消息内容 */
+.el-message .el-message__content {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 500 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 关闭按钮美化 */
+.el-message .el-message__closeBtn {
+  position: absolute !important;
+  top: 50% !important;
+  right: 16px !important;
+  transform: translateY(-50%) !important;
+  cursor: pointer !important;
+  color: var(--el-message-close-icon-color) !important;
+  font-size: var(--el-message-close-size) !important;
+  transition: all 0.2s ease !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.el-message .el-message__closeBtn:hover {
+  color: var(--el-message-close-hover-color) !important;
+  background: rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+/* ==== ElNotification 通知美化 ==== */
+.el-notification {
+  width: 360px !important;
+  backdrop-filter: blur(25px) saturate(180%) !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(248, 250, 252, 0.95) 100%
+  ) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 20px !important;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset !important;
+  padding: 20px 24px !important;
+  margin-bottom: 16px !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  animation: notificationSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.el-notification::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 70%
+  ) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.6s ease !important;
+  pointer-events: none !important;
+}
+
+.el-notification:hover::before {
+  transform: translateX(100%) !important;
+}
+
+.el-notification:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 
+    0 35px 70px rgba(0, 0, 0, 0.2),
+    0 12px 24px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.9) inset !important;
+}
+
+/* 通知标题 */
+.el-notification .el-notification__title {
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+  margin: 0 0 8px 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* 通知内容 */
+.el-notification .el-notification__content {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: rgba(0, 0, 0, 0.75) !important;
+  margin: 0 !important;
+}
+
+/* 通知图标 */
+.el-notification .el-notification__icon {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin-right: 16px !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
+}
+
+/* 通知关闭按钮 */
+.el-notification .el-notification__closeBtn {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  cursor: pointer !important;
+  color: rgba(0, 0, 0, 0.45) !important;
+  font-size: 18px !important;
+  transition: all 0.2s ease !important;
+  border-radius: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.el-notification .el-notification__closeBtn:hover {
+  color: rgba(0, 0, 0, 0.75) !important;
+  background: rgba(0, 0, 0, 0.06) !important;
+  transform: scale(1.1) !important;
+}
+
+/* 通知类型样式 */
+.el-notification.el-notification--success {
+  border-left: 5px solid var(--el-color-success) !important;
+  background: linear-gradient(135deg, 
+    rgba(240, 253, 244, 0.98) 0%, 
+    rgba(233, 250, 240, 0.95) 100%
+  ) !important;
+}
+
+.el-notification.el-notification--warning {
+  border-left: 5px solid var(--el-color-warning) !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 251, 235, 0.98) 0%, 
+    rgba(254, 243, 199, 0.95) 100%
+  ) !important;
+}
+
+.el-notification.el-notification--error {
+  border-left: 5px solid var(--el-color-danger) !important;
+  background: linear-gradient(135deg, 
+    rgba(254, 242, 242, 0.98) 0%, 
+    rgba(252, 231, 243, 0.95) 100%
+  ) !important;
+}
+
+.el-notification.el-notification--info {
+  border-left: 5px solid var(--el-color-info) !important;
+  background: linear-gradient(135deg, 
+    rgba(240, 249, 255, 0.98) 0%, 
+    rgba(239, 246, 255, 0.95) 100%
+  ) !important;
+}
+
+.el-notification.el-notification--primary {
+  border-left: 5px solid var(--el-color-primary) !important;
+  background: linear-gradient(135deg, 
+    rgba(239, 246, 255, 0.98) 0%, 
+    rgba(219, 234, 254, 0.95) 100%
+  ) !important;
+} 
+
+/* ==== 响应式设计 ==== */
+@media (max-width: 768px) {
+  .el-message {
+    min-width: 280px !important;
+    max-width: 90vw !important;
+    margin: 6px 16px !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+  }
+  
+  .el-notification {
+    width: 90vw !important;
+    max-width: 340px !important;
+    margin-bottom: 12px !important;
+    padding: 16px 20px !important;
+    border-radius: 16px !important;
+  }
+  
+  .el-notification .el-notification__title {
+    font-size: 15px !important;
+  }
+  
+  .el-notification .el-notification__content {
+    font-size: 13px !important;
+  }
+}
+
+/* ==== 暗色模式适配 ==== */
+@media (prefers-color-scheme: dark) {
+  .el-message {
+    --el-message-bg-color: rgba(30, 30, 30, 0.98);
+    --el-message-border-color: rgba(255, 255, 255, 0.12);
+    --el-message-close-icon-color: rgba(255, 255, 255, 0.65);
+    --el-message-close-hover-color: rgba(255, 255, 255, 0.9);
+    
+    background: linear-gradient(135deg, 
+      var(--el-message-bg-color) 0%, 
+      rgba(24, 24, 27, 0.95) 100%
+    ) !important;
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.25),
+      0 8px 16px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  }
+  
+  .el-message .el-message__content {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  .el-notification {
+    background: linear-gradient(135deg, 
+      rgba(30, 30, 30, 0.98) 0%, 
+      rgba(24, 24, 27, 0.95) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.3),
+      0 8px 16px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  }
+  
+  .el-notification .el-notification__title {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+  
+  .el-notification .el-notification__content {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  .el-notification .el-notification__closeBtn {
+    color: rgba(255, 255, 255, 0.65) !important;
+  }
+  
+  .el-notification .el-notification__closeBtn:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
   }
 }

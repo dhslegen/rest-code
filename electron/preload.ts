@@ -26,4 +26,10 @@ contextBridge.exposeInMainWorld('api', {
   minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
   maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
   closeWindow: () => ipcRenderer.invoke('close-window'),
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
+  openDownloadPage: (url: string) => ipcRenderer.invoke('open-download-page', url),
+  onUpdateAvailable: (callback: (updateData: any) => void) => {
+    ipcRenderer.on('update-available', (_, updateData) => callback(updateData));
+  },
 })

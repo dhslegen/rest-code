@@ -111,10 +111,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
                 method.parametersPure.push(`${requestType} ${paramName}`)
                 method.parameterNames.push(paramName)
-
-                // 添加参数说明注解
-                method.parameterAnnotations.push(`@Parameter(description = "数值型ID列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = Long.class)))`)
-
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
                 method.imports.add(getVersionSpecificImport(config, 'Valid'))
                 method.imports.add('java.util.List')
@@ -129,10 +125,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
                 method.parametersPure.push(`${requestType} ${paramName}`)
                 method.parameterNames.push(paramName)
-
-                // 添加参数说明注解
-                method.parameterAnnotations.push(`@Parameter(description = "字符串型编码列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = String.class)))`)
-
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
                 method.imports.add(getVersionSpecificImport(config, 'Valid'))
                 method.imports.add('java.util.List')
@@ -153,11 +145,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                     paramName = 'reqVos'
                     method.imports.add('java.util.List')
                     method.importsService.add('java.util.List')
-                    // 添加列表类型的参数说明注解
-                    method.parameterAnnotations.push(`@Parameter(description = "请求体对象列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = ${typeName}.class)))`)
-                } else {
-                    // 添加单个对象的参数说明注解
-                    method.parameterAnnotations.push(`@Parameter(description = "请求体对象", required = true, content = @Content(schema = @Schema(implementation = ${typeName}.class)))`)
                 }
                 method.parameters.push(`@RequestBody @Valid ${requestType} ${paramName}`)
                 method.parametersPure.push(`${requestType} ${paramName}`)

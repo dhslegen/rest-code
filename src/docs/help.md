@@ -226,12 +226,6 @@ User.POST../importByCodes.importByCodes.@$.按编码导入用户      # @$ → @
 - `@` → 自动生成单个对象的说明注解
 - `@=` → 自动生成对象列表的说明注解
 
-```java
-@Parameter(description = "数值型ID列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = Long.class)))
-@Parameter(description = "字符串型编码列表", required = true, content = @Content(schema = @Schema(type = "array", implementation = String.class)))
-@Parameter(description = "请求体对象", required = true, content = @Content(schema = @Schema(implementation = UserReqVo.class)))
-```
-
 #### 生成的完整示例
 
 ```java
