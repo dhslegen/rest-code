@@ -251,6 +251,8 @@ export const useStore = defineStore('main', {
             
             // 检查 operation + contract 的重复
             const operationContractMap: Map<string, number[]> = new Map()
+            // 检查 领域.HTTP请求方法.API路径 的重复
+            const domainHttpPathMap: Map<string, number[]> = new Map()
 
             const domainNameRegex = /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*$/
             const httpMethodRegex = /^(POST|GET|PATCH|DELETE)$/
@@ -452,6 +454,14 @@ export const useStore = defineStore('main', {
                             operationContractMap.set(key, [lineNumber])
                         }
                         
+                        // 记录 领域.HTTP请求方法.API路径 组合
+                        const domainHttpPathKey = `${script.domain}.${script.httpMethod}.${script.apiPath}`
+                        if (domainHttpPathMap.has(domainHttpPathKey)) {
+                            domainHttpPathMap.get(domainHttpPathKey)!.push(lineNumber)
+                        } else {
+                            domainHttpPathMap.set(domainHttpPathKey, [lineNumber])
+                        }
+                        
                         scripts.push(script)
                     }
                 }
@@ -464,6 +474,19 @@ export const useStore = defineStore('main', {
                         errors.push({
                             line: lineNumber,
                             message: `脚本重复：${key}，与第 ${lineNumbers.filter(l => l !== lineNumber).join(', ')} 行重复`,
+                            severity: 'error'
+                        })
+                    })
+                }
+            })
+
+            // 检查重复的 领域.HTTP请求方法.API路径 组合
+            domainHttpPathMap.forEach((lineNumbers, key) => {
+                if (lineNumbers.length > 1) {
+                    lineNumbers.forEach(lineNumber => {
+                        errors.push({
+                            line: lineNumber,
+                            message: `API路径重复：${key}，与第 ${lineNumbers.filter(l => l !== lineNumber).join(', ')} 行重复`,
                             severity: 'error'
                         })
                     })

@@ -1,257 +1,307 @@
-# Rest Code
+# 🚀 Rest Code
 
-<img src="./images/readme-001.png" alt="iShot_2024-10-24_09.49.44" style="zoom:35%;" />
+> **一键生成标准化 REST API 代码的可视化桌面工具**
 
-## 背景
+[![Release](https://img.shields.io/github/v/release/dhslegen/rest-code?style=flat-square)](https://github.com/dhslegen/rest-code/releases)
+[![License](https://img.shields.io/github/license/dhslegen/rest-code?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](https://github.com/dhslegen/rest-code/releases)
 
-随着业务项目的数量及复杂度的提升，开发人员在项目中往往需要编写大量重复的 REST API 代码，例如请求参数解析、响应报文封装、路径和方法定义等。这样的重复性工作不仅耗时，还容易导致错误。在这样的背景下，`Rest Code` 应运而生。该工具的设计初衷是通过可视化界面简化 API 开发流程，让开发者专注于业务逻辑，而不再被重复的代码书写所困扰。通过可视化编辑、脚本文件及内置模板的组合，`Rest Code` 可以帮助开发人员快速生成符合企业规范的 API 代码，显著提升开发效率，减少手工错误，确保代码的统一性和可维护性。
+<p align="center">
+  <img src="./images/readme-001.png" alt="Rest Code 主界面" width="80%">
+</p>
 
-## 概述
+## 📋 项目简介
 
-`Rest Code` 是一个设计完全遵从 `研发组前后端开发规范` ，采用 `Electron`、`Vite` 和 `Vue 3` 开发的桌面应用程序，旨在帮助开发人员自动生成 REST API 后端代码。它提供了直观的界面，用户可以通过可视化编辑和参数配置，生成 `.rcs` 脚本（`Rest Code Script`），并自动生成符合 `Spring Boot` 标准的代码。
+Rest Code 是一个智能的Java代码生成器，专为快速开发REST API而设计。通过简洁的RCS（Rest Code Script）脚本语言，自动生成符合规范的Spring Boot项目代码，包括Controller、Service、VO类等。
 
-通过灵活的 `.rcs` 脚本语言，开发者可以快速定义 API 结构，同时内置的业务模板覆盖常见场景，减少了重复工作。模板还可以根据项目需求持续优化，帮助团队提高开发效率和代码一致性。
+## 🎯 主要特性
 
-## 功能特性
+- 🚀 **快速生成**：通过RCS脚本一键生成完整的REST API代码
+- 🎨 **智能校验**：实时语法检查，友好的错误提示
+- 🔧 **多版本支持**：同时支持Spring Boot 2.x和3.x
+- 📝 **代码预览**：生成前可预览所有代码
+- 🎪 **模板丰富**：内置CRUD操作模板
+- 🌈 **界面美观**：现代化的用户界面
 
-- **领域驱动设计**：支持按领域组织API，提高代码的可读性和可维护性。
+## 🚀 快速开始
 
-- **简洁的语法**：通过符号化的参数契约快速定义 API 规范
-- **智能脚本生成**：根据简单的脚本描述，生成 Controller、Service、VO 等完整的Spring Boot后端代码
-- **增量模式**：支持在现有代码基础上增量添加新的 API 方法
-- **类型安全**：支持泛型、分页、树形结构等复杂类型
-- **批量操作**：内置对 `List<Long>` 和 `List<String>` 的批量操作支持
-- **Swagger v3 集成**：自动生成 OpenAPI 3.0 规范的参数说明注解，提供完整的 API 文档
-- **模板匹配**：根据HTTP方法和操作类型，自动选择对应的代码模板。
-- **参数解析**：支持多种参数类型的解析，包括路径参数、查询参数、请求体参数等。
-- **脚本导出与加载**：支持保存为 `.rcs` 脚本，以及 从 `.rcs` 脚本加载。
-- **表格编辑**：提供直观的表格界面，用于编辑和管理API脚本。
-- **领域管理**：可添加、编辑和删除领域信息。
-- **实时预览**：在表格中编辑时，可实时查看生成的脚本内容。
-- **校验功能**：提供脚本校验功能，实时检测脚本中的错误和重复，保证生成代码的质量。
-- **数据联动**：表格和脚本编辑器双向联动，修改其中一方，另一方实时更新。
-- **代码预览**（inspire by [@fengzilong](http://gitea126.weightyware.com:16680/fengzilong)）：在生成代码之前，支持预览生成的代码，方便用户检查和修改。
-- **一键 CRUD**（inspire by [@linjiahui](http://gitea126.weightyware.com:16680/linjiahui)）：快速生成常用的 CRUD 脚本，提升开发效率。
-- **多版本支持**：支持 Spring Boot 2 和 Spring Boot 3，自动适配相应的依赖和注解
+### 1. 下载安装
 
-## Rcs 文件格式
+前往 [Releases](https://github.com/dhslegen/rest-code/releases) 页面下载适合你操作系统的版本：
 
-Rcs（`Rest Code Script`）文件是一种专门为`Rest Code`设计的脚本文件，用于描述 REST API 的领域模型和操作。它通过简洁的语法规则，定义了领域声明和 API 操作，进而帮助生成符合业务逻辑的 API 控制器代码。
+- **Windows**: `Rest-Code-Setup-x.x.x.exe`
+- **macOS**: `Rest-Code-x.x.x.dmg`
 
-Rcs 文件分为两部分：**Domain 声明** 和 **API 脚本**。
+### 2. 创建你的第一个 API
 
-1. **Domain 声明**：文件的头部由若干行 `Domain声明` 组成，每个声明由 `/` 开头，并由 `/` 分割，用于定义领域名称和领域描述。`Domain 声明` 与内置模板结合使用，以辅助用户快速输入 `API 脚本`。
+```rcs
+# 1. 定义领域
+/User/用户管理
 
-2. **API 脚本**：文件的主体由若干行 `API 脚本` 组成，每个脚本元素通过 `.` 分割，用于描述 API 操作，包括请求方法、路径、参数和描述等。每个 `API 脚本` 将生成对应的 `Spring Boot Rest Controller` 代码。
-
-### Domain 声明格式
-
-**格式**：`/领域名称/领域描述`
-
-- 领域名称是 API 所属的业务模块名称，如 `User`。
-- 领域描述则是对该模块的简单说明，如 `用户。
-
-**示例**：
-
-```text
-/User/用户
-/Order/订单
+# 2. 编写 API 脚本
+User.POST..create.@.创建用户
+User.GET./{id}.get.%id>.获取用户详情
+User.PATCH./{id}.update.%id@update.更新用户
+User.DELETE./{id}.delete.%id.删除用户
 ```
 
-### API 脚本格式
+### 3. 生成代码
 
-**格式**：`领域名称.HTTP请求方法.API路径（可为空）.操作名称（方法名称）.参数契约（可为空）.描述`
+配置输出路径和包名，点击「生成代码」，即可获得完整的 Spring Boot 代码：
 
-- 领域名称：与 Domain 声明中的领域名称一致。
-- HTTP 请求方法：如 `GET`、`POST`、`PUT`、`DELETE` 等。
-- API 路径：可以为空，若不为空，则指定 API 的路径。
-- 操作名称：即生成的控制器中对应方法的名称。
-- 参数契约：定义请求体、查询参数和路径参数的格式，支持多种参数类型。
-- 描述：对 API 操作的简要说明。
+```java
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    
+    @PostMapping
+    public Result<Void> create(@RequestBody @Valid UserReqVo reqVo) {
+        // 业务逻辑
+    }
+    
+    @GetMapping("/{id}")
+    public Result<UserRespVo> get(@PathVariable("id") long id) {
+        // 业务逻辑
+    }
+    // ... 更多方法
+}
 
-**示例**：
+public interface UserService {
 
-```text
-User.POST..create.@.新增用户
-Order.GET./{id}.get.%id.获取订单详情
+    /**
+     * 创建用户
+     */
+    void create(UserReqVo reqVo);
+
+    /**
+     * 获取用户详情
+     */
+    UserRespVo get(long id);
+    // ... 更多方法
+}
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Override
+    public void create(UserReqVo reqVo) {
+        // 业务逻辑
+    }
+
+    @Override
+    public UserRespVo get(long id) {
+        // 业务逻辑
+    }
+    // ... 更多方法
+}
+
+public class UserReqVo implements Serializable {
+
+    /**
+     * todo: 待覆盖字段，实际使用时请替换为真实字段，一般实践为从对应的数据库实体类中复制过来
+     */
+    @Schema(description = "待覆盖字段")
+    private String todo;
+}
+// ... 更多Vo
+
+public interface UserConverter {
+
+    UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
+
+    /**
+     * todo: 待覆盖方法，命名规则是 fromXxxToYyy, 如果包含领域名称，可以忽略领域名称，甚至于from 、to 关键词，因为可以通过上下文推断
+     *
+     * @param source 待转换数据
+     * @return 转换后的数据
+     */
+    Object fromXxxToYyy(Object source);
+}
 ```
 
-### 参数契约格式
+## 🎯 核心功能
 
-`参数契约` 是 API 脚本中用于定义请求参数和响应类型的核心机制。契约采用特殊前缀符号组合的方式描述 REST API 的输入输出规范，格式为：`@xxx?yyy%num%$str>zzz`。
+### 🔧 智能代码生成
+- **Controller** - 标准化的 REST 控制器
+- **Service** - 业务逻辑接口与实现
+- **VO 类** - 请求响应对象模型
+- **Converter** - 实体与 VO 转换器
 
-#### 契约符号说明
+### 📊 可视化编辑
+- **表格编辑器** - 直观的 API 设计界面
+- **实时校验** - 即时检测脚本错误
+- **双向联动** - 表格与脚本编辑器同步更新
+- **代码预览** - 生成前预览代码结构
 
-**1. `@` - 请求体参数（RequestBody）**
+### 🎨 现代化界面
+- **领域管理** - 可视化领域设计
+- **一键 CRUD** - 快速生成标准操作
+- **批量操作** - 支持列表参数的批量处理
+- **模板匹配** - 智能选择代码模板
 
-用于定义 HTTP 请求体中的 JSON 数据结构：
+## 📖 RCS 脚本语言
 
-| 符号格式 | 参数类型 | 生成代码示例 | 说明 |
-|---------|---------|-------------|------|
-| `@` | 单个业务对象 | `@` → `@RequestBody @Valid UserReqVo reqVo` | 标准请求体对象 |
-| `@业务名` | 带业务后缀的对象 | `@update` → `@RequestBody @Valid UserUpdateReqVo reqVo` | 指定业务场景的请求体 |
-| `@=` | 对象列表 | `@=` → `@RequestBody @Valid List<UserReqVo> reqVos` | 批量操作的对象列表 |
-| `@=业务名` | 带业务后缀的对象列表 | `@=update` → `@RequestBody @Valid List<UserUpdateReqVo> reqVos` | 指定业务场景的对象列表 |
-| `@#` | 数值型列表 | `@#` → `@RequestBody @Valid List<Long> ids` | 数值型ID列表，默认参数名为`ids` |
-| `@#参数名` | 自定义数值型列表 | `@#userIds` → `@RequestBody @Valid List<Long> userIds` | 自定义参数名的数值型列表 |
-| `@$` | 字符串型列表 | `@$` → `@RequestBody @Valid List<String> codes` | 字符串型编码列表，默认参数名为`codes` |
-| `@$参数名` | 自定义字符串型列表 | `@$orgCodes` → `@RequestBody @Valid List<String> orgCodes` | 自定义参数名的字符串型列表 |
+RCS（Rest Code Script）是专为 API 设计的领域特定语言，语法简洁而强大。
 
-**2. `?` - 查询参数（Query Parameters）**
+### 基本语法
 
-用于定义 HTTP GET 请求的查询条件：
+```
+领域名称.HTTP方法.路径.操作名称.参数契约.描述
+```
 
-| 符号格式 | 参数类型 | 生成代码示例 | 说明 |
-|---------|---------|-------------|------|
-| `?` | 标准查询对象 | `?` → `@ParameterObject UserQueryVo queryVo` | 领域标准查询参数 |
-| `?业务名` | 带业务后缀的查询对象 | `?simple` → `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
-| `?$` | 字符串型查询参数 | `?$` → `@RequestParam("code") String code` | 默认字符串查询参数 |
-| `?$参数名` | 自定义字符串查询参数 | `?$orgCode` → `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
-| `?#` | 数值型查询参数 | `?#` → `@RequestParam("number") Long number` | 默认数值查询参数 |
-| `?#参数名` | 自定义数值查询参数 | `?#userId` → `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+### 参数契约符号
 
-**3. `%` - 路径参数（PathVariable）**
-
-用于定义 URL 路径中的变量：
+#### `@` - 请求体参数（RequestBody）
 
 | 符号格式 | 参数类型 | 生成代码示例 | 说明 |
 |---------|---------|-------------|------|
-| `%` | 数值型路径参数 | `%` → `@PathVariable("id") long id` | 默认主键ID参数 |
-| `%参数名` | 自定义数值参数 | `%userId` → `@PathVariable("userId") long userId` | 自定义的数值型路径参数 |
-| `%$` | 字符串型路径参数 | `%$` → `@PathVariable("code") String code` | 默认编码参数 |
-| `%$参数名` | 自定义字符串参数 | `%$orgCode` → `@PathVariable("orgCode") String orgCode` | 自定义的字符串型路径参数 |
+| `@` | 单个业务对象 | `@RequestBody @Valid UserReqVo reqVo` | 标准请求体对象 |
+| `@业务名` | 带业务后缀的对象 | `@RequestBody @Valid UserUpdateReqVo reqVo` | 指定业务场景的请求体 |
+| `@=` | 对象列表 | `@RequestBody @Valid List<UserReqVo> reqVos` | 批量操作的对象列表 |
+| `@=业务名` | 带业务后缀的对象列表 | `@RequestBody @Valid List<UserUpdateReqVo> reqVos` | 指定业务场景的对象列表 |
+| `@#` | 数值型列表 | `@RequestBody @Valid List<Long> ids` | 数值型ID列表，默认参数名为`ids` |
+| `@#参数名` | 自定义数值型列表 | `@RequestBody @Valid List<Long> userIds` | 自定义参数名的数值型列表 |
+| `@$` | 字符串型列表 | `@RequestBody @Valid List<String> codes` | 字符串型编码列表，默认参数名为`codes` |
+| `@$参数名` | 自定义字符串型列表 | `@RequestBody @Valid List<String> orgCodes` | 自定义参数名的字符串型列表 |
 
-**4. `>` - 响应类型（Response Type）**
+#### `?` - 查询参数（Query Parameters）
 
-用于定义 HTTP 响应体的数据结构：
+| 符号格式 | 参数类型 | 生成代码示例 | 说明 |
+|---------|---------|-------------|------|
+| `?` | 标准查询对象 | `@ParameterObject UserQueryVo queryVo` | 领域标准查询参数 |
+| `?业务名` | 带业务后缀的查询对象 | `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
+| `?$` | 字符串型查询参数 | `@RequestParam("code") String code` | 默认字符串查询参数 |
+| `?$参数名` | 自定义字符串查询参数 | `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
+| `?#` | 数值型查询参数 | `@RequestParam("number") Long number` | 默认数值查询参数 |
+| `?#参数名` | 自定义数值查询参数 | `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+
+#### `%` - 路径参数（PathVariable）
+
+| 符号格式 | 参数类型 | 生成代码示例 | 说明 |
+|---------|---------|-------------|------|
+| `%` | 数值型路径参数 | `@PathVariable("id") long id` | 默认主键ID参数 |
+| `%参数名` | 自定义数值参数 | `@PathVariable("userId") long userId` | 自定义的数值型路径参数 |
+| `%$` | 字符串型路径参数 | `@PathVariable("code") String code` | 默认编码参数 |
+| `%$参数名` | 自定义字符串参数 | `@PathVariable("orgCode") String orgCode` | 自定义的字符串型路径参数 |
+
+#### `>` - 响应类型（Response Type）
 
 | 符号格式 | 响应类型 | 生成代码示例 | 说明 |
 |---------|---------|-------------|------|
-| `>` | 单个业务对象 | `>` → `Result<UserRespVo>` | 返回单个业务对象 |
-| `>业务名` | 带业务后缀的对象 | `>simple` → `Result<UserSimpleRespVo>` | 返回指定业务场景的对象 |
-| `>=` | 对象列表 | `>=` → `Result<List<UserRespVo>>` | 返回对象列表 |
-| `>=业务名` | 带业务后缀的对象列表 | `>=simple` → `Result<List<UserSimpleRespVo>>` | 返回指定业务场景的对象列表 |
-| `>+` | 分页对象 | `>+` → `Result<Page<UserRespVo>>` | 返回分页数据，自动添加分页查询参数 |
-| `>+业务名` | 带业务后缀的分页对象 | `>+simple` → `Result<Page<UserSimpleRespVo>>` | 返回指定业务场景的分页数据 |
-| `><` | 树形结构 | `><` → `Result<TreeNode<Long, UserTreeVo>>` | 返回树形结构数据 |
-| `><业务名` | 带业务后缀的树形结构 | `><simple` → `Result<TreeNode<Long, UserSimpleTreeVo>>` | 返回指定业务场景的树形数据 |
-| 无`>`符号 | 空响应 | `无` → `Result<Void>` | 无返回数据的操作 |
+| `>` | 单个业务对象 | `Result<UserRespVo>` | 返回单个业务对象 |
+| `>业务名` | 带业务后缀的对象 | `Result<UserSimpleRespVo>` | 返回指定业务场景的对象 |
+| `>=` | 对象列表 | `Result<List<UserRespVo>>` | 返回对象列表 |
+| `>=业务名` | 带业务后缀的对象列表 | `Result<List<UserSimpleRespVo>>` | 返回指定业务场景的对象列表 |
+| `>+` | 分页对象 | `Result<Page<UserRespVo>>` | 返回分页数据，自动添加分页查询参数 |
+| `>+业务名` | 带业务后缀的分页对象 | `Result<Page<UserSimpleRespVo>>` | 返回指定业务场景的分页数据 |
+| `><` | 树形结构 | `Result<TreeNode<Long, UserTreeVo>>` | 返回树形结构数据 |
+| `><业务名` | 带业务后缀的树形结构 | `Result<TreeNode<Long, UserSimpleTreeVo>>` | 返回指定业务场景的树形数据 |
+| 无`>`符号 | 空响应 | `Result<Void>` | 无返回数据的操作 |
 
-#### 契约组合规则
+### 实战示例
 
-1. **符号顺序**：各符号可以任意组合，顺序不限制，如：`#id@update>simple` 或 `@update#id>simple`
-2. **业务后缀**：业务后缀采用驼峰命名法，会自动拼接到对应的VO类名中，`{领域名}{业务后缀}{类型}Vo`，如：`UserUpdateReqVo`、`UserSimpleRespVo`
+```rcs
+# 领域声明
+/User/用户管理
+/Order/订单管理
 
+# 用户 CRUD
+User.POST..create.@.创建用户
+User.GET./{id}.get.%id>.获取用户
+User.PATCH./{id}.update.%id@update.更新用户
+User.DELETE./{id}.delete.%id.删除用户
+User.GET..list.?>.用户分页列表
 
-#### 契约示例
-
-```text
-# 基础CRUD操作
-User.POST..create.@.创建用户                    # @ → @RequestBody UserReqVo + Result<Void>
-User.GET./{id}.get.%id>.获取用户                # %id + > → @PathVariable id + Result<UserRespVo>
-User.PUT./{id}.update.%id@update.更新用户       # %id + @update → @PathVariable id + @RequestBody UserUpdateReqVo + Result<Void>
-User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id + Result<Void>
+# 订单管理
+Order.POST..create.@.创建订单
+Order.GET..list.?userId>=simple.用户订单列表
+Order.PATCH./{id}/status.updateStatus.%id@$status.更新订单状态
 ```
 
-## 操作指南
+## 💻 使用指南
 
-### 界面介绍
+### 基本操作流程
 
-- **文件加载**：用于打开已有的 `.rcs` 脚本文件。
-- **生成代码**：配置生成代码的相关参数，如输出路径、包名等。
-- **领域设计**：设计领域名称和描述，领域是业务模块的划分。
-- **脚本设计**：设计 API 脚本，包括操作名称、请求方法、参数契约等。
-- **脚本编辑器**：可直接编辑 `.rcs` 脚本内容，支持实时校验和与表格的双向联动。
-- **帮助**：查看帮助文档，了解工具的使用方法和脚本格式。
+1. **🎯 设计领域** - 添加业务领域，如用户、订单等
+2. **📝 编写脚本** - 使用 RCS 语法定义 API
+3. **✅ 校验脚本** - 实时检测语法错误和重复定义
+4. **⚙️ 配置生成** - 设置包名、输出路径等参数
+5. **🚀 生成代码** - 一键生成完整的 Spring Boot 代码
 
-### 基本操作
+### 高级功能
 
-1. **添加领域**：
-   - 在领域设计区域，点击`新增领域`按钮。
-   - 输入领域名称和描述。
+- **📄 脚本导入导出** - 保存和加载 `.rcs` 文件
+- **👁️ 代码预览** - 生成前预览代码结构
+- **🔄 增量更新** - 在现有代码基础上安全添加
+- **📋 批量操作** - 一键生成常用 CRUD 操作
 
-2. **添加脚本**：
-   - 在脚本设计区域，点击`新增脚本`按钮。
-   - 选择领域名称和内置模板，模板会自动填充脚本内容。
-   - 根据需要修改脚本的各个部分。
+## 🏗️ 架构设计
 
-3. **一键 CRUD**：
-   - 在脚本设计区域，点击`一键 CRUD`按钮。
-   - 选择需要生成 CRUD 脚本的领域，自动添加常用的增删改查脚本。
+<p align="center">
+  <img src="./images/readme-002.png" alt="代码生成流程" width="70%">
+</p>
 
-4. **校验脚本**：
-   - 在脚本编辑器区域，点击`校验`按钮。
-   - 检查脚本的格式和内容，提示可能的错误和重复。
+Rest Code 采用模块化架构设计：
 
-5. **保存脚本**：
-   - 在脚本编辑器区域，点击"保存"按钮。
-   - 将编辑好的 `.rcs` 脚本保存到文件。
+- **🎨 前端界面** - 基于 Vue 3 + Element Plus 的现代化 UI
+- **⚡ 核心引擎** - RCS 脚本解析与代码生成引擎
+- **📄 模板系统** - 可扩展的代码模板库
+- **🔧 Electron 容器** - 跨平台桌面应用支持
 
-6. **生成代码**：
-   - 在生成代码区域，配置框架基本包名、源码输出路径、源码基本包名等参数。
-   - 点击"生成代码"按钮，生成后端代码。
+## 🤝 贡献指南
 
-7. **预览代码**：
-   - 在生成代码区域，点击"预览"按钮。
-   - 查看生成的代码内容，检查是否符合预期。
+我们欢迎所有形式的贡献！
 
-### 脚本编写注意事项
+### 如何贡献
 
-- **领域名称**：应为大写字母开头的驼峰命名，如 `User`。
-- **操作名称**：应为小写字母开头的驼峰命名，如 `createUser`。
-- **参数契约**：根据 API 的需求，正确使用 `@、?、%、>` 等前缀符。
-- **避免重复**：同一领域下，操作名称和参数契约的组合不能重复。
+1. **🍴 Fork** 本仓库
+2. **🌿 创建** 特性分支: `git checkout -b feature/amazing-feature`
+3. **💾 提交** 更改: `git commit -m 'Add some amazing feature'`
+4. **📤 推送** 分支: `git push origin feature/amazing-feature`
+5. **🔀 创建** Pull Request
 
-## 代码生成流程图
+### 开发环境
 
-<img src="./images/readme-002.png" alt="iShot_2024-10-24_09.49.44" style="zoom:40%;" />
+```bash
+# 克隆仓库
+git clone https://github.com/dhslegen/rest-code.git
 
-### 步骤说明：
+# 安装依赖
+cd rest-code
+yarn install
 
-1. **开始**：用户启动应用程序，进入主界面。
+# 启动开发服务器
+yarn run dev
 
-2. **用户打开应用程序**：应用程序启动后，用户可以选择下一步操作。
+# 构建应用
+yarn run build --mac|--win
+```
 
-3. **是否加载现有脚本？**：用户决定是加载已有的 `.rcs` 脚本文件还是创建新的脚本。
+## 📋 系统要求
 
-   - **是**：用户选择并加载一个已有的 `.rcs` 脚本文件。
-   - **否**：用户在应用程序中创建一个新的脚本。
+- **Windows** 10 或更高版本
+- **macOS** 10.14 或更高版本
 
-4. **设计领域和脚本**：用户通过界面添加或修改领域和 API 脚本。
+## 📄 许可证
 
-   - **领域设计**：定义领域名称和描述，划分业务模块。
-   - **脚本设计**：为每个领域添加 API 脚本，设置请求方法、路径、操作名称、参数契约和描述等。
+本项目基于 [MIT License](LICENSE) 开源协议。
 
-5. **配置代码生成参数**：在"生成代码"区域，用户配置以下参数：
+## 🙏 致谢
 
-   - **框架基本包名**：如 `com.example.framework`。
-   - **源码输出路径**：如 `D:/workspace/project/src/main/java`。
-   - **源码基本包名**：如 `com.example.project.module`。
-   - **生成方式**：选择"覆盖"或"增量"模式。
+感谢所有为项目做出贡献的开发者们！
 
-6. **校验脚本**：用户点击"校验"按钮，应用程序会检查脚本的格式和内容。
+特别感谢：
+- [@fengzilong]- 代码预览功能的灵感来源
+- [@linjiahui] - 一键 CRUD 功能的灵感来源
 
-   - 检查领域和脚本的命名规范。
-   - 检查参数契约的正确性。
-   - 检查是否有重复的操作。
+---
 
-7. **校验通过？**
+<p align="center">
+  <b>如果这个项目对你有帮助，请给它一个 ⭐️</b>
+</p>
 
-   - **否**：如果校验失败，应用程序会显示错误信息，用户需要返回设计或编辑领域和脚本，修正错误。
-   - **是**：如果校验通过，进入下一步。
-
-8. **解析 .rcs 脚本**：应用程序解析 `.rcs` 脚本文件，提取领域、API 方法和参数等信息。
-
-9. **生成 Java 代码**：根据解析的信息和预定义的模板，生成对应的 Java 源代码文件，包括：
-
-   - **Controller**：控制器类，处理 HTTP 请求。
-   - **Service**：服务接口和实现类，封装业务逻辑。
-   - **VO 类**：请求和响应的对象模型。
-   - **Converter**：对象转换器，转换实体与 VO 之间的数据。
-
-10. **预览或保存生成的文件**：用户可以选择预览生成的代码，或者直接保存到指定的输出路径。
-
-    - **预览**：在应用程序中查看生成的代码内容。
-    - **保存**：将生成的代码文件写入到指定的目录中。
-
-11. **结束**：代码生成过程完成，用户可以在项目中使用生成的代码。
+<p align="center">
+  <a href="https://github.com/dhslegen/rest-code/issues">🐛 报告问题</a> •
+  <a href="https://github.com/dhslegen/rest-code/discussions">💬 讨论交流</a> •
+  <a href="#-快速开始">📖 使用文档</a>
+</p>

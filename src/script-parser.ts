@@ -36,8 +36,22 @@ export function parseScript(config: Config, content: string): { domains: Domain[
     const domains: Domain[] = []
     const apiMethods: ApiMethod[] = []
 
-    for (const line of lines) {
+    for (let line of lines) {
+        // 跳过空行
         if (line.trim() === '') continue
+        
+        // 跳过以 # 开头的注释行
+        if (line.trim().startsWith('#')) continue
+        
+        // 处理行尾注释，寻找前面有空格的 # 作为注释开始
+        // 注释符号必须前面有空格或tab，以避免误截取参数契约中的 # 符号
+        const commentMatch = line.match(/\s+#/)
+        if (commentMatch && commentMatch.index !== undefined) {
+            line = line.substring(0, commentMatch.index).trim()
+            // 如果去掉注释后变成空行，则跳过
+            if (line === '') continue
+        }
+        
         if (line.startsWith('/')) {
             const match = line.match(domainRegex)
             if (match) {
@@ -114,9 +128,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
                 method.imports.add(getVersionSpecificImport(config, 'Valid'))
                 method.imports.add('java.util.List')
-                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
-                method.imports.add('io.swagger.v3.oas.annotations.media.Content')
-                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
                 method.importsService.add('java.util.List')
             } else if (simpleStringListMatch) {
                 // '@$' 或 '@$参数名' - List<String> 类型的 RequestBody
@@ -128,9 +139,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
                 method.imports.add(getVersionSpecificImport(config, 'Valid'))
                 method.imports.add('java.util.List')
-                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
-                method.imports.add('io.swagger.v3.oas.annotations.media.Content')
-                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
                 method.importsService.add('java.util.List')
             } else if (requestBodyMatch) {
                 const operator = requestBodyMatch[1] // 可能是 '=' 或空字符串
@@ -152,9 +160,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
 
                 method.imports.add('org.springframework.web.bind.annotation.RequestBody')
                 method.imports.add(getVersionSpecificImport(config, 'Valid'))
-                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
-                method.imports.add('io.swagger.v3.oas.annotations.media.Content')
-                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
 
                 method.voNames.push(typeName)
                 method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)

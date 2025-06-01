@@ -4,6 +4,364 @@ import Mustache from 'mustache'
 import { Domain, ApiMethod, Config } from './types'
 
 /**
+ * 生成项目模板文件（POM/Gradle + 主启动类 + 配置文件）
+ */
+export async function generateProjectTemplate(
+    config: Config,
+    buildTool: 'maven' | 'gradle' = 'maven'
+): Promise<GeneratedFile[]> {
+    const generatedFiles: GeneratedFile[] = []
+
+    if (buildTool === 'maven') {
+        // 生成 pom.xml
+        const pomContent = generateMavenPom(config)
+        generatedFiles.push({
+            filePath: 'pom.xml',
+            content: pomContent
+        })
+    } else {
+        // 生成 build.gradle
+        const gradleContent = generateGradleBuild(config)
+        generatedFiles.push({
+            filePath: 'build.gradle',
+            content: gradleContent
+        })
+    }
+
+    // 生成主启动类
+    const mainClassContent = generateMainClass(config)
+    const mainClassPath = `src/main/java/${config.basePackage.replace(/\./g, '/')}/Application.java`
+    generatedFiles.push({
+        filePath: mainClassPath,
+        content: mainClassContent
+    })
+
+    // 生成配置文件
+    const configContent = generateApplicationConfig(config)
+    generatedFiles.push({
+        filePath: 'src/main/resources/application.yml',
+        content: configContent
+    })
+
+    return generatedFiles
+}
+
+/**
+ * 生成Maven POM文件
+ */
+function generateMavenPom(config: Config): string {
+    const isSpringBoot3 = config.springBootVersion === '3'
+
+    const data = {
+        groupId: config.basePackage,
+        artifactId: extractArtifactId(config.basePackage),
+        springBootVersion: isSpringBoot3 ? '3.5.0' : '2.7.18',
+        javaVersion: isSpringBoot3 ? '17' : '8',
+        mapstructVersion: '1.6.3',
+        knife4jDependency: isSpringBoot3
+            ? 'knife4j-openapi3-jakarta-spring-boot-starter'
+            : 'knife4j-openapi3-spring-boot-starter',
+        knife4jVersion: '4.5.0'
+    }
+
+    const template = `<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>{{springBootVersion}}</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>{{groupId}}</groupId>
+    <artifactId>{{artifactId}}</artifactId>
+    <version>1.0.0</version>
+    <name>{{artifactId}}</name>
+    <description>REST API项目</description>
+
+    <properties>
+        <java.version>{{javaVersion}}</java.version>
+        <mapstruct.version>{{mapstructVersion}}</mapstruct.version>
+        <spring-boot.version>{{springBootVersion}}</spring-boot.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- MyBatis Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <version>3.5.12</version>
+        </dependency>
+
+        <!-- MapStruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>\${mapstruct.version}</version>
+        </dependency>
+
+        <!-- Knife4j API文档 -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>{{knife4jDependency}}</artifactId>
+            <version>{{knife4jVersion}}</version>
+        </dependency>
+
+        <!-- Hutool工具类 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.38</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot DevTools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Configuration Processor -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                            <version>\${spring-boot.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>\${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>\${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- Spring Boot插件 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>`
+
+    return Mustache.render(template, data)
+}
+
+/**
+ * 生成Gradle构建文件
+ */
+function generateGradleBuild(config: Config): string {
+    const isSpringBoot3 = config.springBootVersion === '3'
+
+    const data = {
+        groupId: config.basePackage,
+        springBootVersion: isSpringBoot3 ? '3.5.0' : '2.7.18',
+        dependencyManagementVersion: isSpringBoot3 ? '1.1.6' : '1.1.4',
+        javaVersion: isSpringBoot3 ? '17' : '8',
+        mapstructVersion: '1.6.3',
+        knife4jDependency: isSpringBoot3
+            ? 'knife4j-openapi3-jakarta-spring-boot-starter'
+            : 'knife4j-openapi3-spring-boot-starter',
+        knife4jVersion: '4.5.0'
+    }
+
+    const template = `plugins {
+    id 'java'
+    id 'org.springframework.boot' version '{{springBootVersion}}'
+    id 'io.spring.dependency-management' version '{{dependencyManagementVersion}}'
+}
+
+group = '{{groupId}}'
+version = '1.0.0'
+sourceCompatibility = '{{javaVersion}}'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    mapstructVersion = '{{mapstructVersion}}'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.baomidou:mybatis-plus-extension:3.5.12'
+    implementation "org.mapstruct:mapstruct:\${mapstructVersion}"
+    implementation 'com.github.xiaoymin:{{knife4jDependency}}:{{knife4jVersion}}'
+    implementation 'cn.hutool:hutool-all:5.8.38'
+    
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:\${mapstructVersion}"
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}`
+
+    return Mustache.render(template, data)
+}
+
+/**
+ * 生成主启动类
+ */
+function generateMainClass(config: Config): string {
+    const data = {
+        packageName: config.basePackage,
+        className: 'Application',
+        author: config.author,
+        date: new Date().toISOString().split('T')[0]
+    }
+
+    const template = `package {{packageName}};
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * 应用程序启动类
+ *
+ * @author {{author}}
+ * @since {{date}}
+ */
+@SpringBootApplication
+public class {{className}} {
+
+    public static void main(String[] args) {
+        SpringApplication.run({{className}}.class, args);
+    }
+}`
+
+    return Mustache.render(template, data)
+}
+
+/**
+ * 生成应用配置文件
+ */
+function generateApplicationConfig(config: Config): string {
+    const template = `# 应用配置
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: rest-api
+  profiles:
+    active: dev
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: ${config.basePackage}.controller
+
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    ${config.basePackage}: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'`
+
+    return template
+}
+
+/**
+ * 从包名提取项目名称
+ */
+function extractArtifactId(packageName: string): string {
+    const parts = packageName.split('.')
+    return parts[parts.length - 1] || 'rest-api'
+}
+
+/**
  * 根据Spring Boot版本添加serialVersionUID相关代码
  */
 function getSerialVersionUID(config: Config): { imports: string[], code: string } {
@@ -435,9 +793,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import {{basePackage}}.core.code.CodeMsg;
 import {{basePackage}}.core.code.ResponseCode;
 import lombok.Getter;
-
-${serialInfo.imports.length > 0 ? serialInfo.imports.map((imp: string) => `import ${imp};`).join('\n') : ''}
-
+${serialInfo.imports.length > 0 ? '\n' + serialInfo.imports.map((imp: string) => `import ${imp};`).join('\n') + '\n' : ''}
 /**
  * 业务异常类，用于封装业务层错误信息和错误码。
  * <p>
@@ -2344,8 +2700,7 @@ async function generateVoClass(
 import {{abstractTreeNode}};
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-
-${serialInfo.imports.length > 0 ? serialInfo.imports.map((imp: string) => `import ${imp};`).join('\n') : ''}
+${serialInfo.imports.length > 0 ? '\n' + serialInfo.imports.map((imp: string) => `import ${imp};`).join('\n') : ''}
 import java.io.Serializable;
 
 /**
@@ -2414,8 +2769,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-${serialInfo.imports.length > 0 ? serialInfo.imports.map((imp: string) => `import ${imp};`).join('\n') : ''}
+${serialInfo.imports.length > 0 ? '\n' + serialInfo.imports.map((imp: string) => `import ${imp};`).join('\n') : ''}
 import java.io.Serializable;
 
 /**

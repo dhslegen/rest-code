@@ -175,6 +175,7 @@ Order.GET./{id}.get.#id.获取订单详情
 #### 契约示例
 
 ```text
+/User/用户
 # 基础CRUD操作
 User.POST..create.@.创建用户                    # @ → @RequestBody UserReqVo + Result<Void>
 User.GET./{id}.get.%id>.获取用户                # %id + > → @PathVariable id + Result<UserRespVo>
@@ -183,19 +184,18 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 
 # 批量操作
 User.DELETE..batchDelete.@#.批量删除用户        # @# → @RequestBody List<Long> ids + Result<Void>
-User.DELETE..batchDeleteUsers.@#userIds.按用户ID批量删除  # @#userIds → @RequestBody List<Long> userIds + Result<Void>
-User.POST..batchCreate.@=.批量创建用户          # @= → @RequestBody List<UserReqVo> reqVos + Result<Void>
-User.POST../importByCodes.importByCodes.@$.按编码导入用户  # @$ → @RequestBody List<String> codes + Result<Void>
-User.POST../importByOrgCodes.importByOrgCodes.@$orgCodes.按组织编码导入用户  # @$orgCodes → @RequestBody List<String> orgCodes + Result<Void>
+User.DELETE./batchDeleteUsers.batchDeleteUsers.@#userIds.按用户ID批量删除  # @#userIds → @RequestBody List<Long> userIds + Result<Void>
+User.POST./batchCreate.batchCreate.@=.批量创建用户          # @= → @RequestBody List<UserReqVo> reqVos + Result<Void>
+User.POST./importByCodes.importByCodes.@$.按编码导入用户  # @$ → @RequestBody List<String> codes + Result<Void>
+User.POST./importByOrgCodes.importByOrgCodes.@$orgCodes.按组织编码导入用户  # @$orgCodes → @RequestBody List<String> orgCodes + Result<Void>
 
 # 查询操作
 User.GET..list.?>=.获取用户列表                 # ? + >= → @ParameterObject UserQueryVo + Result<List<UserRespVo>>
-User.GET..page.?>+.获取用户分页                 # ? + >+ → PageQueryVo + UserQueryVo + Result<Page<UserRespVo>>
-User.GET..tree.?><.获取用户树                   # ? + >< → @ParameterObject UserQueryVo + Result<TreeNode<Long, UserTreeVo>>
+User.GET./page.page.?>+.获取用户分页                 # ? + >+ → PageQueryVo + UserQueryVo + Result<Page<UserRespVo>>
+User.GET./tree.tree.?><.获取用户树                   # ? + >< → @ParameterObject UserQueryVo + Result<TreeNode<Long, UserTreeVo>>
 
 # 复杂业务场景
 User.GET./{id}/profile.getProfile.%id>profile.获取用户档案    # %id + >profile → @PathVariable id + Result<UserProfileRespVo>
-User.POST../importByCodes.importByCodes.@$.按编码导入用户      # @$ → @RequestBody List<String> codes + Result<Void>
 ```
 
 ### 自动生成的 Swagger v3 参数说明注解

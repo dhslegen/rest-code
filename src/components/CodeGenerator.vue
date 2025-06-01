@@ -96,8 +96,24 @@
                         </el-radio-group>
             </div>
 
+            <!-- 构建工具 -->
+            <div class="form-item">
+                <label class="form-label">构建工具</label>
+                <el-radio-group v-model="buildTool" class="modern-radio-group">
+                    <el-radio value="maven">Maven</el-radio>
+                    <el-radio value="gradle">Gradle</el-radio>
+                </el-radio-group>
+            </div>
+
             <!-- 操作按钮 -->
             <div class="action-buttons">
+                <el-button 
+                    class="action-btn template-btn" 
+                    @click.stop="generateTemplate"
+                >
+                    <el-icon><Box /></el-icon>
+                    生成项目模板
+                </el-button>
                 <el-button 
                     class="action-btn preview-btn" 
                     @click.stop="previewCode"
@@ -120,10 +136,11 @@
 <script setup lang="ts">
 import { reactive, watch, ref, computed, nextTick } from 'vue'
 import { useStore } from '../store/'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { generateJavaCode } from '../code-generator'
+import { generateProjectTemplate } from '../code-generator'
 import type { Config } from '../types'
-import { FolderOpened, Loading, QuestionFilled, View, Tools } from '@element-plus/icons-vue'
+import { FolderOpened, Loading, QuestionFilled, View, Tools, Box } from '@element-plus/icons-vue'
 
 const store = useStore()
 
@@ -188,6 +205,9 @@ const frameworkTooltipContent = computed(() => `
 </div>
 `)
 
+// 添加构建工具选择
+const buildTool = ref<'maven' | 'gradle'>('maven')
+
 const generateCode = async () => {
     try {
         // 使用编辑器内容进行校验
@@ -246,6 +266,58 @@ const previewCode = async () => {
     } catch (error) {
         console.error(error)
         ElMessage.error('代码预览失败')
+    }
+}
+
+const generateTemplate = async () => {
+    try {
+        // 验证基本配置
+        if (!config.basePackage) {
+            ElMessage.error('请先设置基础包名')
+            return
+        }
+
+        // 选择输出目录
+        const { filePaths, canceled } = await window.api.showOpenDialog({
+            properties: ['openDirectory'],
+            title: '选择项目模板保存目录'
+        })
+
+        if (canceled || !filePaths || filePaths.length === 0) {
+            return
+        }
+
+        const outputPath = filePaths[0]
+
+        // 生成项目模板
+        const templateFiles = await generateProjectTemplate(config, buildTool.value)
+        
+        // 写入文件
+        for (const file of templateFiles) {
+            const fullPath = window.api.join(outputPath, file.filePath)
+            ensureDirectoryExistence(fullPath)
+            window.api.writeFile(fullPath, file.content)
+        }
+
+        ElMessage.success(`项目模板生成成功！包含 ${templateFiles.length} 个文件`)
+        
+        // 显示生成的文件列表
+        const fileList = templateFiles.map(f => f.filePath).join('\n')
+        await ElMessageBox.alert(
+            `生成的文件：\n${fileList}\n\n下一步：\n1. 在IDE中打开项目\n2. 配置数据库连接\n3. 使用Rest Code生成业务代码`, 
+            '项目模板生成完成', 
+            { type: 'success' }
+        )
+    } catch (error) {
+        console.error(error)
+        ElMessage.error('项目模板生成失败')
+    }
+}
+
+const ensureDirectoryExistence = (filePath: string) => {
+    const dirname = window.api.dirname(filePath)
+    if (!window.api.exists(dirname)) {
+        window.api.mkdir(dirname)
     }
 }
 </script>
@@ -451,6 +523,17 @@ const previewCode = async () => {
     background: linear-gradient(135deg, #20c997, #1dd1a1);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.template-btn {
+    background: linear-gradient(135deg, #6f42c1, #563d7c);
+    color: white;
+}
+
+.template-btn:hover {
+    background: linear-gradient(135deg, #563d7c, #495057);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
 }
 
 /* 响应式设计 */
