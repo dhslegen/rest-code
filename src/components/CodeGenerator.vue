@@ -3,130 +3,102 @@
         <el-form :model="config" class="modern-form">
             <!-- 作者和Spring Boot版本 -->
             <div class="form-item">
-                    <label class="form-label">作者</label>
-                        <el-input 
-                            v-model="config.author" 
-                            placeholder="例如：zhaowenhao"
-                            class="modern-input"
-                        />
-                    </div>
+                <label class="form-label">作者</label>
+                <el-input v-model="config.author" placeholder="例如：zhaowenhao" class="modern-input" />
+            </div>
 
             <div class="form-item">
                 <label class="form-label">Spring Boot 版本</label>
-                        <el-radio-group v-model="config.springBootVersion" class="modern-radio-group">
-                                <el-radio value="2" class="modern-radio">Spring Boot 2</el-radio>
-                                <el-radio value="3" class="modern-radio">Spring Boot 3</el-radio>
-                        </el-radio-group>
+                <el-radio-group v-model="config.springBootVersion" class="modern-radio-group">
+                    <el-radio value="2" class="modern-radio">Spring Boot 2</el-radio>
+                    <el-radio value="3" class="modern-radio">Spring Boot 3</el-radio>
+                </el-radio-group>
             </div>
 
             <!-- 前置框架包名 -->
             <div class="form-item">
                 <label class="form-label">前置框架包名（可选）</label>
-                    <el-input 
-                        v-model="config.frameworkBasePackage" 
-                        placeholder="留空自动生成基础框架 | 有框架时填写，如：com.yourcompany.software.deepcloud"
-                        class="modern-input"
-                        clearable
-                    >
-                        <template #suffix>
-                            <el-tooltip
-                                effect="dark"
-                                placement="top"
-                                :content="frameworkTooltipContent"
-                                raw-content>
-                                <el-icon class="help-icon">
-                                    <QuestionFilled />
-                                </el-icon>
-                            </el-tooltip>
-                        </template>
-                    </el-input>
+                <el-input v-model="config.frameworkBasePackage"
+                    placeholder="留空自动生成基础框架 | 有框架时填写，如：com.yourcompany.software.deepcloud" class="modern-input"
+                    clearable>
+                    <template #suffix>
+                        <el-tooltip effect="dark" placement="top" :content="frameworkTooltipContent" raw-content>
+                            <el-icon class="help-icon">
+                                <QuestionFilled />
+                            </el-icon>
+                        </el-tooltip>
+                    </template>
+                </el-input>
             </div>
-            
+
             <!-- 前置框架包名提示 -->
             <div class="form-item">
                 <label class="form-label"></label>
-                    <div class="input-tip">
-                        <span v-if="!config.frameworkBasePackage.trim()" class="tip-auto">
-                            💡 未填写：将在源码基本包名下自动生成 core 基础框架（Result、BusinessException等）
-                        </span>
-                        <span v-else class="tip-existing">
-                            ✅ 已填写：将使用现有框架的 common.model.Result 等类，无需生成基础框架
-                        </span>
+                <div class="input-tip">
+                    <span v-if="!config.frameworkBasePackage.trim()" class="tip-auto">
+                        💡 未填写：将在源码基本包名下自动生成 core 基础框架（Result、BusinessException等）
+                    </span>
+                    <span v-else class="tip-existing">
+                        ✅ 已填写：将使用现有框架的 common.model.Result 等类，无需生成基础框架
+                    </span>
                 </div>
             </div>
 
             <!-- 源码输出路径 -->
             <div class="form-item">
                 <label class="form-label">源码输出路径</label>
-                    <el-input 
-                        v-model="config.outputPath" 
-                        placeholder="例如：/.../src/main/java"
-                        class="modern-input"
-                    >
-                        <template #append>
-                            <el-button 
-                                :icon="FolderOpened" 
-                                @click="selectOutputPath"
-                                class="path-btn"
-                            />
-                        </template>
-                    </el-input>
+                <el-input v-model="config.outputPath" placeholder="例如：/.../src/main/java" class="modern-input">
+                    <template #append>
+                        <el-button :icon="FolderOpened" @click="selectOutputPath" class="path-btn" />
+                    </template>
+                </el-input>
             </div>
 
             <!-- 源码基本包名 -->
             <div class="form-item">
                 <label class="form-label">源码基本包名</label>
-                    <el-input 
-                        v-model="config.basePackage" 
-                        placeholder="例如：com.yourcompany.software.system.demo"
-                        class="modern-input"
-                    />
+                <el-input v-model="config.basePackage" placeholder="例如：com.yourcompany.software.system.demo"
+                    class="modern-input" />
             </div>
 
             <!-- 生成方式 -->
             <div class="form-item">
-                    <label class="form-label">生成方式</label>
-                        <el-radio-group v-model="config.mode" class="modern-radio-group">
+                <label class="form-label">生成方式</label>
+                <el-radio-group v-model="config.mode" class="modern-radio-group">
                     <el-radio value="overwrite" class="modern-radio">
                         覆盖模式 <span class="radio-desc">完全重新生成</span>
                     </el-radio>
                     <el-radio value="incremental" class="modern-radio">
                         增量模式 <span class="radio-desc">仅添加新内容</span>
                     </el-radio>
-                        </el-radio-group>
+                </el-radio-group>
             </div>
 
             <!-- 操作按钮 -->
             <div class="action-buttons">
-                <el-button 
-                    class="action-btn template-btn" 
-                    @click.stop="openTemplateDialog"
-                >
-                    <el-icon><Box /></el-icon>
+                <el-button class="action-btn template-btn" @click.stop="openTemplateDialog">
+                    <el-icon>
+                        <Box />
+                    </el-icon>
                     生成项目模板
                 </el-button>
-                <el-button 
-                    class="action-btn preview-btn" 
-                    @click.stop="previewCode"
-                >
-                    <el-icon><View /></el-icon>
+                <el-button class="action-btn preview-btn" @click.stop="previewCode">
+                    <el-icon>
+                        <View />
+                    </el-icon>
                     预览代码
                 </el-button>
-                <el-button 
-                    class="action-btn generate-btn" 
-                    @click.stop="generateCode"
-                >
-                    <el-icon><Tools /></el-icon>
+                <el-button class="action-btn generate-btn" @click.stop="generateCode">
+                    <el-icon>
+                        <Tools />
+                    </el-icon>
                     生成代码
                 </el-button>
             </div>
         </el-form>
-        
+
         <!-- 环境配置向导 -->
-        <environment-guide 
-            ref="environmentGuideRef" 
-            @generate-template="handleTemplateGeneration"
-        />
+        <environment-guide ref="environmentGuideRef" @generate-template="handleTemplateGeneration" />
     </div>
 </template>
 
@@ -137,7 +109,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { generateJavaCode } from '../code-generator'
 import { generateProjectTemplate } from '../code-generator'
 import type { Config } from '../types'
-import { FolderOpened, Loading, QuestionFilled, View, Tools, Box } from '@element-plus/icons-vue'
+import { FolderOpened, QuestionFilled, View, Tools, Box } from '@element-plus/icons-vue'
 import EnvironmentGuide from './EnvironmentGuide.vue'
 
 const store = useStore()
@@ -149,7 +121,7 @@ const props = defineProps<{
 
 // 定义 emit
 const emit = defineEmits<{
-  previewCode: [content: string]
+    previewCode: [content: string]
 }>()
 
 // 环境向导组件引用
@@ -211,7 +183,7 @@ const generateCode = async () => {
         // 使用编辑器内容进行校验
         const rcsContent = getCurrentRcsContent()
         const validation = store.validateRcsContent(rcsContent)
-        
+
         if (!validation.isValid) {
             ElMessage.error(`脚本校验失败，发现 ${validation.errors.length} 个错误，无法生成代码`)
             // 直接触发错误弹窗显示
@@ -220,7 +192,7 @@ const generateCode = async () => {
             store.triggerErrorDisplay = true
             return
         }
-        
+
         await generateJavaCode(config, rcsContent)
         ElMessage.success('代码生成成功')
     } catch (error) {
@@ -243,7 +215,7 @@ const previewCode = async () => {
         // 使用编辑器内容进行校验
         const rcsContent = getCurrentRcsContent()
         const validation = store.validateRcsContent(rcsContent)
-        
+
         if (!validation.isValid) {
             ElMessage.error(`脚本校验失败，发现 ${validation.errors.length} 个错误，无法预览代码`)
             // 直接触发错误弹窗显示
@@ -252,7 +224,7 @@ const previewCode = async () => {
             store.triggerErrorDisplay = true
             return
         }
-        
+
         const generatedFiles = await generateJavaCode(config, rcsContent, true)
         let markdownContent = ''
         generatedFiles.forEach((file) => {
@@ -274,7 +246,7 @@ const openTemplateDialog = () => {
         ElMessage.error('请先设置基础包名')
         return
     }
-    
+
     environmentGuideRef.value?.show()
 }
 
@@ -293,7 +265,7 @@ const handleTemplateGeneration = async (templateConfig: {
 
         // 生成项目模板
         const templateFiles = await generateProjectTemplate(tempConfig, templateConfig.buildTool)
-        
+
         // 写入文件
         for (const file of templateFiles) {
             const fullPath = window.api.join(templateConfig.outputDirectory, file.filePath)
@@ -304,9 +276,9 @@ const handleTemplateGeneration = async (templateConfig: {
         // 只显示详细的完成消息框，移除简单的成功消息以避免重复
         const fileList = templateFiles.map(f => f.filePath).join('\n')
         await ElMessageBox.alert(
-            `项目模板生成成功！包含 ${templateFiles.length} 个文件\n\n生成的文件：\n${fileList}\n\n下一步：\n1. 在IDE中打开项目\n2. 配置数据库连接\n3. 使用Rest Code生成业务代码`, 
-            '项目模板生成完成', 
-            { 
+            `项目模板生成成功！包含 ${templateFiles.length} 个文件\n\n生成的文件：\n${fileList}\n\n下一步：\n1. 在IDE中打开项目\n2. 配置数据库连接\n3. 使用Rest Code生成业务代码`,
+            '项目模板生成完成',
+            {
                 type: 'success',
                 customStyle: {
                     zIndex: 99999
@@ -547,20 +519,21 @@ const ensureDirectoryExistence = (filePath: string) => {
         grid-template-columns: 1fr;
         gap: 16px;
     }
-    
+
     .action-buttons {
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .action-btn {
         width: 100%;
     }
-    
+
     .form-label {
-        min-width: 100px; /* 在小屏幕上减少label宽度 */
+        min-width: 100px;
+        /* 在小屏幕上减少label宽度 */
     }
-    
+
     .modern-radio-group {
         flex-direction: column;
         align-items: flex-start;
@@ -570,26 +543,28 @@ const ensureDirectoryExistence = (filePath: string) => {
 
 @media (max-width: 768px) {
     .modern-form {
-        gap: 10px; /* 在移动端进一步减少间距 */
+        gap: 10px;
+        /* 在移动端进一步减少间距 */
     }
-    
+
     .form-item {
-        flex-direction: column; /* 在小屏幕上垂直排列 */
+        flex-direction: column;
+        /* 在小屏幕上垂直排列 */
         align-items: flex-start;
         gap: 4px;
     }
-    
+
     .form-label {
         min-width: auto;
         text-align: left;
         padding-right: 0;
         line-height: 1.4;
     }
-    
+
     .modern-radio-group {
         width: 100%;
     }
-    
+
     .action-btn {
         height: 40px;
         font-size: 13px;
@@ -602,14 +577,13 @@ const ensureDirectoryExistence = (filePath: string) => {
 }
 
 :deep(.el-select__popper .el-select-dropdown) {
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.98) 0%, 
-        rgba(248, 250, 252, 0.95) 100%
-    ) !important;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(248, 250, 252, 0.95) 100%) !important;
     backdrop-filter: blur(25px) !important;
     border: 1px solid rgba(255, 149, 0, 0.15) !important;
     border-radius: 16px !important;
-    box-shadow: 
+    box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.15),
         0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
     padding: 12px 0 !important;
@@ -631,6 +605,7 @@ const ensureDirectoryExistence = (filePath: string) => {
         opacity: 0;
         transform: translateY(-8px) scale(0.95);
     }
+
     100% {
         opacity: 1;
         transform: translateY(-4px) scale(1);
