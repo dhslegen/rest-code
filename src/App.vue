@@ -232,7 +232,7 @@
               <div class="card-content">
                 <label>当前版本</label>
                 <a href="javascript:void(0)"
-                  @click="openLink('http://gitea126.weightyware.com:16680/GENERAL-COMPONENT-BACKEND/rest-code/releases/tag/v1.1.1')"
+                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.1')"
                   class="link-btn">
                   v1.1.1
                 </a>
@@ -243,7 +243,7 @@
               <div class="card-content">
                 <label>最新版下载</label>
                 <a href="javascript:void(0)"
-                  @click="openLink('http://gitea126.weightyware.com:16680/GENERAL-COMPONENT-BACKEND/rest-code/releases')"
+                  @click="openLink('https://github.com/dhslegen/rest-code/releases')"
                   class="link-btn">
                   点击下载
                 </a>
@@ -254,7 +254,7 @@
               <div class="card-content">
                 <label>源码仓库</label>
                 <a href="javascript:void(0)"
-                  @click="openLink('http://gitea126.weightyware.com:16680/GENERAL-COMPONENT-BACKEND/rest-code/releases')"
+                  @click="openLink('https://github.com/dhslegen/rest-code/releases')"
                   class="link-btn">
                   点击访问
                 </a>
@@ -265,7 +265,7 @@
               <div class="card-content">
                 <label>作者</label>
                 <a href="javascript:void(0)" @click="openLink('https://dahaoshen.com')" class="link-btn">
-                  赵文昊
+                  dahaoshen
                 </a>
               </div>
             </div>
@@ -2015,7 +2015,7 @@ body {
 }
 
 .dialog-close-btn {
-  width: 32px;
+  width: 55px;
   height: 32px;
   border: none;
   background: rgba(0, 0, 0, 0.05);
@@ -2564,9 +2564,71 @@ body {
   margin-right: 8px;
   font-size: 16px;
 }
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  body .el-message.el-message,
+  html .el-message.el-message {
+    min-width: 280px !important;
+    max-width: 90vw !important;
+    padding: 16px 20px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Element Plus MessageBox 层级控制 */
+body .el-overlay,
+html .el-overlay {
+  z-index: 99999 !important;
+}
+
+body .el-message-box,
+html .el-message-box {
+  z-index: 100000 !important;
+  border-radius: 20px !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(25px) !important;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+  overflow: hidden !important;
+}
+
+body .el-message-box::before,
+html .el-message-box::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #FF3B30, #FF9500, #FFCC02, #34C759, #007AFF, #5856D6, #AF52DE) !important;
+  opacity: 0.8 !important;
+  z-index: 1 !important;
+}
+
+body .el-message-box .el-message-box__header,
+html .el-message-box .el-message-box__header {
+  padding-top: 32px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+body .el-message-box .el-message-box__content,
+html .el-message-box .el-message-box__content {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+body .el-message-box .el-message-box__btns,
+html .el-message-box .el-message-box__btns {
+  position: relative !important;
+  z-index: 2 !important;
+}
 </style>
 
-<!-- <style>
+<style>
 /* 超高优先级全局样式 - Element Plus 消息提示现代化 */
 body .el-message.el-message,
 html .el-message.el-message {
@@ -2708,16 +2770,55 @@ html .el-message-container .el-message:hover {
   transform: translateY(-3px) scale(1.02) !important;
 }
 
-/* 图标脉冲动画 */
-@keyframes iconPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.3;
-  }
+/* Element Plus MessageBox 层级控制 - 确保比 ElMessage 层级更高 */
+body .el-overlay,
+html .el-overlay {
+  z-index: 99999 !important;
+}
+
+body .el-message-box,
+html .el-message-box {
+  z-index: 100000 !important;
+  border-radius: 20px !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(25px) !important;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+  overflow: hidden !important;
+}
+
+body .el-message-box::before,
+html .el-message-box::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #FF3B30, #FF9500, #FFCC02, #34C759, #007AFF, #5856D6, #AF52DE) !important;
+  opacity: 0.8 !important;
+  z-index: 1 !important;
+}
+
+body .el-message-box .el-message-box__header,
+html .el-message-box .el-message-box__header {
+  padding-top: 32px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+body .el-message-box .el-message-box__content,
+html .el-message-box .el-message-box__content {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+body .el-message-box .el-message-box__btns,
+html .el-message-box .el-message-box__btns {
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 /* 响应式设计 */
@@ -2730,4 +2831,4 @@ html .el-message-container .el-message:hover {
     font-size: 14px !important;
   }
 }
-</style> -->
+</style>

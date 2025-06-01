@@ -24,7 +24,7 @@
                 <label class="form-label">前置框架包名（可选）</label>
                     <el-input 
                         v-model="config.frameworkBasePackage" 
-                        placeholder="留空自动生成基础框架 | 有框架时填写，如：com.wanji.software.deepcloud"
+                        placeholder="留空自动生成基础框架 | 有框架时填写，如：com.yourcompany.software.deepcloud"
                         class="modern-input"
                         clearable
                     >
@@ -78,7 +78,7 @@
                 <label class="form-label">源码基本包名</label>
                     <el-input 
                         v-model="config.basePackage" 
-                        placeholder="例如：com.wanji.software.tocc.system.uaa"
+                        placeholder="例如：com.yourcompany.software.system.demo"
                         class="modern-input"
                     />
             </div>
@@ -96,20 +96,11 @@
                         </el-radio-group>
             </div>
 
-            <!-- 构建工具 -->
-            <div class="form-item">
-                <label class="form-label">构建工具</label>
-                <el-radio-group v-model="buildTool" class="modern-radio-group">
-                    <el-radio value="maven">Maven</el-radio>
-                    <el-radio value="gradle">Gradle</el-radio>
-                </el-radio-group>
-            </div>
-
             <!-- 操作按钮 -->
             <div class="action-buttons">
                 <el-button 
                     class="action-btn template-btn" 
-                    @click.stop="generateTemplate"
+                    @click.stop="openTemplateDialog"
                 >
                     <el-icon><Box /></el-icon>
                     生成项目模板
@@ -130,6 +121,12 @@
                 </el-button>
             </div>
         </el-form>
+        
+        <!-- 环境配置向导 -->
+        <environment-guide 
+            ref="environmentGuideRef" 
+            @generate-template="handleTemplateGeneration"
+        />
     </div>
 </template>
 
@@ -141,6 +138,7 @@ import { generateJavaCode } from '../code-generator'
 import { generateProjectTemplate } from '../code-generator'
 import type { Config } from '../types'
 import { FolderOpened, Loading, QuestionFilled, View, Tools, Box } from '@element-plus/icons-vue'
+import EnvironmentGuide from './EnvironmentGuide.vue'
 
 const store = useStore()
 
@@ -153,6 +151,9 @@ const props = defineProps<{
 const emit = defineEmits<{
   previewCode: [content: string]
 }>()
+
+// 环境向导组件引用
+const environmentGuideRef = ref()
 
 // 默认配置
 const defaultConfig: Config = {
@@ -204,9 +205,6 @@ const frameworkTooltipContent = computed(() => `
     <p style="color: #E6A23C;">💡 建议：新项目留空，现有项目填写框架包名</p>
 </div>
 `)
-
-// 添加构建工具选择
-const buildTool = ref<'maven' | 'gradle'>('maven')
 
 const generateCode = async () => {
     try {
@@ -269,44 +267,51 @@ const previewCode = async () => {
     }
 }
 
-const generateTemplate = async () => {
+// 打开项目模板配置弹窗
+const openTemplateDialog = () => {
+    // 验证基本配置
+    if (!config.basePackage) {
+        ElMessage.error('请先设置基础包名')
+        return
+    }
+    
+    environmentGuideRef.value?.show()
+}
+
+// 处理环境向导的模板生成
+const handleTemplateGeneration = async (templateConfig: {
+    stackType: 'springboot2' | 'springboot3',
+    buildTool: 'maven' | 'gradle',
+    outputDirectory: string
+}) => {
     try {
-        // 验证基本配置
-        if (!config.basePackage) {
-            ElMessage.error('请先设置基础包名')
-            return
+        // 创建临时配置，使用选择的Spring Boot版本
+        const tempConfig = {
+            ...config,
+            springBootVersion: templateConfig.stackType === 'springboot2' ? '2' as const : '3' as const
         }
-
-        // 选择输出目录
-        const { filePaths, canceled } = await window.api.showOpenDialog({
-            properties: ['openDirectory'],
-            title: '选择项目模板保存目录'
-        })
-
-        if (canceled || !filePaths || filePaths.length === 0) {
-            return
-        }
-
-        const outputPath = filePaths[0]
 
         // 生成项目模板
-        const templateFiles = await generateProjectTemplate(config, buildTool.value)
+        const templateFiles = await generateProjectTemplate(tempConfig, templateConfig.buildTool)
         
         // 写入文件
         for (const file of templateFiles) {
-            const fullPath = window.api.join(outputPath, file.filePath)
+            const fullPath = window.api.join(templateConfig.outputDirectory, file.filePath)
             ensureDirectoryExistence(fullPath)
             window.api.writeFile(fullPath, file.content)
         }
 
-        ElMessage.success(`项目模板生成成功！包含 ${templateFiles.length} 个文件`)
-        
-        // 显示生成的文件列表
+        // 只显示详细的完成消息框，移除简单的成功消息以避免重复
         const fileList = templateFiles.map(f => f.filePath).join('\n')
         await ElMessageBox.alert(
-            `生成的文件：\n${fileList}\n\n下一步：\n1. 在IDE中打开项目\n2. 配置数据库连接\n3. 使用Rest Code生成业务代码`, 
+            `项目模板生成成功！包含 ${templateFiles.length} 个文件\n\n生成的文件：\n${fileList}\n\n下一步：\n1. 在IDE中打开项目\n2. 配置数据库连接\n3. 使用Rest Code生成业务代码`, 
             '项目模板生成完成', 
-            { type: 'success' }
+            { 
+                type: 'success',
+                customStyle: {
+                    zIndex: 99999
+                }
+            }
         )
     } catch (error) {
         console.error(error)

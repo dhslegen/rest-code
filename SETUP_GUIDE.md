@@ -71,96 +71,105 @@ gradle -version
 **创建Maven项目**
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.18</version>
         <relativePath/>
     </parent>
-    
-    <groupId>com.example</groupId>
-    <artifactId>my-api</artifactId>
+
+    <groupId>com.yourcompany.software.test</groupId>
+    <artifactId>test</artifactId>
     <version>1.0.0</version>
-    <name>my-api</name>
+    <name>test</name>
     <description>REST API项目</description>
-    
+
     <properties>
         <java.version>8</java.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <spring-boot.version>2.7.18</spring-boot.version>
     </properties>
-    
+
     <dependencies>
-        <!-- 核心依赖 -->
+        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- Spring Boot Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        
-        <!-- 数据库 -->
+
+        <!-- MyBatis Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
             <version>3.5.12</version>
         </dependency>
-        
-        <!-- 工具类 -->
+
+        <!-- MapStruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+
+        <!-- Knife4j API文档 -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+
+        <!-- Hutool工具类 -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.38</version>
         </dependency>
+
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        
-        <!-- API文档 -->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-            <version>4.4.0</version>
-        </dependency>
-        
-        <!-- 开发工具 -->
+
+        <!-- Spring Boot DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+
+        <!-- Spring Boot Configuration Processor -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        
-        <!-- 测试 -->
+
+        <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
+            <!-- Maven编译插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -184,9 +193,19 @@ gradle -version
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Spring Boot插件 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -202,9 +221,15 @@ gradle -version
 
 ```xml
 <!-- 关键差异点 -->
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.5.0</version>
+    <relativePath/>
+</parent>
 <properties>
     <java.version>17</java.version>
-    <mapstruct.version>1.6.3</mapstruct.version>
+    <spring-boot.version>3.5.0</spring-boot.version>
 </properties>
 
 <!-- Knife4j依赖变化 -->
@@ -232,38 +257,33 @@ spring:
     name: rest-api
   profiles:
     active: dev
-  
-  # 数据源配置
-  datasource:
-    url: jdbc:mysql://localhost:3306/your_database?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
-# MyBatis Plus配置
-mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    db-config:
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.yourcompany.software.test.controller
 
-# API文档配置
+# knife4j的增强配置，不需要增强可以不配
 knife4j:
   enable: true
-  openapi:
-    title: REST API 文档
-    description: 基于Rest Code生成的API文档
-    version: 1.0.0
+  setting:
+    language: zh_cn
 
 # 日志配置
 logging:
   level:
     root: INFO
-    com.example: DEBUG
+    com.yourcompany.software.test: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
 ```
 
 ### 主启动类
@@ -283,41 +303,6 @@ public class Application {
 }
 ```
 
-## 🔧 IDE配置
-
-### IntelliJ IDEA 推荐插件
-
-1. **Lombok Plugin** - 支持Lombok注解
-2. **MapStruct Support** - MapStruct代码生成支持
-3. **MyBatis X** - MyBatis增强工具
-4. **Spring Boot Assistant** - Spring Boot开发助手
-
-### VS Code 推荐插件
-
-1. **Extension Pack for Java** - Java开发套件
-2. **Spring Boot Extension Pack** - Spring Boot支持
-3. **Lombok Annotations Support** - Lombok支持
-
-## 🚦 验证安装
-
-### 1. 启动项目
-```bash
-# Maven
-mvn spring-boot:run
-
-# Gradle
-./gradlew bootRun
-
-# JAR包运行
-java -jar target/my-api-1.0.0.jar
-```
-
-### 2. 访问API文档
-打开浏览器访问：`http://localhost:8080/api/doc.html`
-
-### 3. 健康检查
-访问：`http://localhost:8080/api/actuator/health`
-
 ## 🛠 故障排除
 
 ### 常见问题
@@ -333,36 +318,7 @@ java.lang.UnsupportedClassVersionError
 # Spring Boot 3.x: JDK 17+
 ```
 
-#### 2. Maven依赖下载失败
-```bash
-# 配置国内镜像源
-# ~/.m2/settings.xml
-<mirrors>
-    <mirror>
-        <id>aliyun</id>
-        <mirrorOf>central</mirrorOf>
-        <name>Aliyun Maven</name>
-        <url>https://maven.aliyun.com/repository/central</url>
-    </mirror>
-</mirrors>
-```
-
-#### 3. Knife4j访问404
-```yaml
-# 检查Spring Boot 3.x配置
-knife4j:
-  enable: true
-  openapi:
-    title: API文档
-    group:
-      default:
-        group-name: 默认分组
-        api-rule: package
-        api-rule-resources:
-          - com.example.controller
-```
-
-#### 4. MapStruct编译失败
+#### 2. MapStruct编译失败
 ```xml
 <!-- 确保注解处理器正确配置 -->
 <plugin>
@@ -373,7 +329,7 @@ knife4j:
             <path>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
-                <version>1.6.3</version>
+                <version>${mapstruct.version}</version>
             </path>
             <path>
                 <groupId>org.projectlombok</groupId>
@@ -383,31 +339,6 @@ knife4j:
         </annotationProcessorPaths>
     </configuration>
 </plugin>
-```
-
-## 📈 性能优化建议
-
-### 1. JVM参数优化
-```bash
-# JDK 8
-java -Xms512m -Xmx2g -XX:+UseG1GC -jar app.jar
-
-# JDK 17
-java -Xms512m -Xmx2g --enable-preview -jar app.jar
-```
-
-### 2. Spring Boot配置优化
-```yaml
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-  
-server:
-  tomcat:
-    max-threads: 200
-    accept-count: 100
 ```
 
 ## 📚 学习资源
