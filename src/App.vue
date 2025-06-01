@@ -181,7 +181,7 @@
 
           <div class="release-notes" v-if="updateInfo.releaseNotes">
             <h4>更新内容</h4>
-            <div class="notes-content">{{ updateInfo.releaseNotes }}</div>
+            <div class="notes-content scrollable-content" v-html="releaseNotesHtml"></div>
           </div>
         </div>
 
@@ -435,6 +435,9 @@ md.renderer.rules.code_inline = (tokens, idx) => {
 const gptContentHtml = computed(() => md.render(gptContent.value))
 const helpContentHtml = computed(() => md.render(helpContent.value))
 const previewContentHtml = computed(() => md.render(previewContent.value))
+const releaseNotesHtml = computed(() => {
+  return updateInfo.value.releaseNotes ? md.render(updateInfo.value.releaseNotes) : ''
+})
 
 // 预览代码处理函数
 const handlePreviewCode = (content: string) => {
@@ -1942,7 +1945,7 @@ body {
 }
 
 .close-btn {
-  width: 32px;
+  width: 55px;
   height: 32px;
   border: none;
   background: rgba(0, 0, 0, 0.05);
@@ -2046,31 +2049,39 @@ body {
 
 .notes-content {
   background: linear-gradient(135deg,
-      rgba(248, 250, 252, 0.9) 0%,
-      rgba(241, 245, 249, 0.8) 100%);
-  padding: 16px;
-  border-radius: 12px;
+      rgba(248, 250, 252, 0.95) 0%,
+      rgba(241, 245, 249, 0.9) 100%);
+  padding: 20px 24px;
+  border-radius: 16px;
   font-size: 14px;
   line-height: 1.6;
   color: #4a5568;
-  max-height: 120px;
+  max-height: 280px;
   overflow-y: auto;
   border: 1px solid rgba(175, 82, 222, 0.1);
   scrollbar-width: thin;
   scrollbar-color: rgba(175, 82, 222, 0.3) transparent;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
 }
 
 .notes-content::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .notes-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
 
 .notes-content::-webkit-scrollbar-thumb {
-  background: rgba(175, 82, 222, 0.3);
-  border-radius: 3px;
+  background: linear-gradient(135deg, rgba(175, 82, 222, 0.4), rgba(191, 90, 242, 0.4));
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.notes-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(175, 82, 222, 0.6), rgba(191, 90, 242, 0.6));
 }
 
 .update-dialog-footer {
@@ -3251,5 +3262,103 @@ html .el-message-box .el-message-box__btns {
   .fab-text {
     font-size: 8px;
   }
+}
+
+/* 更新对话中发布说明的 Markdown 样式 */
+.notes-content :deep(h1),
+.notes-content :deep(h2),
+.notes-content :deep(h3),
+.notes-content :deep(h4) {
+  color: #1a1a1a;
+  font-weight: 700;
+  margin: 20px 0 12px 0;
+  line-height: 1.3;
+}
+
+.notes-content :deep(h1) {
+  font-size: 22px;
+  background: linear-gradient(135deg, #AF52DE, #BF5AF2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+.notes-content :deep(h2) {
+  font-size: 18px;
+  color: #AF52DE;
+  border-bottom: 2px solid rgba(175, 82, 222, 0.2);
+  padding-bottom: 6px;
+  margin-top: 24px;
+  margin-bottom: 14px;
+}
+
+.notes-content :deep(h3) {
+  font-size: 16px;
+  color: #BF5AF2;
+  margin-top: 20px;
+}
+
+.notes-content :deep(h4) {
+  font-size: 14px;
+  color: #DA70D6;
+  margin-top: 16px;
+}
+
+.notes-content :deep(p) {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+.notes-content :deep(ul),
+.notes-content :deep(ol) {
+  color: #4a5568;
+  line-height: 1.6;
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.notes-content :deep(li) {
+  margin: 4px 0;
+}
+
+.notes-content :deep(strong) {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.notes-content :deep(em) {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.notes-content :deep(code) {
+  background: rgba(175, 82, 222, 0.1);
+  color: #AF52DE;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+.notes-content :deep(pre) {
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  border: 1px solid rgba(175, 82, 222, 0.1);
+  overflow-x: auto;
+}
+
+.notes-content :deep(blockquote) {
+  border-left: 3px solid #AF52DE;
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: rgba(175, 82, 222, 0.05);
+  border-radius: 0 6px 6px 0;
+  color: #4a5568;
+  font-style: italic;
 }
 </style>
