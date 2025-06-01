@@ -11,7 +11,8 @@
                     </div>
                     <button class="dialog-close-btn" @click="handleClose">
                         <svg width="16" height="16" viewBox="0 0 16 16">
-                            <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
                         </svg>
                     </button>
                 </div>
@@ -22,7 +23,9 @@
                             <!-- 版本选择 -->
                             <div class="section">
                                 <h3 class="section-title">
-                                    <el-icon><Platform /></el-icon>
+                                    <el-icon>
+                                        <Platform />
+                                    </el-icon>
                                     技术栈版本
                                 </h3>
                                 <div class="selector-container">
@@ -46,7 +49,9 @@
                             <!-- 构建工具选择 -->
                             <div class="section">
                                 <h3 class="section-title">
-                                    <el-icon><Tools /></el-icon>
+                                    <el-icon>
+                                        <Tools />
+                                    </el-icon>
                                     构建工具
                                 </h3>
                                 <div class="selector-container">
@@ -70,41 +75,38 @@
                             <!-- 环境要求 -->
                             <div class="section">
                                 <h3 class="section-title">
-                                    <el-icon><Monitor /></el-icon>
+                                    <el-icon>
+                                        <Monitor />
+                                    </el-icon>
                                     环境要求
                                 </h3>
                                 <div class="requirements">
                                     <div class="requirement-item">
-                                        <el-icon class="req-icon java-icon"><Platform /></el-icon>
+                                        <el-icon class="req-icon java-icon">
+                                            <Platform />
+                                        </el-icon>
                                         <div class="req-content">
                                             <div class="req-title">JDK版本</div>
                                             <div class="req-value">{{ currentRequirements.jdk }}</div>
                                         </div>
                                         <div class="req-status">
-                                            <el-button 
-                                                size="small" 
-                                                type="primary" 
-                                                link
-                                                @click="openJdkDownload"
-                                            >
+                                            <el-button size="small" type="primary" link @click="openJdkDownload">
                                                 下载
                                             </el-button>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="requirement-item">
-                                        <el-icon class="req-icon maven-icon"><FolderOpened /></el-icon>
+                                        <el-icon class="req-icon maven-icon">
+                                            <FolderOpened />
+                                        </el-icon>
                                         <div class="req-content">
                                             <div class="req-title">构建工具</div>
-                                            <div class="req-value">{{ currentBuildToolName }} {{ currentRequirements.version }}</div>
+                                            <div class="req-value">{{ currentBuildToolName }} {{
+                                                currentRequirements.version }}</div>
                                         </div>
                                         <div class="req-status">
-                                            <el-button 
-                                                size="small" 
-                                                type="primary" 
-                                                link
-                                                @click="openBuildToolDownload"
-                                            >
+                                            <el-button size="small" type="primary" link @click="openBuildToolDownload">
                                                 下载
                                             </el-button>
                                         </div>
@@ -115,7 +117,9 @@
                             <!-- 关键依赖差异 -->
                             <div class="section">
                                 <h3 class="section-title">
-                                    <el-icon><List /></el-icon>
+                                    <el-icon>
+                                        <List />
+                                    </el-icon>
                                     关键依赖差异
                                 </h3>
                                 <el-table :data="dependencyDiff" class="diff-table" size="small">
@@ -148,17 +152,18 @@
                 <div class="dialog-footer">
                     <button class="btn-secondary" @click="handleClose">
                         <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;">
-                            <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
                         </svg>
                         取消
                     </button>
-                    <button 
-                        class="btn-primary"
-                        @click="generateTemplate"
-                        :disabled="isGenerating"
-                    >
-                        <el-icon v-if="isGenerating" class="is-loading"><Loading /></el-icon>
-                        <el-icon v-else><Box /></el-icon>
+                    <button class="btn-primary" @click="generateTemplate" :disabled="isGenerating">
+                        <el-icon v-if="isGenerating" class="is-loading">
+                            <Loading />
+                        </el-icon>
+                        <el-icon v-else>
+                            <Box />
+                        </el-icon>
                         {{ isGenerating ? '生成中...' : '生成项目模板' }}
                     </button>
                 </div>
@@ -170,10 +175,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { 
-    Monitor, 
-    Platform, 
-    FolderOpened, 
+import {
+    Monitor,
+    Platform,
+    FolderOpened,
     Box,
     Tools,
     List,
@@ -263,7 +268,7 @@ const generateTemplate = async () => {
             buildTool: selectedBuildTool.value,
             outputDirectory: selectedDirectory
         })
-        
+
         // 关闭弹窗
         dialogVisible.value = false
     } catch (error) {
@@ -276,10 +281,10 @@ const generateTemplate = async () => {
 
 // 打开JDK下载页面
 const openJdkDownload = () => {
-    const url = selectedStack.value === 'springboot2' 
+    const url = selectedStack.value === 'springboot2'
         ? 'https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html'
         : 'https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html'
-    
+
     if (window.api?.openExternal) {
         window.api.openExternal(url)
     } else {
@@ -289,10 +294,10 @@ const openJdkDownload = () => {
 
 // 打开构建工具下载页面
 const openBuildToolDownload = () => {
-    const url = selectedBuildTool.value === 'maven' 
+    const url = selectedBuildTool.value === 'maven'
         ? 'https://maven.apache.org/download.cgi'
         : 'https://gradle.org/install/'
-    
+
     if (window.api?.openExternal) {
         window.api.openExternal(url)
     } else {
@@ -337,6 +342,7 @@ defineExpose({
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -364,6 +370,7 @@ defineExpose({
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -384,9 +391,9 @@ defineExpose({
 .dialog-header {
     padding: 24px 28px 20px;
     background: linear-gradient(135deg,
-        rgba(175, 82, 222, 0.08) 0%,
-        rgba(191, 90, 242, 0.08) 50%,
-        rgba(218, 112, 214, 0.08) 100%);
+            rgba(175, 82, 222, 0.08) 0%,
+            rgba(191, 90, 242, 0.08) 50%,
+            rgba(218, 112, 214, 0.08) 100%);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     display: flex;
     align-items: center;
@@ -452,8 +459,8 @@ defineExpose({
 .dialog-footer {
     padding: 20px 28px 24px;
     background: linear-gradient(135deg,
-        rgba(248, 250, 252, 0.95) 0%,
-        rgba(255, 255, 255, 0.9) 100%);
+            rgba(248, 250, 252, 0.95) 0%,
+            rgba(255, 255, 255, 0.9) 100%);
     border-top: 1px solid rgba(0, 0, 0, 0.06);
     display: flex;
     gap: 12px;
@@ -494,9 +501,9 @@ defineExpose({
 
 .template-dialog .dialog-header {
     background: linear-gradient(135deg,
-        rgba(0, 122, 255, 0.08) 0%,
-        rgba(88, 196, 250, 0.08) 50%,
-        rgba(30, 144, 255, 0.08) 100%);
+            rgba(0, 122, 255, 0.08) 0%,
+            rgba(88, 196, 250, 0.08) 50%,
+            rgba(30, 144, 255, 0.08) 100%);
     border-bottom-color: rgba(0, 122, 255, 0.1);
 }
 
@@ -543,7 +550,7 @@ defineExpose({
     padding: 20px;
     border: 1px solid rgba(0, 122, 255, 0.1);
     backdrop-filter: blur(10px);
-    box-shadow: 
+    box-shadow:
         0 4px 20px rgba(0, 122, 255, 0.08),
         0 0 0 1px rgba(255, 255, 255, 0.5) inset;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -565,7 +572,7 @@ defineExpose({
 
 .selector-container:hover {
     transform: translateY(-2px);
-    box-shadow: 
+    box-shadow:
         0 8px 30px rgba(0, 122, 255, 0.15),
         0 0 0 1px rgba(255, 255, 255, 0.6) inset;
     border-color: rgba(0, 122, 255, 0.2);
@@ -576,25 +583,29 @@ defineExpose({
     background: linear-gradient(90deg, #007AFF, #5AC8FA, #34C759, #FF9500, #AF52DE);
 }
 
-.stack-selector, .build-tool-selector {
+.stack-selector,
+.build-tool-selector {
     display: flex;
     gap: 16px;
     position: relative;
     z-index: 1;
 }
 
-.stack-option, .tool-option {
+.stack-option,
+.tool-option {
     text-align: center;
     padding: 8px;
 }
 
-.stack-title, .tool-title {
+.stack-title,
+.tool-title {
     font-weight: 600;
     color: #2c3e50;
     margin-bottom: 4px;
 }
 
-.stack-desc, .tool-desc {
+.stack-desc,
+.tool-desc {
     font-size: 12px;
     color: #6c757d;
 }
@@ -662,7 +673,8 @@ defineExpose({
 }
 
 /* 现代化按钮样式 */
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
     border: none;
     border-radius: 12px;
     padding: 12px 24px;
@@ -716,6 +728,7 @@ defineExpose({
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -760,7 +773,7 @@ defineExpose({
     background: linear-gradient(135deg, #007AFF, #5AC8FA);
     border-color: #007AFF;
     color: white;
-    box-shadow: 
+    box-shadow:
         0 8px 25px rgba(0, 122, 255, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.2) inset;
     transform: translateY(-2px);
@@ -777,10 +790,13 @@ defineExpose({
 }
 
 @keyframes glow {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.6;
         transform: scale(1);
     }
+
     50% {
         opacity: 1;
         transform: scale(1.1);
@@ -793,25 +809,27 @@ defineExpose({
         width: 95vw;
         max-width: none;
     }
-    
-    .stack-selector, .build-tool-selector {
+
+    .stack-selector,
+    .build-tool-selector {
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .requirement-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
-    
+
     .dialog-footer {
         flex-direction: column;
     }
-    
-    .btn-primary, .btn-secondary {
+
+    .btn-primary,
+    .btn-secondary {
         width: 100%;
         justify-content: center;
     }
 }
-</style> 
+</style>

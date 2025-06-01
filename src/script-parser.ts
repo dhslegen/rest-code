@@ -39,10 +39,10 @@ export function parseScript(config: Config, content: string): { domains: Domain[
     for (let line of lines) {
         // 跳过空行
         if (line.trim() === '') continue
-        
+
         // 跳过以 # 开头的注释行
         if (line.trim().startsWith('#')) continue
-        
+
         // 处理行尾注释，寻找前面有空格的 # 作为注释开始
         // 注释符号必须前面有空格或tab，以避免误截取参数契约中的 # 符号
         const commentMatch = line.match(/\s+#/)
@@ -51,7 +51,7 @@ export function parseScript(config: Config, content: string): { domains: Domain[
             // 如果去掉注释后变成空行，则跳过
             if (line === '') continue
         }
-        
+
         if (line.startsWith('/')) {
             const match = line.match(domainRegex)
             if (match) {
@@ -102,7 +102,7 @@ export function parseScript(config: Config, content: string): { domains: Domain[
 
 function parseParameterContract(config: Config, method: ApiMethod) {
     const contract = method.parameterContract
-    const tokens = contract.match(/[@?%>][=+<#$]?([A-Za-z][A-Za-z0-9]*)?/g) || []
+    const tokens = contract.match(/[@?%>][=+<#$*]?([A-Za-z][A-Za-z0-9]*)?/g) || []
 
     const domainName = method.domainName
     const domainNameLower = domainName.charAt(0).toLowerCase() + domainName.slice(1)
@@ -170,6 +170,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
             // Query 参数
             const queryStringMatch = token.match(/^\?\$([A-Za-z][A-Za-z0-9]*)?$/)
             const queryNumberMatch = token.match(/^\?#([A-Za-z][A-Za-z0-9]*)?$/)
+            const queryFileMatch = token.match(/^\?\*([A-Za-z][A-Za-z0-9]*)?$/)
 
             // 新增的查询参数类型：?$ 和 ?#
             if (queryStringMatch) {
@@ -200,6 +201,22 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.imports.add('io.swagger.v3.oas.annotations.Parameter')
                 method.imports.add('io.swagger.v3.oas.annotations.enums.ParameterIn')
                 method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
+            } else if (queryFileMatch) {
+                // '?*' 或 '?*参数名' - MultipartFile 类型的查询参数
+                const paramName = queryFileMatch[1] || 'file'  // 支持自定义参数名，默认为 file
+                method.parameters.push(`@RequestParam("${paramName}") MultipartFile ${paramName}`)
+                method.parametersPure.push(`MultipartFile ${paramName}`)
+                method.parameterNames.push(paramName)
+
+                // 添加文件查询参数说明注解
+                method.parameterAnnotations.push(`@Parameter(name = "${paramName}", description = "文件型查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "binary"))`)
+
+                method.imports.add('org.springframework.web.bind.annotation.RequestParam')
+                method.imports.add('org.springframework.web.multipart.MultipartFile')
+                method.imports.add('io.swagger.v3.oas.annotations.Parameter')
+                method.imports.add('io.swagger.v3.oas.annotations.enums.ParameterIn')
+                method.imports.add('io.swagger.v3.oas.annotations.media.Schema')
+                method.importsService.add('org.springframework.web.multipart.MultipartFile')
             } else {
                 // 原有的查询对象逻辑
                 let typeName = `${domainName}QueryVo`

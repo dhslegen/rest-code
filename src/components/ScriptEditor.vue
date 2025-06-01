@@ -137,7 +137,7 @@ const tips = {
           • <code>@$参数名</code> → <code>@RequestBody @Valid List&lt;String&gt; orgCodes</code> (自定义参数名)`,
 
     '?': `<strong>? - 查询参数（Query Parameters）</strong><br />
-          用于定义 HTTP GET 请求的查询条件：<br /><br />
+          用于定义 HTTP 请求的查询条件：<br /><br />
           <strong>对象查询：</strong><br />
           • <code>?</code> → <code>@ParameterObject UserQueryVo queryVo</code> (标准查询对象)<br />
           • <code>?业务名</code> → <code>@ParameterObject UserSimpleQueryVo queryVo</code> (指定业务场景)<br /><br />
@@ -146,7 +146,10 @@ const tips = {
           • <code>?\$参数名</code> → <code>@RequestParam("参数名") String 参数名</code> (自定义字符串参数)<br /><br />
           <strong>数值查询：</strong><br />
           • <code>?#</code> → <code>@RequestParam("number") Long number</code> (默认数值参数)<br />
-          • <code>?#参数名</code> → <code>@RequestParam("参数名") Long 参数名</code> (自定义数值参数)`,
+          • <code>?#参数名</code> → <code>@RequestParam("参数名") Long 参数名</code> (自定义数值参数)<br /><br />
+          <strong>文件查询：</strong><br />
+          • <code>?*</code> → <code>@RequestParam("file") MultipartFile file</code> (默认文件参数)<br />
+          • <code>?*参数名</code> → <code>@RequestParam("参数名") MultipartFile 参数名</code> (自定义文件参数)`,
 
     '%': `<strong>% - 路径参数（PathVariable）</strong><br />
           用于定义 URL 路径中的变量：<br /><br />

@@ -260,7 +260,7 @@ export const useStore = defineStore('main', {
             // 不允许空格、中文、特殊字符等
             const apiPathRegex = /^\/(?:[a-zA-Z0-9_-]+|\{[a-zA-Z0-9_]+\})(?:\/(?:[a-zA-Z0-9_-]+|\{[a-zA-Z0-9_]+\}))*\/?$/
             const operationRegex = /^[a-z][a-zA-Z0-9]*(?:[A-Z][a-z0-9]*)*$/
-            const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?#?(?:[0-9]*)?)|(?:\?\$?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
+            const contractRegex = /^((?:@(?:=|#|\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:\?(?:\$|#|\*)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:%(?:\$)?(?:[A-Za-z][A-Za-z0-9]*)?)|(?:>(?:=|\+|<)?(?:[A-Za-z][A-Za-z0-9]*)?))*$/
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim()

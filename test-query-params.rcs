@@ -15,5 +15,11 @@ User.GET./searchByNumber.searchByNumber.?#.按数字查询用户        # ?# →
 User.GET./searchByUserId.searchByUserId.?#userId>.通过用户ID查询  # ?#userId + > → @RequestParam("userId") Long userId + Result<UserRespVo>
 User.GET./searchByAge.searchByAge.?#age>=.按年龄查询用户列表   # ?#age + >= → @RequestParam("age") Long age + Result<List<UserRespVo>>
 
+# 新增文件型查询参数测试
+User.POST./uploadAvatar.uploadAvatar.?*.上传用户头像            # ?* → @RequestParam("file") MultipartFile file + Result<Void>
+User.POST./uploadDocument.uploadDocument.?*document>.上传用户文档  # ?*document + > → @RequestParam("document") MultipartFile document + Result<UserRespVo>
+User.POST./uploadFiles.uploadFiles.?*files>=.批量上传用户文件     # ?*files + >= → @RequestParam("files") MultipartFile files + Result<List<UserRespVo>>
+
 # 混合查询参数测试
-User.GET./complexSearch.complexSearch.?$status?#age>=.复合条件查询用户  # ?$status + ?#age + >= → @RequestParam status + @RequestParam age + Result<List<UserRespVo>> 
+User.GET./complexSearch.complexSearch.?$status?#age>=.复合条件查询用户  # ?$status + ?#age + >= → @RequestParam status + @RequestParam age + Result<List<UserRespVo>>
+User.POST./uploadWithInfo.uploadWithInfo.?$category?*file>.带信息上传文件  # ?$category + ?*file + > → @RequestParam category + @RequestParam file + Result<UserRespVo> 

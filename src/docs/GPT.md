@@ -64,7 +64,7 @@
 
 **2. `?` - 查询参数（Query Parameters）**
 
-用于定义 HTTP GET 请求的查询条件：
+用于定义 HTTP 请求的查询条件：
 
 | 符号格式  | 参数类型             | 生成代码示例                                             | 说明                   |
 | --------- | -------------------- | -------------------------------------------------------- | ---------------------- |
@@ -74,6 +74,8 @@
 | `?$参数名` | 自定义字符串查询参数 | `?$orgCode` → `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
 | `?#` | 数值型查询参数 | `?#` → `@RequestParam("number") Long number` | 默认数值查询参数 |
 | `?#参数名` | 自定义数值查询参数 | `?#userId` → `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+| `?*` | 文件型查询参数 | `?*` → `@RequestParam("file") MultipartFile file` | 默认文件查询参数 |
+| `?*参数名` | 自定义文件查询参数 | `?*document` → `@RequestParam("document") MultipartFile document` | 自定义的文件型查询参数 |
 
 **3. `%` - 路径参数（PathVariable）**
 
@@ -129,6 +131,7 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 | `?`  | 查询参数       | `?` → UserQueryVo               |
 | `?$` | 字符串查询参数 | `?$` → @RequestParam String code |
 | `?#` | 数值查询参数   | `?#` → @RequestParam Long number |
+| `?*` | 文件查询参数   | `?*` → @RequestParam MultipartFile file |
 | `%`  | 数值路径参数   | `%id` → @PathVariable id        |
 | `%$` | 字符串路径参数 | `%$code` → @PathVariable code   |
 | `>`  | 单个响应       | `>` → Result<UserRespVo>        |
@@ -150,6 +153,7 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 - `获取(id): obj` → `GET` + `%id>`
 - `获取列表(query): list` → `GET` + `?>=`
 - `获取分页(query): page` → `GET` + `?>+`
+- `上传文件(file): void` → `POST` + `?*`
 
 **示例：**
 
@@ -161,6 +165,7 @@ User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id +
 | 编辑用户(id,obj): void    | PATCH      | /users/{id} |
 | 获取用户分页(query): page | GET      | /users      |
 | 批量删除用户(ids): void   | DELETE   | /users      |
+| 上传头像(file): void      | POST     | /users/upload |
 
 输出：
 
@@ -171,12 +176,13 @@ User.POST..create.@.创建用户
 User.PATCH./{id}.update.%id@update.编辑用户
 User.GET..page.?>+.获取用户分页
 User.DELETE..batchDelete.@#.批量删除用户
+User.POST./upload.uploadAvatar.?*.上传头像
 ```
 
 **注意：**
 
 - 用 5 个点 `.` 分隔：领域名.方法.路径.操作.契约.描述
 - 契约符号直接拼接，不用分隔符
-- 支持自定义参数名：`@#userIds`、`%$orgCode` 等
+- 支持自定义参数名：`@#userIds`、`%$orgCode`、`?*document` 等
 ~~~
-
+</rewritten_file>

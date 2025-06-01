@@ -186,6 +186,8 @@ RCS（Rest Code Script）是专为 API 设计的领域特定语言，语法简�
 | `?$参数名` | 自定义字符串查询参数 | `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
 | `?#` | 数值型查询参数 | `@RequestParam("number") Long number` | 默认数值查询参数 |
 | `?#参数名` | 自定义数值查询参数 | `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+| `?*` | 文件型查询参数 | `@RequestParam("file") MultipartFile file` | 默认文件查询参数 |
+| `?*参数名` | 自定义文件查询参数 | `@RequestParam("document") MultipartFile document` | 自定义的文件型查询参数 |
 
 #### `%` - 路径参数（PathVariable）
 
@@ -223,6 +225,11 @@ User.GET./{id}.get.%id>.获取用户
 User.PATCH./{id}.update.%id@update.更新用户
 User.DELETE./{id}.delete.%id.删除用户
 User.GET..list.?>.用户分页列表
+
+# 文件上传
+User.POST./upload.uploadAvatar.?*.上传头像
+User.POST./uploadDoc.uploadDocument.?*document>.上传文档
+User.POST./uploadWithInfo.uploadWithInfo.?$category?*file>.带分类信息上传文件
 
 # 订单管理
 Order.POST..create.@.创建订单
