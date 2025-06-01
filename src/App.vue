@@ -254,8 +254,8 @@
               <div class="card-content">
                 <label>当前版本</label>
                 <a href="javascript:void(0)"
-                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.1')" class="link-btn">
-                  v1.1.1
+                   @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.3')" class="link-btn">
+                  v1.1.3
                 </a>
               </div>
             </div>

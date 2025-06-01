@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 应用版本和更新相关
-const CURRENT_VERSION = '1.1.1';
+const CURRENT_VERSION = '1.1.3';
 const UPDATE_CHECK_URL = 'https://api.github.com/repos/dhslegen/rest-code/releases/latest';
 
 let win: BrowserWindow | null;
