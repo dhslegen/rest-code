@@ -377,7 +377,7 @@ const createEditor = () => {
         },
         '.cm-lintRange-error': {
           backgroundImage: 'linear-gradient(45deg, transparent 40%, rgba(239, 68, 68, 0.6) 50%, transparent 60%)',
-          backgroundPosition: 'left bottom',
+          'background-position': 'left bottom',
           backgroundRepeat: 'repeat-x',
           backgroundSize: '6px 2px',
           borderBottom: '1px solid rgba(239, 68, 68, 0.3)',
@@ -385,7 +385,7 @@ const createEditor = () => {
         },
         '.cm-lintRange-warning': {
           backgroundImage: 'linear-gradient(45deg, transparent 40%, rgba(245, 158, 11, 0.6) 50%, transparent 60%)',
-          backgroundPosition: 'left bottom',
+          'background-position': 'left bottom',
           backgroundRepeat: 'repeat-x',
           backgroundSize: '6px 2px',
           borderBottom: '1px solid rgba(245, 158, 11, 0.3)',
@@ -1069,11 +1069,11 @@ defineExpose({
 /* 错误下划线动画 */
 @keyframes errorUnderline {
   0%, 100% { 
-    backgroundPosition: '0% bottom';
+    background-position: 0% bottom;
     opacity: 0.7;
   }
   50% { 
-    backgroundPosition: '100% bottom';
+    background-position: 100% bottom;
     opacity: 1;
   }
 }
@@ -1081,11 +1081,11 @@ defineExpose({
 /* 警告下划线动画 */
 @keyframes warningUnderline {
   0%, 100% { 
-    backgroundPosition: '0% bottom';
+    background-position: 0% bottom;
     opacity: 0.6;
   }
   50% { 
-    backgroundPosition: '100% bottom';
+    background-position: 100% bottom;
     opacity: 0.9;
   }
 }
