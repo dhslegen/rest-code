@@ -74,7 +74,7 @@ if (!gotTheLock) {
 function createWindow() {
   win = new BrowserWindow({
     width: 1250,
-    height: 870,
+    height: 925,
     frame: false, // 无边框窗口
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : undefined, // macOS隐藏标题栏但保留交通灯
     trafficLightPosition: process.platform === 'darwin' ? { x: 20, y: 15 } : undefined, // macOS交通灯位置，稍微

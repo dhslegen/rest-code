@@ -1,91 +1,93 @@
 <template>
     <div class="script-editor">
         <div class="table-container">
-            <el-table 
-                :data="scripts" 
-                ref="scriptTable" 
-                class="modern-table"
-                :header-cell-style="{ backgroundColor: 'rgba(248, 249, 250, 0.8)', textAlign: 'center', color: '#2c3e50', fontWeight: '600' }" 
-                :show-header="true" 
-                :max-height="300"
-            >
-        <el-table-column label="内置模板" align="center">
-            <template #default="{ row }">
+            <el-table :data="scripts" ref="scriptTable" class="modern-table"
+                :header-cell-style="{ backgroundColor: 'rgba(248, 249, 250, 0.8)', textAlign: 'center', color: '#2c3e50', fontWeight: '600' }"
+                :show-header="true" :max-height="300">
+                <el-table-column label="内置模板" align="center">
+                    <template #default="{ row }">
                         <el-select v-model="row.template" @change="onTemplateChange(row)" placeholder="请选择模板" filterable
                             clearable class="table-select">
-                    <el-option v-for="template in templates" :key="template.name" :label="template.name"
-                        :value="template.name"></el-option>
-                </el-select>
-            </template>
-        </el-table-column>
-        <el-table-column label="领域名称" align="center">
-            <template #default="{ row }">
+                            <el-option v-for="template in templates" :key="template.name" :label="template.name"
+                                :value="template.name"></el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column label="领域名称" align="center">
+                    <template #default="{ row }">
                         <el-select v-model="row.domain" @change="onTemplateChange(row)" placeholder="请选择领域名称" filterable
                             class="table-select">
-                    <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
-                        :value="domain.name"></el-option>
-                </el-select>
-            </template>
-        </el-table-column>
-                <el-table-column label="HTTP请求方法" align="center" width="120">
-            <template #default="{ row }">
-                        <el-select v-model="row.httpMethod" placeholder="请选择" class="table-select">
-                    <el-option label="GET" value="GET"></el-option>
-                    <el-option label="POST" value="POST"></el-option>
-                            <el-option label="PATCH" value="PATCH"></el-option>
-                    <el-option label="DELETE" value="DELETE"></el-option>
-                </el-select>
-            </template>
-        </el-table-column>
-        <el-table-column label="API路径" align="center">
-            <template #default="{ row }">
-                        <el-input v-model="row.apiPath" placeholder="例如：/{id}" class="table-input"></el-input>
-            </template>
-        </el-table-column>
-        <el-table-column label="操作名称" align="center">
-            <template #default="{ row }">
-                        <el-input v-model="row.operation" placeholder="例如：update" class="table-input"></el-input>
-            </template>
-        </el-table-column>
-        <el-table-column label="参数契约" align="center">
-            <template #default="{ row }">
-                <el-tooltip :visible="row.showTooltip" effect="dark" placement="top">
-                    <template #content>
-                        <div v-html="row.tooltipContent"></div>
+                            <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
+                                :value="domain.name"></el-option>
+                        </el-select>
                     </template>
+                </el-table-column>
+                <el-table-column label="HTTP请求方法" align="center" width="120">
+                    <template #default="{ row }">
+                        <el-select v-model="row.httpMethod" placeholder="请选择" class="table-select">
+                            <el-option label="GET" value="GET"></el-option>
+                            <el-option label="POST" value="POST"></el-option>
+                            <el-option label="PATCH" value="PATCH"></el-option>
+                            <el-option label="DELETE" value="DELETE"></el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column label="API路径" align="center">
+                    <template #default="{ row }">
+                        <el-input v-model="row.apiPath" placeholder="例如：/{id}" class="table-input"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作名称" align="center">
+                    <template #default="{ row }">
+                        <el-input v-model="row.operation" placeholder="例如：update" class="table-input"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="参数契约" align="center">
+                    <template #default="{ row }">
+                        <el-tooltip :visible="row.showTooltip" effect="dark" placement="top">
+                            <template #content>
+                                <div v-html="row.tooltipContent"></div>
+                            </template>
                             <el-input v-model="row.contract" placeholder="输入 @?%> 以获取提示" @input="onContractInput(row)"
-                                @focus="onContractFocus(row)" @blur="onContractBlur(row)" class="table-input"></el-input>
-                </el-tooltip>
-            </template>
-        </el-table-column>
-        <el-table-column label="描述" align="center">
-            <template #default="{ row }">
+                                @focus="onContractFocus(row)" @blur="onContractBlur(row)"
+                                class="table-input"></el-input>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column label="描述" align="center">
+                    <template #default="{ row }">
                         <el-input v-model="row.description" placeholder="例如：编辑用户" class="table-input"></el-input>
-            </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="100">
-            <template #default="{ $index }">
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center" width="100">
+                    <template #default="{ $index }">
                         <el-button class="delete-btn" @click="deleteScript($index)">
-                            <el-icon><Delete /></el-icon>
+                            <el-icon>
+                                <Delete />
+                            </el-icon>
                             删除
                         </el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
 
         <div class="action-container">
             <el-button class="crud-btn" @click="oneClickCRUD">
-                <el-icon><Operation /></el-icon>
+                <el-icon>
+                    <Operation />
+                </el-icon>
                 一键 CRUD
             </el-button>
             <el-button class="add-btn" @click="addScript">
-                <el-icon><Plus /></el-icon>
+                <el-icon>
+                    <Plus />
+                </el-icon>
                 新增脚本
             </el-button>
         </div>
     </div>
-    
+
     <el-dialog title="一键 CRUD" v-model="showCrudDialog" class="modern-dialog" center>
         <el-form>
             <el-form-item label="领域名称">
@@ -404,7 +406,7 @@ const onTemplateChange = (row: any) => {
     display: flex;
     justify-content: center;
     gap: 12px;
-    padding: 12px 0;
+    padding: 0;
 }
 
 .crud-btn {
@@ -522,17 +524,17 @@ const onTemplateChange = (row: any) => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .editor-actions {
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 10px 12px;
-  }
-  
-  .action-btn {
-    height: 28px;
-    padding: 0 8px;
-    font-size: 11px;
-    gap: 2px;
-  }
+    .editor-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px 12px;
+    }
+
+    .action-btn {
+        height: 28px;
+        padding: 0 8px;
+        font-size: 11px;
+        gap: 2px;
+    }
 }
 </style>

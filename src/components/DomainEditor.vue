@@ -1,14 +1,9 @@
 <template>
     <div class="domain-editor">
         <div class="table-container">
-            <el-table 
-                :data="domains" 
-                ref="domainTable" 
-                class="modern-table"
-                :max-height="300"
-                :header-cell-style="{ backgroundColor: 'rgba(248, 249, 250, 0.8)', textAlign: 'center', color: '#2c3e50', fontWeight: '600' }" 
-                :show-header="true"
-            >
+            <el-table :data="domains" ref="domainTable" class="modern-table" :max-height="300"
+                :header-cell-style="{ backgroundColor: 'rgba(248, 249, 250, 0.8)', textAlign: 'center', color: '#2c3e50', fontWeight: '600' }"
+                :show-header="true">
                 <el-table-column prop="name" label="领域名称" width="180" align="center">
                     <template #default="{ row }">
                         <el-input v-model="row.name" placeholder="领域名称" class="table-input" />
@@ -22,7 +17,9 @@
                 <el-table-column label="操作" width="100" align="center">
                     <template #default="{ $index }">
                         <el-button class="delete-btn" @click="deleteDomain($index)">
-                            <el-icon><Delete /></el-icon>
+                            <el-icon>
+                                <Delete />
+                            </el-icon>
                             删除
                         </el-button>
                     </template>
@@ -32,7 +29,9 @@
 
         <div class="action-container">
             <el-button class="add-btn" @click="addDomain">
-                <el-icon><Plus /></el-icon>
+                <el-icon>
+                    <Plus />
+                </el-icon>
                 新增领域
             </el-button>
         </div>
@@ -57,7 +56,7 @@ const addDomain = () => {
         if (tableBodyWrapper) {
             tableBodyWrapper.scrollTop = tableBodyWrapper.scrollHeight
         }
-        store.setScrollToBottom(true)
+        // store.setScrollToBottom(true)
     })
 }
 
@@ -162,7 +161,7 @@ const deleteDomain = (index: number) => {
 .action-container {
     display: flex;
     justify-content: center;
-    padding: 12px 0;
+    padding: 0;
 }
 
 .add-btn {
@@ -191,16 +190,16 @@ const deleteDomain = (index: number) => {
         padding: 4px 8px;
         font-size: 11px;
     }
-    
+
     .add-btn {
         padding: 8px 16px;
         font-size: 13px;
     }
-    
+
     :deep(.modern-table td) {
         padding: 8px 4px;
     }
-    
+
     :deep(.modern-table th) {
         padding: 12px 4px;
     }

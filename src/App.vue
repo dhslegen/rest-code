@@ -125,6 +125,28 @@
               @open-about-dialog="showAboutDialog = true" @open-help-dialog="showHelpDialog = true" />
           </div>
         </div>
+
+        <!-- 专注模式悬浮按钮 -->
+        <div class="focus-mode-fab" :class="{ 'active': focusModeActive, 'dragging': fabPosition.isDragging }" :style="{
+          left: fabPosition.x + 'px',
+          top: fabPosition.y + 'px'
+        }" @click="handleFabClick" @mousedown="startDrag"
+          :title="focusModeActive ? '退出专注模式 (Cmd/Ctrl+F)' : '进入专注模式 (Cmd/Ctrl+F) | 支持拖拽移动位置'">
+          <div class="fab-icon">
+            <svg v-if="!focusModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <!-- 专注模式图标 - 圆形加上焦点 -->
+              <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" />
+              <circle cx="12" cy="12" r="3" fill="currentColor" />
+              <path d="M2 12h4M18 12h4M12 2v4M12 18v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <!-- 退出专注模式图标 - 展开箭头 -->
+              <path d="M8 3v3a2 2 0 0 1-2 2H3M16 3v3a2 2 0 0 0 2 2h3M8 21v-3a2 2 0 0 1-2-2H3M16 21v-3a2 2 0 0 0 2-2h3"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="fab-text">{{ focusModeActive ? '退出专注' : '专注模式' }}</div>
+        </div>
       </div>
     </div>
 
@@ -232,8 +254,7 @@
               <div class="card-content">
                 <label>当前版本</label>
                 <a href="javascript:void(0)"
-                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.1')"
-                  class="link-btn">
+                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.1')" class="link-btn">
                   v1.1.1
                 </a>
               </div>
@@ -242,8 +263,7 @@
               <div class="card-icon">📥</div>
               <div class="card-content">
                 <label>最新版下载</label>
-                <a href="javascript:void(0)"
-                  @click="openLink('https://github.com/dhslegen/rest-code/releases')"
+                <a href="javascript:void(0)" @click="openLink('https://github.com/dhslegen/rest-code/releases')"
                   class="link-btn">
                   点击下载
                 </a>
@@ -253,8 +273,7 @@
               <div class="card-icon">📁</div>
               <div class="card-content">
                 <label>源码仓库</label>
-                <a href="javascript:void(0)"
-                  @click="openLink('https://github.com/dhslegen/rest-code/releases')"
+                <a href="javascript:void(0)" @click="openLink('https://github.com/dhslegen/rest-code/releases')"
                   class="link-btn">
                   点击访问
                 </a>
@@ -354,7 +373,7 @@ import DomainEditor from './components/DomainEditor.vue'
 import ScriptEditor from './components/ScriptEditor.vue'
 import ScriptViewer from './components/ScriptViewer.vue'
 import CodeGenerator from './components/CodeGenerator.vue'
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
@@ -447,7 +466,28 @@ onMounted(async () => {
       updateDialogVisible.value = true
     })
   }
+
+  // 添加键盘快捷键监听
+  document.addEventListener('keydown', handleKeydown)
+
+  // 初始化悬浮按钮位置
+  initFabPosition()
+
+  // 监听窗口大小变化，调整按钮位置
+  window.addEventListener('resize', handleWindowResize)
+
+  // 开始监听内容变化
+  startContentObserver()
 })
+
+// 键盘快捷键处理
+const handleKeydown = (event: KeyboardEvent) => {
+  // Cmd/Ctrl + F 切换专注模式
+  if ((event.metaKey || event.ctrlKey) && event.key === 'f') {
+    event.preventDefault()
+    toggleFocusMode()
+  }
+}
 
 // 窗口控制方法
 const minimizeWindow = () => {
@@ -516,6 +556,237 @@ const sectionCollapsed = reactive({
 // 切换区域折叠状态
 const toggleSection = (section: keyof typeof sectionCollapsed) => {
   sectionCollapsed[section] = !sectionCollapsed[section]
+}
+
+// 专注模式状态
+const focusModeActive = ref(false)
+const fabPosition = reactive({
+  x: 0,
+  y: 0,
+  isDragging: false
+})
+
+// 初始化悬浮按钮位置（右侧垂直居中）
+const initFabPosition = () => {
+  fabPosition.x = window.innerWidth - 70 // 距离右边缘70px
+  fabPosition.y = window.innerHeight * 0.70 - 30
+}
+
+// 拖拽相关变量
+let dragStartX = 0
+let dragStartY = 0
+let dragOffsetX = 0
+let dragOffsetY = 0
+let hasDragged = false // 标记是否发生了拖拽
+
+// 悬浮按钮拖拽开始
+const startDrag = (event: MouseEvent) => {
+  fabPosition.isDragging = true
+  hasDragged = false // 重置拖拽标记
+
+  const rect = (event.target as HTMLElement).getBoundingClientRect()
+  dragStartX = event.clientX
+  dragStartY = event.clientY
+  dragOffsetX = event.clientX - rect.left
+  dragOffsetY = event.clientY - rect.top
+
+  document.addEventListener('mousemove', onDrag)
+  document.addEventListener('mouseup', endDrag)
+  event.preventDefault()
+}
+
+// 拖拽过程中
+const onDrag = (event: MouseEvent) => {
+  if (!fabPosition.isDragging) return
+
+  const deltaX = Math.abs(event.clientX - dragStartX)
+  const deltaY = Math.abs(event.clientY - dragStartY)
+
+  // 如果移动距离超过阈值，标记为拖拽
+  if (deltaX > 5 || deltaY > 5) {
+    hasDragged = true
+  }
+
+  const newX = event.clientX - dragOffsetX
+  const newY = event.clientY - dragOffsetY
+
+  // 限制在视窗范围内
+  const maxX = window.innerWidth - 60
+  const maxY = window.innerHeight - 60
+
+  fabPosition.x = Math.max(0, Math.min(newX, maxX))
+  fabPosition.y = Math.max(0, Math.min(newY, maxY))
+}
+
+// 拖拽结束
+const endDrag = () => {
+  fabPosition.isDragging = false
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', endDrag)
+}
+
+// 动态检测滚动空间并智能滚动
+const smartScrollToFocus = () => {
+  const appContent = document.querySelector('.app-content') as HTMLElement
+  if (!appContent) return false
+
+  const scrollHeight = appContent.scrollHeight
+  const clientHeight = appContent.clientHeight
+  const currentScrollTop = appContent.scrollTop
+
+  // 检查是否有向下滚动的空间
+  const hasScrollSpace = scrollHeight > clientHeight
+  const canScrollDown = currentScrollTop < (scrollHeight - clientHeight)
+
+  if (hasScrollSpace && canScrollDown) {
+    // 平滑滚动到底部，确保编辑器区域完全可见
+    appContent.scrollTo({
+      top: scrollHeight - clientHeight,
+      behavior: 'smooth'
+    })
+    return true
+  }
+
+  return false
+}
+
+// 切换专注模式
+const toggleFocusMode = () => {
+  focusModeActive.value = !focusModeActive.value
+
+  const appContent = document.querySelector('.app-content') as HTMLElement
+  if (!appContent) return
+
+  if (focusModeActive.value) {
+    // 进入专注模式
+    const didScroll = smartScrollToFocus()
+
+    // 禁用滚轮
+    appContent.style.overflow = 'hidden'
+
+    // 开始监听内容变化以保持置底
+    startContentObserver()
+
+    // 显示带快捷键的提示
+    if (didScroll) {
+      ElMessage.success('已进入专注模式并滚动到编辑区域 (快捷键: Cmd/Ctrl+F)')
+    } else {
+      ElMessage.success('已进入专注模式，专心编辑脚本 (快捷键: Cmd/Ctrl+F)')
+    }
+  } else {
+    // 退出专注模式
+    // 恢复滚轮
+    appContent.style.overflow = 'auto'
+
+    // 停止监听内容变化
+    stopContentObserver()
+
+    // 显示退出提示
+    ElMessage.info('已退出专注模式，恢复正常滚动 (快捷键: Cmd/Ctrl+F)')
+  }
+}
+
+onUnmounted(() => {
+  // 清理事件监听器
+  document.removeEventListener('keydown', handleKeydown)
+  // 清理窗口大小变化监听器
+  window.removeEventListener('resize', handleWindowResize)
+  // 清理拖拽事件监听器（如果存在）
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', endDrag)
+  // 清理内容观察器
+  stopContentObserver()
+})
+
+// 窗口大小变化处理函数
+const handleWindowResize = () => {
+  // 如果按钮超出了新的窗口范围，重新调整位置
+  const maxX = window.innerWidth - 60
+  const maxY = window.innerHeight - 60
+
+  if (fabPosition.x > maxX) {
+    fabPosition.x = maxX
+  }
+  if (fabPosition.y > maxY) {
+    fabPosition.y = maxY
+  }
+
+  // 如果处于专注模式，窗口大小变化时保持置底
+  if (focusModeActive.value) {
+    setTimeout(() => {
+      maintainBottomScroll()
+    }, 100) // 延迟一点确保布局完成
+  }
+}
+
+// 内容变化观察器
+let contentObserver: MutationObserver | null = null
+
+// 保持底部滚动的函数
+const maintainBottomScroll = () => {
+  if (!focusModeActive.value) return
+
+  const appContent = document.querySelector('.app-content') as HTMLElement
+  if (!appContent) return
+
+  const scrollHeight = appContent.scrollHeight
+  const clientHeight = appContent.clientHeight
+
+  if (scrollHeight > clientHeight) {
+    appContent.scrollTo({
+      top: scrollHeight - clientHeight,
+      behavior: 'smooth'
+    })
+  }
+}
+
+// 开始监听内容变化
+const startContentObserver = () => {
+  const appContent = document.querySelector('.app-content') as HTMLElement
+  if (!appContent || contentObserver) return
+
+  contentObserver = new MutationObserver((mutations) => {
+    // 检查是否有实际的内容变化
+    const hasContentChanges = mutations.some(mutation =>
+      mutation.type === 'childList' ||
+      (mutation.type === 'attributes' &&
+        (mutation.attributeName === 'style' || mutation.attributeName === 'class'))
+    )
+
+    if (hasContentChanges && focusModeActive.value) {
+      // 延迟执行，确保DOM更新完成
+      setTimeout(() => {
+        maintainBottomScroll()
+      }, 50)
+    }
+  })
+
+  // 观察整个app-content及其子树的变化
+  contentObserver.observe(appContent, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'class', 'data-*']
+  })
+}
+
+// 停止监听内容变化
+const stopContentObserver = () => {
+  if (contentObserver) {
+    contentObserver.disconnect()
+    contentObserver = null
+  }
+}
+
+// 处理按钮点击（需要区分点击和拖拽）
+const handleFabClick = () => {
+  // 如果刚刚发生了拖拽，不执行切换
+  if (hasDragged) {
+    hasDragged = false
+    return
+  }
+
+  toggleFocusMode()
 }
 </script>
 
@@ -799,7 +1070,7 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
 
 .editor-content {
   padding: 0;
-  height: 420px;
+  height: 390px;
   min-height: 200px;
 }
 
@@ -2589,7 +2860,7 @@ html .el-message-box {
   border: none !important;
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(25px) !important;
-  box-shadow: 
+  box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
   overflow: hidden !important;
@@ -2626,9 +2897,19 @@ html .el-message-box .el-message-box__btns {
   position: relative !important;
   z-index: 2 !important;
 }
-</style>
 
-<style>
+/* 响应式设计 */
+@media (max-width: 768px) {
+
+  body .el-message.el-message,
+  html .el-message.el-message {
+    min-width: 280px !important;
+    max-width: 90vw !important;
+    padding: 16px 20px !important;
+    font-size: 14px !important;
+  }
+}
+
 /* 超高优先级全局样式 - Element Plus 消息提示现代化 */
 body .el-message.el-message,
 html .el-message.el-message {
@@ -2641,7 +2922,7 @@ html .el-message.el-message {
   border: none !important;
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(25px) !important;
-  box-shadow: 
+  box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
   font-weight: 600 !important;
@@ -2678,7 +2959,7 @@ html .el-message.el-message::before {
 body .el-message.el-message:hover,
 html .el-message.el-message:hover {
   transform: translateX(-50%) translateY(-3px) scale(1.02) !important;
-  box-shadow: 
+  box-shadow:
     0 35px 100px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -2689,12 +2970,11 @@ body .el-message--success.el-message--success,
 html .el-message--success.el-message--success {
   color: #1a1a1a !important;
   border: 1px solid rgba(34, 197, 94, 0.2) !important;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(240, 253, 244, 0.95) 50%,
-    rgba(34, 197, 94, 0.08) 100%
-  ) !important;
-  box-shadow: 
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(240, 253, 244, 0.95) 50%,
+      rgba(34, 197, 94, 0.08) 100%) !important;
+  box-shadow:
     0 25px 80px rgba(34, 197, 94, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
 }
@@ -2783,7 +3063,7 @@ html .el-message-box {
   border: none !important;
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(25px) !important;
-  box-shadow: 
+  box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
   overflow: hidden !important;
@@ -2823,12 +3103,153 @@ html .el-message-box .el-message-box__btns {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+
   body .el-message.el-message,
   html .el-message.el-message {
     min-width: 280px !important;
     max-width: 90vw !important;
     padding: 16px 20px !important;
     font-size: 14px !important;
+  }
+}
+
+/* 专注模式悬浮按钮样式 */
+.focus-mode-fab {
+  position: fixed;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 60px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8px 25px rgba(102, 126, 234, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1001;
+  backdrop-filter: blur(10px);
+  user-select: none;
+  overflow: hidden;
+}
+
+.focus-mode-fab.dragging {
+  cursor: grabbing;
+  transform: scale(1.1);
+  box-shadow:
+    0 15px 35px rgba(102, 126, 234, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  transition: none;
+  /* 拖拽时禁用过渡动画 */
+}
+
+.focus-mode-fab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.focus-mode-fab:hover:not(.dragging) {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 15px 35px rgba(102, 126, 234, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  cursor: grab;
+}
+
+.focus-mode-fab:hover:not(.dragging)::before {
+  transform: translateX(100%);
+}
+
+.focus-mode-fab:active:not(.dragging) {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.fab-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+  /* 防止拖拽时选中SVG */
+}
+
+.focus-mode-fab:hover:not(.dragging) .fab-icon {
+  transform: scale(1.1);
+}
+
+.fab-text {
+  font-size: 9px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1;
+  opacity: 0.9;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+  /* 防止拖拽时选中文字 */
+}
+
+.focus-mode-fab.active {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  animation: focusModePulse 2s ease-in-out infinite;
+}
+
+.focus-mode-fab.active:hover:not(.dragging) {
+  box-shadow:
+    0 15px 35px rgba(255, 107, 107, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+.focus-mode-fab.active.dragging {
+  box-shadow:
+    0 15px 35px rgba(255, 107, 107, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+@keyframes focusModePulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 8px 25px rgba(255, 107, 107, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  50% {
+    box-shadow:
+      0 8px 25px rgba(255, 107, 107, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+      0 0 0 4px rgba(255, 107, 107, 0.1);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .focus-mode-fab {
+    width: 56px;
+    height: 56px;
+  }
+
+  .fab-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .fab-text {
+    font-size: 8px;
   }
 }
 </style>
