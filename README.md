@@ -55,7 +55,6 @@ User.DELETE./{id}.delete.%id.删除用户
 
 - 🎯 **Spring Boot 2 vs 3 版本对比**
 - 🏗️ **Maven/Gradle 完整配置**
-- ⚙️ **IDE 推荐插件和配置**
 - 🛠️ **常见问题解决方案**
 - 🚀 **一键项目模板生成**
 
