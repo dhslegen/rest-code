@@ -72,7 +72,7 @@
             </el-table>
         </div>
 
-        <div class="action-container">
+        <div class="script-actions">
             <el-button class="crud-btn" @click="oneClickCRUD">
                 <el-icon>
                     <Operation />
@@ -87,21 +87,6 @@
             </el-button>
         </div>
     </div>
-
-    <el-dialog title="一键 CRUD" v-model="showCrudDialog" class="modern-dialog" center>
-        <el-form>
-            <el-form-item label="领域名称">
-                <el-select v-model="selectedDomain" placeholder="请选择领域名称" class="dialog-select">
-                    <el-option v-for="domain in domains" :key="domain.name" :label="domain.name"
-                        :value="domain.name"></el-option>
-                </el-select>
-            </el-form-item>
-        </el-form>
-        <template #footer>
-            <el-button class="cancel-btn" @click="showCrudDialog = false">取消</el-button>
-            <el-button class="confirm-btn" @click="confirmCRUD">确定</el-button>
-        </template>
-    </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -119,8 +104,10 @@ import type { ElTable } from 'element-plus'
 
 const scriptTable = ref<InstanceType<typeof ElTable> | null>(null)
 
-const showCrudDialog = ref(false)
-const selectedDomain = ref('')
+// 定义emit事件
+const emit = defineEmits<{
+  showCrudDialog: []
+}>()
 
 const tips = {
     '@': `<strong>@ - 请求体参数（RequestBody）</strong><br />
@@ -203,43 +190,7 @@ const oneClickCRUD = () => {
         ElMessage.error('请先添加领域')
         return
     }
-    showCrudDialog.value = true
-}
-
-const confirmCRUD = () => {
-    if (!selectedDomain.value) {
-        ElMessage.error('请选择领域名称')
-        return
-    }
-    const domainName = selectedDomain.value
-    const domainDesc = domains.find((d) => d.name === domainName)?.description || ''
-
-    const crudTemplates = ['POST-创建', 'PATCH-编辑', 'GET-获取分页', 'DELETE-批量删除']
-    crudTemplates.forEach((templateName) => {
-        const template = templates.find((t) => t.name === templateName)
-        if (template) {
-            const script = {
-                domain: domainName,
-                httpMethod: template.httpMethod,
-                apiPath: template.apiPath || '',
-                operation: template.operation,
-                contract: template.contract,
-                description: template.description.replace('{领域描述}', domainDesc),
-                template: template.name,
-                tooltipContent: '',
-                showTooltip: false,
-            }
-            store.addScript(script)
-        }
-    })
-    showCrudDialog.value = false
-    nextTick(() => {
-        const tableBodyWrapper = scriptTable.value?.$el.querySelector('.el-scrollbar__wrap')
-        if (tableBodyWrapper) {
-            tableBodyWrapper.scrollTop = tableBodyWrapper.scrollHeight
-        }
-        store.setScrollToBottom(true)
-    })
+    emit('showCrudDialog')
 }
 
 const addScript = () => {
@@ -402,7 +353,7 @@ const onTemplateChange = (row: any) => {
     box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
-.action-container {
+.script-actions {
     display: flex;
     justify-content: center;
     gap: 12px;
@@ -449,92 +400,5 @@ const onTemplateChange = (row: any) => {
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
-/* 对话框样式 */
-:deep(.modern-dialog) {
-    border-radius: 16px;
-    overflow: hidden;
-}
 
-:deep(.modern-dialog .el-dialog__header) {
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(90, 200, 250, 0.1));
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-:deep(.modern-dialog .el-dialog__body) {
-    padding: 24px;
-    background: rgba(255, 255, 255, 0.95);
-}
-
-:deep(.modern-dialog .el-dialog__footer) {
-    background: rgba(248, 249, 250, 0.9);
-    padding: 16px 24px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    text-align: center;
-}
-
-:deep(.dialog-select) {
-    width: 100%;
-}
-
-:deep(.dialog-select .el-select__wrapper) {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-:deep(.dialog-select .el-select__wrapper:hover) {
-    border-color: rgba(0, 122, 255, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.1);
-}
-
-.cancel-btn {
-    background: rgba(108, 117, 125, 0.1);
-    border: 1px solid rgba(108, 117, 125, 0.3);
-    color: #6c757d;
-    padding: 8px 24px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin-right: 12px;
-}
-
-.cancel-btn:hover {
-    background: rgba(108, 117, 125, 0.2);
-    border-color: rgba(108, 117, 125, 0.5);
-    color: #5a6268;
-}
-
-.confirm-btn {
-    background: linear-gradient(135deg, #007AFF, #5AC8FA);
-    border: none;
-    color: white;
-    padding: 8px 24px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.confirm-btn:hover {
-    background: linear-gradient(135deg, #0051D5, #32A3F7);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .editor-actions {
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 10px 12px;
-    }
-
-    .action-btn {
-        height: 28px;
-        padding: 0 8px;
-        font-size: 11px;
-        gap: 2px;
-    }
-}
 </style>

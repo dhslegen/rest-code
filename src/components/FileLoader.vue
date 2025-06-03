@@ -1,12 +1,7 @@
 <template>
     <div class="file-loader">
-        <div 
-            class="file-drop-area" 
-            :class="{ dragging: isDragging }" 
-            @dragover.prevent="onDragOver"
-            @dragleave.prevent="onDragLeave" 
-            @drop.prevent="onFileDrop"
-        >
+        <div class="file-drop-area" :class="{ dragging: isDragging }" @dragover.prevent="onDragOver"
+            @dragleave.prevent="onDragLeave" @drop.prevent="onFileDrop">
             <div class="drop-content">
                 <div class="drop-icon">
                     <el-icon v-if="!isDragging" class="upload-icon">
@@ -25,13 +20,16 @@
                     </p>
                     <p class="secondary-text">或点击下方按钮选择文件</p>
                 </div>
-                <el-button class="upload-btn" @click="openFile" type="primary">
-                    <el-icon><FolderOpened /></el-icon>
+                <el-button class="upload-btn" @click="openFile" type="primary"
+                    :title="`选择文件 (${isDarwin ? 'Cmd' : 'Ctrl'}+O)`">
+                    <el-icon>
+                        <FolderOpened />
+                    </el-icon>
                     选择文件
                 </el-button>
             </div>
         </div>
-        
+
         <!-- 文件信息显示 -->
         <div v-if="store.loadedFilePath" class="file-info">
             <div class="file-icon">📄</div>
@@ -45,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
 import { Upload, Document, FolderOpened } from '@element-plus/icons-vue'
@@ -53,6 +51,8 @@ import { Upload, Document, FolderOpened } from '@element-plus/icons-vue'
 const store = useStore()
 
 const isDragging = ref(false)
+
+const isDarwin = computed(() => navigator.userAgent.toLowerCase().includes('mac'))
 
 const openFile = async () => {
     const { filePaths, canceled } = await window.api.showOpenDialog({
@@ -74,6 +74,11 @@ const openFile = async () => {
         ElMessage.info('已取消选择文件')
     }
 }
+
+
+defineExpose({
+    openFile
+})
 
 const onDragOver = (event: DragEvent) => {
     event.preventDefault()
@@ -185,7 +190,8 @@ const formatDate = (date: Date) => {
     transition: all 0.3s ease;
 }
 
-.upload-icon, .dragging-icon {
+.upload-icon,
+.dragging-icon {
     font-size: 32px;
     color: #007AFF;
     transition: all 0.3s ease;
@@ -202,8 +208,13 @@ const formatDate = (date: Date) => {
 }
 
 @keyframes bounce {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-4px); }
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-4px);
+    }
 }
 
 .drop-text {
@@ -318,37 +329,38 @@ code {
         padding: 24px 16px;
         min-height: 160px;
     }
-    
+
     .drop-icon {
         width: 48px;
         height: 48px;
     }
-    
-    .upload-icon, .dragging-icon {
+
+    .upload-icon,
+    .dragging-icon {
         font-size: 24px;
     }
-    
+
     .primary-text {
         font-size: 14px;
     }
-    
+
     .secondary-text {
         font-size: 13px;
     }
-    
+
     .upload-btn {
         padding: 10px 20px;
         font-size: 13px;
     }
-    
+
     .file-info {
         padding: 12px 16px;
     }
-    
+
     .file-name {
         font-size: 14px;
     }
-    
+
     .file-path {
         font-size: 12px;
     }

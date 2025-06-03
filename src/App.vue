@@ -13,6 +13,13 @@
 
         <!-- 更新检查按钮 -->
         <div class="titlebar-actions" v-if="isDarwin">
+          <el-button text size="small" @click="toggleFocusMode" :class="['focus-mode-btn', { 'active': focusMode }]"
+            :title="`${focusMode ? '退出专注模式' : '进入专注模式'} (${isDarwin ? 'Cmd' : 'Ctrl'}+E)`">
+            <el-icon>
+              <component :is="focusMode ? 'View' : 'Hide'" />
+            </el-icon>
+            <span class="focus-btn-text">{{ focusMode ? '退出专注' : '专注模式' }}</span>
+          </el-button>
           <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
             title="检查更新">
             <el-icon>
@@ -23,13 +30,22 @@
         </div>
 
         <div class="window-controls" v-if="!isDarwin">
-          <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
-            title="检查更新">
-            <el-icon>
-              <Refresh />
-            </el-icon>
-            <span class="update-btn-text">检查更新</span>
-          </el-button>
+          <div class="win32-actions">
+            <el-button text size="small" @click="toggleFocusMode" :class="['focus-mode-btn', { 'active': focusMode }]"
+              :title="`${focusMode ? '退出专注模式' : '进入专注模式'} (${isDarwin ? 'Cmd' : 'Ctrl'}+E)`">
+              <el-icon>
+                <component :is="focusMode ? 'View' : 'Hide'" />
+              </el-icon>
+              <span class="focus-btn-text">{{ focusMode ? '退出专注' : '专注模式' }}</span>
+            </el-button>
+            <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
+              title="检查更新">
+              <el-icon>
+                <Refresh />
+              </el-icon>
+              <span class="update-btn-text">检查更新</span>
+            </el-button>
+          </div>
           <button class="control-btn minimize-btn" @click="minimizeWindow">
             <svg width="12" height="12" viewBox="0 0 12 12">
               <rect x="2" y="5.5" width="8" height="1" fill="currentColor" />
@@ -51,7 +67,7 @@
       <!-- 内容区域 -->
       <div class="app-content">
         <!-- 操作区域 -->
-        <div class="section-card operation-section">
+        <div class="section-card operation-section" v-show="!focusMode">
           <div class="section-header" @click="toggleSection('operation')">
             <div class="section-icon">⚡</div>
             <span class="section-title">操作区域</span>
@@ -67,7 +83,7 @@
                     <span class="card-title">文件加载</span>
                   </div>
                   <div class="card-content">
-                    <file-loader />
+                    <file-loader ref="fileLoaderRef" />
                   </div>
                 </div>
                 <div class="card-wrapper code-generator-card">
@@ -85,7 +101,7 @@
         </div>
 
         <!-- 领域设计区域 -->
-        <div class="section-card domain-section">
+        <div class="section-card domain-section" v-show="!focusMode">
           <div class="section-header" @click="toggleSection('domain')">
             <div class="section-icon">🎯</div>
             <span class="section-title">领域设计</span>
@@ -108,8 +124,8 @@
               :icon="sectionCollapsed.script ? 'ArrowDown' : 'ArrowUp'" />
           </div>
           <el-collapse-transition>
-            <div v-show="!sectionCollapsed.script" class="section-content">
-              <script-editor />
+            <div v-show="!sectionCollapsed.script" class="section-content" :class="{ 'focus-mode-content': focusMode }">
+              <script-editor @show-crud-dialog="handleShowCrudDialog" />
             </div>
           </el-collapse-transition>
         </div>
@@ -125,28 +141,6 @@
               @open-about-dialog="showAboutDialog = true" @open-help-dialog="showHelpDialog = true" />
           </div>
         </div>
-
-        <!-- 专注模式悬浮按钮 -->
-        <div class="focus-mode-fab" :class="{ 'active': focusModeActive, 'dragging': fabPosition.isDragging }" :style="{
-          left: fabPosition.x + 'px',
-          top: fabPosition.y + 'px'
-        }" @click="handleFabClick" @mousedown="startDrag"
-          :title="focusModeActive ? '退出专注模式 (Cmd/Ctrl+F)' : '进入专注模式 (Cmd/Ctrl+F) | 支持拖拽移动位置'">
-          <div class="fab-icon">
-            <svg v-if="!focusModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <!-- 专注模式图标 - 圆形加上焦点 -->
-              <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" />
-              <circle cx="12" cy="12" r="3" fill="currentColor" />
-              <path d="M2 12h4M18 12h4M12 2v4M12 18v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-            <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <!-- 退出专注模式图标 - 展开箭头 -->
-              <path d="M8 3v3a2 2 0 0 1-2 2H3M16 3v3a2 2 0 0 0 2 2h3M8 21v-3a2 2 0 0 1-2-2H3M16 21v-3a2 2 0 0 0 2-2h3"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <div class="fab-text">{{ focusModeActive ? '退出专注' : '专注模式' }}</div>
-        </div>
       </div>
     </div>
 
@@ -159,11 +153,6 @@
             <h3>发现新版本</h3>
             <p>有可用的更新版本</p>
           </div>
-          <button class="close-btn" @click="updateDialogVisible = false">
-            <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </button>
         </div>
 
         <div class="update-dialog-content">
@@ -209,11 +198,6 @@
             <h3>RCS 脚本生成专家</h3>
             <p>将 Markdown 表格的中文伪代码解析为 RCS 文件</p>
           </div>
-          <button class="dialog-close-btn" @click="showGptDialog = false">
-            <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </button>
         </div>
 
         <div class="dialog-content">
@@ -240,11 +224,6 @@
             <h3>Rest Code</h3>
             <p>可视化API脚本生成工具</p>
           </div>
-          <button class="dialog-close-btn" @click="showAboutDialog = false">
-            <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </button>
         </div>
 
         <div class="dialog-content">
@@ -254,8 +233,8 @@
               <div class="card-content">
                 <label>当前版本</label>
                 <a href="javascript:void(0)"
-                   @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.3')" class="link-btn">
-                  v1.1.3
+                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.4')" class="link-btn">
+                  v1.1.4
                 </a>
               </div>
             </div>
@@ -273,7 +252,7 @@
               <div class="card-icon">📁</div>
               <div class="card-content">
                 <label>源码仓库</label>
-                <a href="javascript:void(0)" @click="openLink('https://github.com/dhslegen/rest-code/releases')"
+                <a href="javascript:void(0)" @click="openLink('https://github.com/dhslegen/rest-code')"
                   class="link-btn">
                   点击访问
                 </a>
@@ -311,11 +290,6 @@
             <h3>使用指南</h3>
             <p>快速上手 Rest Code 的完整指南</p>
           </div>
-          <button class="dialog-close-btn" @click="showHelpDialog = false">
-            <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </button>
         </div>
 
         <div class="dialog-content">
@@ -343,11 +317,6 @@
             <h3>代码预览</h3>
             <p>生成的Java代码结构预览</p>
           </div>
-          <button class="dialog-close-btn" @click="showPreviewDialog = false">
-            <svg width="16" height="16" viewBox="0 0 16 16">
-              <path d="M4 4 L12 12 M12 4 L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </button>
         </div>
 
         <div class="dialog-content">
@@ -364,6 +333,40 @@
         </div>
       </div>
     </div>
+
+    <!-- 一键CRUD对话框 -->
+    <div v-if="showCrudDialog" class="dialog-overlay" @click="showCrudDialog = false">
+      <div class="modern-dialog crud-dialog" @click.stop>
+        <div class="dialog-header">
+          <div class="dialog-icon">⚙️</div>
+          <div class="dialog-title">
+            <h3>一键 CRUD</h3>
+            <p>快速生成增删改查接口脚本</p>
+          </div>
+        </div>
+
+        <div class="dialog-content">
+          <div class="crud-form">
+            <div class="form-item">
+              <label class="form-label">领域名称</label>
+              <el-select v-model="selectedDomain" placeholder="请选择领域名称" class="form-select">
+                <el-option v-for="domain in domains" :key="domain.name" :label="domain.name" :value="domain.name">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <button class="btn-secondary" @click="showCrudDialog = false">
+            取消
+          </button>
+          <button class="btn-primary" @click="confirmCRUD">
+            确定
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -375,19 +378,25 @@ import ScriptViewer from './components/ScriptViewer.vue'
 import CodeGenerator from './components/CodeGenerator.vue'
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Refresh } from '@element-plus/icons-vue'
+import { Refresh, View, Hide } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import helpContentRaw from './docs/help.md?raw'
 import gptContentRaw from './docs/GPT.md?raw'
+import { useStore } from './store/'
 
 // 平台检测
 const platform = ref('')
 const isDarwin = computed(() => platform.value === 'darwin')
 const isWin32 = computed(() => platform.value === 'win32')
 
+// Store
+const store = useStore()
+const { domains } = store
+
 // 状态管理
 const scriptViewerRef = ref()
+const fileLoaderRef = ref()
 const checkingUpdate = ref(false)
 
 // 弹窗管理
@@ -404,9 +413,13 @@ const showGptDialog = ref(false)
 const showAboutDialog = ref(false)
 const showHelpDialog = ref(false)
 const showPreviewDialog = ref(false)
+const showCrudDialog = ref(false)
 
 // 预览相关状态
 const previewContent = ref('')
+
+// CRUD弹窗相关状态
+const selectedDomain = ref('')
 
 // Markdown 处理
 const helpContent = ref(helpContentRaw)
@@ -470,26 +483,106 @@ onMounted(async () => {
     })
   }
 
-  // 添加键盘快捷键监听
-  document.addEventListener('keydown', handleKeydown)
-
-  // 初始化悬浮按钮位置
-  initFabPosition()
-
-  // 监听窗口大小变化，调整按钮位置
-  window.addEventListener('resize', handleWindowResize)
-
-  // 开始监听内容变化
-  startContentObserver()
+  // 添加快捷键监听
+  document.addEventListener('keydown', handleKeyDown)
 })
 
-// 键盘快捷键处理
-const handleKeydown = (event: KeyboardEvent) => {
-  // Cmd/Ctrl + F 切换专注模式
-  if ((event.metaKey || event.ctrlKey) && event.key === 'f') {
+// 清理事件监听器
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+})
+
+// 快捷键处理函数
+const handleKeyDown = (event: KeyboardEvent) => {
+  const isMac = isDarwin.value
+  const ctrlOrCmd = isMac ? event.metaKey : event.ctrlKey
+
+  // Cmd/Ctrl + O: 打开文件选择窗口
+  if (ctrlOrCmd && event.key === 'o') {
+    event.preventDefault()
+    handleOpenFile()
+  }
+
+  // Cmd/Ctrl + S: 保存
+  if (ctrlOrCmd && event.key === 's') {
+    event.preventDefault()
+    handleSave()
+  }
+
+  // Cmd/Ctrl + E: 切换专注模式
+  if (ctrlOrCmd && event.key === 'e') {
     event.preventDefault()
     toggleFocusMode()
   }
+}
+
+// 处理打开文件功能
+const handleOpenFile = () => {
+  // 调用FileLoader的openFile方法
+  if (fileLoaderRef.value && fileLoaderRef.value.openFile) {
+    fileLoaderRef.value.openFile()
+  }
+  else {
+    ElMessage.warning(`暂无可打开的文件`)
+  }
+}
+
+// 处理保存功能
+const handleSave = async () => {
+  // 调用ScriptViewer的保存方法
+  if (scriptViewerRef.value && scriptViewerRef.value.saveScripts) {
+    await scriptViewerRef.value.saveScripts()
+  } else {
+    ElMessage.warning(`暂无可保存的内容`)
+  }
+}
+
+// 一键CRUD相关方法
+const handleShowCrudDialog = () => {
+  if (domains.length === 0) {
+    ElMessage.error('请先添加领域')
+    return
+  }
+
+  // 检查当前选择的域名是否还在domains列表中，如果不在则重置
+  const domainExists = domains.some(domain => domain.name === selectedDomain.value)
+  if (!domainExists) {
+    selectedDomain.value = ''
+  }
+
+  showCrudDialog.value = true
+}
+
+const confirmCRUD = () => {
+  if (!selectedDomain.value) {
+    ElMessage.error('请选择领域名称')
+    return
+  }
+
+  const domainName = selectedDomain.value
+  const domainDesc = domains.find((d) => d.name === domainName)?.description || ''
+
+  const crudTemplates = ['POST-创建', 'PATCH-编辑', 'GET-获取分页', 'DELETE-批量删除']
+  crudTemplates.forEach((templateName) => {
+    const template = store.templates.find((t) => t.name === templateName)
+    if (template) {
+      const script = {
+        domain: domainName,
+        httpMethod: template.httpMethod,
+        apiPath: template.apiPath || '',
+        operation: template.operation,
+        contract: template.contract,
+        description: template.description.replace('{领域描述}', domainDesc),
+        template: template.name,
+        tooltipContent: '',
+        showTooltip: false,
+      }
+      store.addScript(script)
+    }
+  })
+
+  showCrudDialog.value = false
+  ElMessage.success(`已为"${domainName}"生成CRUD接口`)
 }
 
 // 窗口控制方法
@@ -561,236 +654,43 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
   sectionCollapsed[section] = !sectionCollapsed[section]
 }
 
-// 专注模式状态
-const focusModeActive = ref(false)
-const fabPosition = reactive({
-  x: 0,
-  y: 0,
-  isDragging: false
-})
+// 专注模式相关状态
+const focusMode = ref(false)
 
-// 初始化悬浮按钮位置（右侧垂直居中）
-const initFabPosition = () => {
-  fabPosition.x = window.innerWidth - 70 // 距离右边缘70px
-  fabPosition.y = window.innerHeight * 0.70 - 30
-}
-
-// 拖拽相关变量
-let dragStartX = 0
-let dragStartY = 0
-let dragOffsetX = 0
-let dragOffsetY = 0
-let hasDragged = false // 标记是否发生了拖拽
-
-// 悬浮按钮拖拽开始
-const startDrag = (event: MouseEvent) => {
-  fabPosition.isDragging = true
-  hasDragged = false // 重置拖拽标记
-
-  const rect = (event.target as HTMLElement).getBoundingClientRect()
-  dragStartX = event.clientX
-  dragStartY = event.clientY
-  dragOffsetX = event.clientX - rect.left
-  dragOffsetY = event.clientY - rect.top
-
-  document.addEventListener('mousemove', onDrag)
-  document.addEventListener('mouseup', endDrag)
-  event.preventDefault()
-}
-
-// 拖拽过程中
-const onDrag = (event: MouseEvent) => {
-  if (!fabPosition.isDragging) return
-
-  const deltaX = Math.abs(event.clientX - dragStartX)
-  const deltaY = Math.abs(event.clientY - dragStartY)
-
-  // 如果移动距离超过阈值，标记为拖拽
-  if (deltaX > 5 || deltaY > 5) {
-    hasDragged = true
-  }
-
-  const newX = event.clientX - dragOffsetX
-  const newY = event.clientY - dragOffsetY
-
-  // 限制在视窗范围内
-  const maxX = window.innerWidth - 60
-  const maxY = window.innerHeight - 60
-
-  fabPosition.x = Math.max(0, Math.min(newX, maxX))
-  fabPosition.y = Math.max(0, Math.min(newY, maxY))
-}
-
-// 拖拽结束
-const endDrag = () => {
-  fabPosition.isDragging = false
-  document.removeEventListener('mousemove', onDrag)
-  document.removeEventListener('mouseup', endDrag)
-}
-
-// 动态检测滚动空间并智能滚动
-const smartScrollToFocus = () => {
-  const appContent = document.querySelector('.app-content') as HTMLElement
-  if (!appContent) return false
-
-  const scrollHeight = appContent.scrollHeight
-  const clientHeight = appContent.clientHeight
-  const currentScrollTop = appContent.scrollTop
-
-  // 检查是否有向下滚动的空间
-  const hasScrollSpace = scrollHeight > clientHeight
-  const canScrollDown = currentScrollTop < (scrollHeight - clientHeight)
-
-  if (hasScrollSpace && canScrollDown) {
-    // 平滑滚动到底部，确保编辑器区域完全可见
-    appContent.scrollTo({
-      top: scrollHeight - clientHeight,
-      behavior: 'smooth'
-    })
-    return true
-  }
-
-  return false
-}
-
-// 切换专注模式
 const toggleFocusMode = () => {
-  focusModeActive.value = !focusModeActive.value
+  focusMode.value = !focusMode.value
 
-  const appContent = document.querySelector('.app-content') as HTMLElement
-  if (!appContent) return
-
-  if (focusModeActive.value) {
+  if (focusMode.value) {
     // 进入专注模式
-    const didScroll = smartScrollToFocus()
+    ElMessage.success(`已进入专注模式 (${isDarwin.value ? 'Cmd' : 'Ctrl'}+E)`)
 
-    // 禁用滚轮
-    appContent.style.overflow = 'hidden'
+    // 滚动到底部
+    setTimeout(() => {
+      const appContent = document.querySelector('.app-content')
+      if (appContent) {
+        appContent.scrollTop = appContent.scrollHeight
+      }
+    }, 100)
 
-    // 开始监听内容变化以保持置底
-    startContentObserver()
-
-    // 显示带快捷键的提示
-    if (didScroll) {
-      ElMessage.success('已进入专注模式并滚动到编辑区域 (快捷键: Cmd/Ctrl+F)')
-    } else {
-      ElMessage.success('已进入专注模式，专心编辑脚本 (快捷键: Cmd/Ctrl+F)')
+    // 禁用滚动条
+    document.body.style.overflow = 'hidden'
+    const appContent = document.querySelector('.app-content')
+    if (appContent) {
+      (appContent as any).style.overflow = 'hidden'
     }
   } else {
     // 退出专注模式
-    // 恢复滚轮
-    appContent.style.overflow = 'auto'
+    ElMessage.info(`已退出专注模式 (${isDarwin.value ? 'Cmd' : 'Ctrl'}+E)`)
 
-    // 停止监听内容变化
-    stopContentObserver()
-
-    // 显示退出提示
-    ElMessage.info('已退出专注模式，恢复正常滚动 (快捷键: Cmd/Ctrl+F)')
-  }
-}
-
-onUnmounted(() => {
-  // 清理事件监听器
-  document.removeEventListener('keydown', handleKeydown)
-  // 清理窗口大小变化监听器
-  window.removeEventListener('resize', handleWindowResize)
-  // 清理拖拽事件监听器（如果存在）
-  document.removeEventListener('mousemove', onDrag)
-  document.removeEventListener('mouseup', endDrag)
-  // 清理内容观察器
-  stopContentObserver()
-})
-
-// 窗口大小变化处理函数
-const handleWindowResize = () => {
-  // 如果按钮超出了新的窗口范围，重新调整位置
-  const maxX = window.innerWidth - 60
-  const maxY = window.innerHeight - 60
-
-  if (fabPosition.x > maxX) {
-    fabPosition.x = maxX
-  }
-  if (fabPosition.y > maxY) {
-    fabPosition.y = maxY
-  }
-
-  // 如果处于专注模式，窗口大小变化时保持置底
-  if (focusModeActive.value) {
-    setTimeout(() => {
-      maintainBottomScroll()
-    }, 100) // 延迟一点确保布局完成
-  }
-}
-
-// 内容变化观察器
-let contentObserver: MutationObserver | null = null
-
-// 保持底部滚动的函数
-const maintainBottomScroll = () => {
-  if (!focusModeActive.value) return
-
-  const appContent = document.querySelector('.app-content') as HTMLElement
-  if (!appContent) return
-
-  const scrollHeight = appContent.scrollHeight
-  const clientHeight = appContent.clientHeight
-
-  if (scrollHeight > clientHeight) {
-    appContent.scrollTo({
-      top: scrollHeight - clientHeight,
-      behavior: 'smooth'
-    })
-  }
-}
-
-// 开始监听内容变化
-const startContentObserver = () => {
-  const appContent = document.querySelector('.app-content') as HTMLElement
-  if (!appContent || contentObserver) return
-
-  contentObserver = new MutationObserver((mutations) => {
-    // 检查是否有实际的内容变化
-    const hasContentChanges = mutations.some(mutation =>
-      mutation.type === 'childList' ||
-      (mutation.type === 'attributes' &&
-        (mutation.attributeName === 'style' || mutation.attributeName === 'class'))
-    )
-
-    if (hasContentChanges && focusModeActive.value) {
-      // 延迟执行，确保DOM更新完成
-      setTimeout(() => {
-        maintainBottomScroll()
-      }, 50)
+    // 恢复滚动条
+    document.body.style.overflow = ''
+    const appContent = document.querySelector('.app-content')
+    if (appContent) {
+      (appContent as any).style.overflow = ''
     }
-  })
-
-  // 观察整个app-content及其子树的变化
-  contentObserver.observe(appContent, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['style', 'class', 'data-*']
-  })
-}
-
-// 停止监听内容变化
-const stopContentObserver = () => {
-  if (contentObserver) {
-    contentObserver.disconnect()
-    contentObserver = null
   }
 }
 
-// 处理按钮点击（需要区分点击和拖拽）
-const handleFabClick = () => {
-  // 如果刚刚发生了拖拽，不执行切换
-  if (hasDragged) {
-    hasDragged = false
-    return
-  }
-
-  toggleFocusMode()
-}
 </script>
 
 <style scoped>
@@ -831,7 +731,14 @@ const handleFabClick = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 居中显示 */
+  position: absolute;
+  /* 改为绝对定位 */
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  /* 让按钮可以点击 */
 }
 
 .titlebar-actions {
@@ -839,6 +746,14 @@ const handleFabClick = () => {
   display: flex;
   align-items: center;
   margin-right: 10px;
+  position: absolute;
+  /* 改为绝对定位 */
+  right: 0;
+  /* 确保在右边 */
+  top: 50%;
+  transform: translateY(-50%);
+  /* 垂直居中 */
+  z-index: 10;
 }
 
 .update-check-btn {
@@ -875,26 +790,13 @@ const handleFabClick = () => {
   display: flex;
   align-items: center;
   gap: 8px;
+  pointer-events: auto;
+  /* 恢复标题的交互 */
 }
 
 .app-logo {
   font-size: 18px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  animation: logoGlow 3s ease-in-out infinite;
-}
-
-@keyframes logoGlow {
-
-  0%,
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  }
-
-  50% {
-    transform: scale(1.05);
-    filter: drop-shadow(0 3px 8px rgba(175, 82, 222, 0.4));
-  }
 }
 
 .app-name {
@@ -915,6 +817,16 @@ const handleFabClick = () => {
   -webkit-app-region: no-drag;
   display: flex;
   height: 100%;
+  position: relative;
+  /* 确保在标题之上 */
+  z-index: 10;
+}
+
+.win32-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 8px;
 }
 
 .control-btn {
@@ -958,34 +870,19 @@ const handleFabClick = () => {
   min-height: 100%;
   /* 填满window-container */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #E33D98 50%, #f5576c 75%, #4facfe 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  /* 移除动画相关属性 */
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
 }
 
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .section-card {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 0;
-  margin: 0 20px 20px 20px;
+  margin: 10px 20px 20px 20px;
   /* 添加左右margin */
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -994,13 +891,6 @@ const handleFabClick = () => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 移除hover动画效果 */
-/* .section-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-} */
-
-/* 第一个section与标题栏的间距 */
 .operation-section {
   margin-top: 10px;
   /* 移除顶部间距，因为移除了gap */
@@ -1028,8 +918,8 @@ const handleFabClick = () => {
 .section-header {
   display: flex;
   align-items: center;
-  padding: 16px 20px 12px;
-  background: rgba(255, 255, 255, 0.8);
+  padding: 12px 20px 12px;
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   border-radius: 24px 24px 0 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -1069,6 +959,13 @@ const handleFabClick = () => {
 
 .section-content {
   padding: 20px;
+}
+
+/* 专注模式下的内容区域样式 */
+.focus-mode-content {
+  min-height: 350px !important;
+  height: auto !important;
+  /* 覆盖原有的固定高度 */
 }
 
 .editor-content {
@@ -1147,647 +1044,6 @@ const handleFabClick = () => {
 
   .card-content {
     padding: 16px;
-  }
-}
-
-/* 全局下拉框样式 */
-/* 重置浏览器默认样式 */
-* {
-  box-sizing: border-box;
-}
-
-html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  /* 防止滚动条出现 */
-}
-
-/* 强制#app填满窗口 */
-#app {
-  width: 100vw !important;
-  height: 100vh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  text-align: initial !important;
-  display: block !important;
-  overflow: hidden !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 1 !important;
-}
-
-/* Element Plus 下拉框现代化样式 - 全局作用域 */
-.el-select__popper {
-  z-index: 2020 !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(0, 122, 255, 0.15) !important;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(248, 250, 252, 0.95) 100%) !important;
-  backdrop-filter: blur(25px) !important;
-}
-
-.el-select__popper .el-select-dropdown {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 12px 0 !important;
-  margin: 0 !important;
-  min-width: 200px !important;
-  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border: none !important;
-  height: 100% !important;
-}
-
-.el-select__popper[data-popper-placement*="top"] .el-select-dropdown {
-  transform: translateY(4px) !important;
-}
-
-.el-select__popper[data-popper-placement*="bottom"] .el-select-dropdown {
-  transform: translateY(-4px) !important;
-}
-
-@keyframes dropdownSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(-4px) scale(1);
-  }
-}
-
-.el-select-dropdown__item {
-  padding: 12px 20px !important;
-  font-size: 14px !important;
-  color: #2c3e50 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border-radius: 12px !important;
-  margin: 3px 12px !important;
-  background: transparent !important;
-  position: relative !important;
-  font-weight: 500 !important;
-  letter-spacing: -0.1px !important;
-  border: none !important;
-  line-height: 1.2 !important;
-  min-height: auto !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-.el-select-dropdown__item span {
-  position: relative !important;
-  z-index: 2 !important;
-  width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  line-height: 1.2 !important;
-}
-
-.el-select-dropdown__item::before {
-  content: '' !important;
-  position: absolute !important;
-  left: 8px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  width: 3px !important;
-  height: 0 !important;
-  background: linear-gradient(135deg, #007AFF, #5AC8FA) !important;
-  border-radius: 2px !important;
-  transition: height 0.3s ease !important;
-  z-index: 1 !important;
-}
-
-.el-select-dropdown__item:hover {
-  background: linear-gradient(135deg,
-      rgba(0, 122, 255, 0.12) 0%,
-      rgba(90, 200, 250, 0.08) 100%) !important;
-  color: #007AFF !important;
-  transform: translateX(4px) scale(1.02) !important;
-  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.15) !important;
-}
-
-.el-select-dropdown__item:hover::before {
-  height: 20px !important;
-}
-
-.el-select-dropdown__item:hover span {
-  color: #007AFF !important;
-  font-weight: 600 !important;
-}
-
-.el-select-dropdown__item.is-selected {
-  background: linear-gradient(135deg,
-      rgba(0, 122, 255, 0.18) 0%,
-      rgba(90, 200, 250, 0.12) 100%) !important;
-  color: #007AFF !important;
-  font-weight: 700 !important;
-  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.2) !important;
-}
-
-.el-select-dropdown__item.is-selected::before {
-  height: 24px !important;
-  background: linear-gradient(135deg, #007AFF, #5AC8FA, #34C759) !important;
-}
-
-.el-select-dropdown__item.is-selected span {
-  color: #007AFF !important;
-  font-weight: 700 !important;
-}
-
-.el-select-dropdown__item.is-selected::after {
-  content: '✨' !important;
-  position: absolute !important;
-  right: 16px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  font-size: 16px !important;
-  animation: selectedGlow 1.5s ease-in-out infinite !important;
-  z-index: 2 !important;
-}
-
-@keyframes selectedGlow {
-
-  0%,
-  100% {
-    opacity: 0.8;
-    transform: translateY(-50%) scale(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateY(-50%) scale(1.1);
-  }
-}
-
-/* 滚动条美化 */
-.el-select-dropdown .el-scrollbar__wrap {
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(0, 122, 255, 0.4) transparent !important;
-}
-
-.el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar {
-  width: 8px !important;
-}
-
-.el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-radius: 4px !important;
-  margin: 12px 0 !important;
-}
-
-.el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg,
-      rgba(0, 122, 255, 0.5),
-      rgba(90, 200, 250, 0.4)) !important;
-  border-radius: 4px !important;
-  border: 2px solid transparent !important;
-  background-clip: padding-box !important;
-}
-
-.el-select-dropdown .el-scrollbar__wrap::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg,
-      rgba(0, 122, 255, 0.7),
-      rgba(90, 200, 250, 0.6)) !important;
-}
-
-/* 代码生成区域下拉框 - 橙色主题 */
-.code-generator-card .el-select__popper {
-  border: 1px solid rgba(255, 149, 0, 0.15) !important;
-}
-
-.code-generator-card .el-select-dropdown__item::before {
-  background: linear-gradient(135deg, #FF9500, #FFCC02) !important;
-}
-
-.code-generator-card .el-select-dropdown__item:hover {
-  background: linear-gradient(135deg,
-      rgba(255, 149, 0, 0.12) 0%,
-      rgba(255, 204, 2, 0.08) 100%) !important;
-  color: #FF9500 !important;
-  box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15) !important;
-}
-
-.code-generator-card .el-select-dropdown__item:hover span {
-  color: #FF9500 !important;
-}
-
-.code-generator-card .el-select-dropdown__item.is-selected {
-  background: linear-gradient(135deg,
-      rgba(255, 149, 0, 0.18) 0%,
-      rgba(255, 204, 2, 0.12) 100%) !important;
-  color: #FF9500 !important;
-  box-shadow: 0 4px 20px rgba(255, 149, 0, 0.2) !important;
-}
-
-.code-generator-card .el-select-dropdown__item.is-selected::before {
-  background: linear-gradient(135deg, #FF9500, #FFCC02, #34C759) !important;
-}
-
-.code-generator-card .el-select-dropdown__item.is-selected span {
-  color: #FF9500 !important;
-}
-
-.code-generator-card .el-select-dropdown__item.is-selected::after {
-  content: '🔥' !important;
-}
-
-/* 现代化消息提示美化 - 与对话框设计语言一致 */
-.el-message {
-  position: fixed !important;
-  top: 60px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  padding: 20px 28px !important;
-  border-radius: 20px !important;
-  border: none !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(25px) !important;
-  box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-  font-weight: 600 !important;
-  font-size: 15px !important;
-  letter-spacing: -0.1px !important;
-  z-index: 3000 !important;
-  line-height: 1.4 !important;
-  min-width: 320px !important;
-  max-width: 520px !important;
-  overflow: hidden !important;
-  animation: messageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 12px !important;
-  text-align: center !important;
-  margin: 0 !important;
-  white-space: nowrap !important;
-}
-
-.el-message::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #FF3B30, #FF9500, #FFCC02, #34C759, #007AFF, #5856D6, #AF52DE) !important;
-  opacity: 0.8 !important;
-}
-
-@keyframes messageSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-30px) scale(0.9) rotateX(10deg);
-    filter: blur(8px);
-  }
-
-  30% {
-    opacity: 0.6;
-    transform: translateX(-50%) translateY(-10px) scale(0.98) rotateX(5deg);
-    filter: blur(4px);
-  }
-
-  70% {
-    opacity: 0.9;
-    transform: translateX(-50%) translateY(5px) scale(1.02) rotateX(-2deg);
-    filter: blur(1px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1) rotateX(0deg);
-    filter: blur(0px);
-  }
-}
-
-/* 成功消息 - 绿色主题 */
-.el-message--success {
-  color: #1a1a1a !important;
-  border: 1px solid rgba(34, 197, 94, 0.2) !important;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(240, 253, 244, 0.95) 50%,
-      rgba(34, 197, 94, 0.08) 100%) !important;
-  box-shadow:
-    0 25px 80px rgba(34, 197, 94, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-}
-
-.el-message--success::before {
-  background: linear-gradient(90deg, #34C759, #22c55e, #16a34a) !important;
-}
-
-.el-message--success .el-message__icon {
-  color: #22c55e !important;
-  font-size: 20px !important;
-  margin-right: 0 !important;
-  filter: drop-shadow(0 2px 4px rgba(34, 197, 94, 0.2)) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 8px !important;
-  background: rgba(34, 197, 94, 0.1) !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-.el-message--success .el-message__icon::after {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  border-radius: 8px !important;
-  background: rgba(34, 197, 94, 0.2) !important;
-  animation: iconPulse 2s ease-in-out infinite !important;
-}
-
-.el-message--success .el-message__content {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-  flex: 1 !important;
-  text-shadow: 0 1px 2px rgba(34, 197, 94, 0.1) !important;
-  text-align: center !important;
-}
-
-/* 错误消息 - 红色主题 */
-.el-message--error {
-  color: #1a1a1a !important;
-  border: 1px solid rgba(239, 68, 68, 0.2) !important;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(254, 242, 242, 0.95) 50%,
-      rgba(239, 68, 68, 0.08) 100%) !important;
-  box-shadow:
-    0 25px 80px rgba(239, 68, 68, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-}
-
-.el-message--error::before {
-  background: linear-gradient(90deg, #FF3B30, #ef4444, #dc2626) !important;
-}
-
-.el-message--error .el-message__icon {
-  color: #ef4444 !important;
-  font-size: 20px !important;
-  margin-right: 0 !important;
-  filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.2)) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 8px !important;
-  background: rgba(239, 68, 68, 0.1) !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-.el-message--error .el-message__icon::after {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  border-radius: 8px !important;
-  background: rgba(239, 68, 68, 0.2) !important;
-  animation: iconPulse 2s ease-in-out infinite !important;
-}
-
-.el-message--error .el-message__content {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-  flex: 1 !important;
-  text-shadow: 0 1px 2px rgba(239, 68, 68, 0.1) !important;
-  text-align: center !important;
-}
-
-/* 警告消息 - 橙色主题 */
-.el-message--warning {
-  color: #1a1a1a !important;
-  border: 1px solid rgba(245, 158, 11, 0.2) !important;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 251, 235, 0.95) 50%,
-      rgba(245, 158, 11, 0.08) 100%) !important;
-  box-shadow:
-    0 25px 80px rgba(245, 158, 11, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-}
-
-.el-message--warning::before {
-  background: linear-gradient(90deg, #FF9500, #f59e0b, #d97706) !important;
-}
-
-.el-message--warning .el-message__icon {
-  color: #f59e0b !important;
-  font-size: 20px !important;
-  margin-right: 0 !important;
-  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.2)) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 8px !important;
-  background: rgba(245, 158, 11, 0.1) !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-.el-message--warning .el-message__icon::after {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  border-radius: 8px !important;
-  background: rgba(245, 158, 11, 0.2) !important;
-  animation: iconPulse 2s ease-in-out infinite !important;
-}
-
-.el-message--warning .el-message__content {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-  flex: 1 !important;
-  text-shadow: 0 1px 2px rgba(245, 158, 11, 0.1) !important;
-  text-align: center !important;
-}
-
-/* 信息消息 - 蓝色主题 */
-.el-message--info {
-  color: #1a1a1a !important;
-  border: 1px solid rgba(59, 130, 246, 0.2) !important;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(239, 246, 255, 0.95) 50%,
-      rgba(59, 130, 246, 0.08) 100%) !important;
-  box-shadow:
-    0 25px 80px rgba(59, 130, 246, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-}
-
-.el-message--info::before {
-  background: linear-gradient(90deg, #007AFF, #3b82f6, #2563eb) !important;
-}
-
-.el-message--info .el-message__icon {
-  color: #3b82f6 !important;
-  font-size: 20px !important;
-  margin-right: 0 !important;
-  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2)) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 8px !important;
-  background: rgba(59, 130, 246, 0.1) !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-.el-message--info .el-message__icon::after {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  border-radius: 8px !important;
-  background: rgba(59, 130, 246, 0.2) !important;
-  animation: iconPulse 2s ease-in-out infinite !important;
-}
-
-.el-message--info .el-message__content {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-  flex: 1 !important;
-  text-shadow: 0 1px 2px rgba(59, 130, 246, 0.1) !important;
-  text-align: center !important;
-}
-
-/* 消息提示的悬停效果 */
-.el-message:hover {
-  transform: translateX(-50%) translateY(-3px) scale(1.02) !important;
-  box-shadow:
-    0 35px 100px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* 关闭按钮美化 */
-.el-message .el-message__closeBtn {
-  position: absolute !important;
-  top: 14px !important;
-  right: 14px !important;
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: 10px !important;
-  background: rgba(0, 0, 0, 0.05) !important;
-  color: #6c757d !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border: none !important;
-  outline: none !important;
-  backdrop-filter: blur(10px) !important;
-  opacity: 0.7 !important;
-}
-
-.el-message .el-message__closeBtn:hover {
-  background: rgba(239, 68, 68, 0.12) !important;
-  color: #ef4444 !important;
-  transform: scale(1.15) !important;
-  opacity: 1 !important;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2) !important;
-}
-
-/* 光波扫过动画效果 */
-.el-message::after {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: -100% !important;
-  width: 100% !important;
-  height: 100% !important;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
-  transition: left 0.6s ease-out !important;
-  pointer-events: none !important;
-  z-index: 1 !important;
-}
-
-.el-message:hover::after {
-  left: 100% !important;
-}
-
-/* 图标脉冲动画 */
-@keyframes iconPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
-  50% {
-    transform: scale(1.2);
-    opacity: 0.3;
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .el-message {
-    min-width: 280px !important;
-    max-width: 90vw !important;
-    padding: 16px 20px !important;
-    font-size: 14px !important;
-  }
-
-  .el-message .el-message__icon {
-    font-size: 18px !important;
-    width: 20px !important;
-    height: 20px !important;
-  }
-
-  .el-message .el-message__closeBtn {
-    top: 12px !important;
-    right: 12px !important;
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 12px !important;
   }
 }
 
@@ -1944,26 +1200,6 @@ body {
   font-weight: 500;
 }
 
-.close-btn {
-  width: 55px;
-  height: 32px;
-  border: none;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  color: #6c757d;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  transform: scale(1.1);
-}
-
 .update-dialog-content {
   padding: 24px 28px;
 }
@@ -2019,21 +1255,6 @@ body {
   font-size: 20px;
   color: #AF52DE;
   font-weight: bold;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
 }
 
 .release-notes {
@@ -2076,8 +1297,6 @@ body {
 .notes-content::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, rgba(175, 82, 222, 0.4), rgba(191, 90, 242, 0.4));
   border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 
 .notes-content::-webkit-scrollbar-thumb:hover {
@@ -2162,10 +1381,6 @@ body {
   .version-comparison {
     flex-direction: column;
     gap: 12px;
-  }
-
-  .version-arrow {
-    transform: rotate(90deg);
   }
 
   .update-dialog-footer {
@@ -2296,27 +1511,6 @@ body {
   font-weight: 500;
 }
 
-.dialog-close-btn {
-  width: 55px;
-  height: 32px;
-  border: none;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  color: #6c757d;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.dialog-close-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  transform: scale(1.1);
-}
-
 .dialog-content {
   flex: 1;
   overflow: hidden;
@@ -2357,8 +1551,6 @@ body {
 .scrollable-content::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, rgba(175, 82, 222, 0.4), rgba(191, 90, 242, 0.4));
   border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 
 /* 关于对话框特殊布局 */
@@ -2821,8 +2013,6 @@ body {
 .preview-dialog .scrollable-content::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, rgba(255, 149, 0, 0.4), rgba(255, 204, 2, 0.4));
   border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 
 /* 预览弹窗中的特殊标题样式 */
@@ -2847,518 +2037,152 @@ body {
   font-size: 16px;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  body .el-message.el-message,
-  html .el-message.el-message {
-    min-width: 280px !important;
-    max-width: 90vw !important;
-    padding: 16px 20px !important;
-    font-size: 14px !important;
-  }
-}
-
-/* Element Plus MessageBox 层级控制 */
-body .el-overlay,
-html .el-overlay {
-  z-index: 99999 !important;
-}
-
-body .el-message-box,
-html .el-message-box {
-  z-index: 100000 !important;
-  border-radius: 20px !important;
-  border: none !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(25px) !important;
-  box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-  overflow: hidden !important;
-}
-
-body .el-message-box::before,
-html .el-message-box::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #FF3B30, #FF9500, #FFCC02, #34C759, #007AFF, #5856D6, #AF52DE) !important;
-  opacity: 0.8 !important;
-  z-index: 1 !important;
-}
-
-body .el-message-box .el-message-box__header,
-html .el-message-box .el-message-box__header {
-  padding-top: 32px !important;
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-body .el-message-box .el-message-box__content,
-html .el-message-box .el-message-box__content {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-body .el-message-box .el-message-box__btns,
-html .el-message-box .el-message-box__btns {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-
-  body .el-message.el-message,
-  html .el-message.el-message {
-    min-width: 280px !important;
-    max-width: 90vw !important;
-    padding: 16px 20px !important;
-    font-size: 14px !important;
-  }
-}
-
-/* 超高优先级全局样式 - Element Plus 消息提示现代化 */
-body .el-message.el-message,
-html .el-message.el-message {
-  position: fixed !important;
-  top: 60px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  padding: 20px 28px !important;
-  border-radius: 20px !important;
-  border: none !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(25px) !important;
-  box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-  font-weight: 600 !important;
-  font-size: 15px !important;
-  letter-spacing: -0.1px !important;
-  z-index: 3000 !important;
-  line-height: 1.4 !important;
-  min-width: 320px !important;
-  max-width: 520px !important;
-  overflow: hidden !important;
-  animation: messageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* 专注模式按钮样式 */
+.focus-mode-btn {
+  color: rgba(255, 255, 255, 0.8) !important;
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  gap: 12px !important;
-  text-align: center !important;
-  margin: 0 !important;
-  white-space: nowrap !important;
+  gap: 6px !important;
+  margin-right: 8px !important;
 }
 
-body .el-message.el-message::before,
-html .el-message.el-message::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #FF3B30, #FF9500, #FFCC02, #34C759, #007AFF, #5856D6, #AF52DE) !important;
-  opacity: 0.8 !important;
+.focus-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.05) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2) !important;
 }
 
-/* 消息提示悬停效果 */
-body .el-message.el-message:hover,
-html .el-message.el-message:hover {
-  transform: translateX(-50%) translateY(-3px) scale(1.02) !important;
-  box-shadow:
-    0 35px 100px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+.focus-mode-btn.active {
+  background: rgba(76, 175, 80, 0.3) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(76, 175, 80, 0.5) !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
 }
 
-/* 成功消息 - 绿色主题 */
-body .el-message--success.el-message--success,
-html .el-message--success.el-message--success {
-  color: #1a1a1a !important;
-  border: 1px solid rgba(34, 197, 94, 0.2) !important;
+.focus-mode-btn.active:hover {
+  background: rgba(76, 175, 80, 0.4) !important;
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4) !important;
+}
+
+.focus-btn-text {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CRUD弹窗特殊样式 */
+.crud-dialog {
+  width: 480px;
+  max-width: 90vw;
+}
+
+.crud-dialog .dialog-header {
   background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(240, 253, 244, 0.95) 50%,
-      rgba(34, 197, 94, 0.08) 100%) !important;
-  box-shadow:
-    0 25px 80px rgba(34, 197, 94, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+      rgba(175, 82, 222, 0.08) 0%,
+      rgba(191, 90, 242, 0.08) 50%,
+      rgba(218, 112, 214, 0.08) 100%);
+  border-bottom-color: rgba(175, 82, 222, 0.1);
 }
 
-body .el-message--success.el-message--success::before,
-html .el-message--success.el-message--success::before {
-  background: linear-gradient(90deg, #34C759, #22c55e, #16a34a) !important;
-}
-
-body .el-message--success.el-message--success .el-message__icon,
-html .el-message--success.el-message--success .el-message__icon {
-  color: #22c55e !important;
-  font-size: 20px !important;
-  margin-right: 0 !important;
-  filter: drop-shadow(0 2px 4px rgba(34, 197, 94, 0.2)) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 8px !important;
-  background: rgba(34, 197, 94, 0.1) !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-body .el-message--success.el-message--success .el-message__content,
-html .el-message--success.el-message--success .el-message__content {
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-  flex: 1 !important;
-  text-shadow: 0 1px 2px rgba(34, 197, 94, 0.1) !important;
-  text-align: center !important;
-}
-
-/* 其他消息类型的全局样式 */
-body .el-message--error .el-message__content,
-html .el-message--error .el-message__content,
-body .el-message--warning .el-message__content,
-html .el-message--warning .el-message__content,
-body .el-message--info .el-message__content,
-html .el-message--info .el-message__content {
-  text-align: center !important;
-}
-
-/* Element Plus 消息容器居中 */
-body .el-message-container,
-html .el-message-container {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  pointer-events: none !important;
-  z-index: 3000 !important;
-}
-
-body .el-message-container .el-message,
-html .el-message-container .el-message {
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  transform: none !important;
-  margin: 10px 0 !important;
-  pointer-events: auto !important;
-}
-
-/* 如果消息在容器中，需要特殊处理悬停效果 */
-body .el-message-container .el-message:hover,
-html .el-message-container .el-message:hover {
-  transform: translateY(-3px) scale(1.02) !important;
-}
-
-/* Element Plus MessageBox 层级控制 - 确保比 ElMessage 层级更高 */
-body .el-overlay,
-html .el-overlay {
-  z-index: 99999 !important;
-}
-
-body .el-message-box,
-html .el-message-box {
-  z-index: 100000 !important;
-  border-radius: 20px !important;
-  border: none !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(25px) !important;
-  box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
-  overflow: hidden !important;
-}
-
-body .el-message-box::before,
-html .el-message-box::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #FF3B30, #FF9500, #FFCC02, #34C759, #007AFF, #5856D6, #AF52DE) !important;
-  opacity: 0.8 !important;
-  z-index: 1 !important;
-}
-
-body .el-message-box .el-message-box__header,
-html .el-message-box .el-message-box__header {
-  padding-top: 32px !important;
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-body .el-message-box .el-message-box__content,
-html .el-message-box .el-message-box__content {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-body .el-message-box .el-message-box__btns,
-html .el-message-box .el-message-box__btns {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-
-  body .el-message.el-message,
-  html .el-message.el-message {
-    min-width: 280px !important;
-    max-width: 90vw !important;
-    padding: 16px 20px !important;
-    font-size: 14px !important;
-  }
-}
-
-/* 专注模式悬浮按钮样式 */
-.focus-mode-fab {
-  position: fixed;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 60px;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    0 8px 25px rgba(102, 126, 234, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1001;
-  backdrop-filter: blur(10px);
-  user-select: none;
-  overflow: hidden;
-}
-
-.focus-mode-fab.dragging {
-  cursor: grabbing;
-  transform: scale(1.1);
-  box-shadow:
-    0 15px 35px rgba(102, 126, 234, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
-  transition: none;
-  /* 拖拽时禁用过渡动画 */
-}
-
-.focus-mode-fab::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
-
-.focus-mode-fab:hover:not(.dragging) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    0 15px 35px rgba(102, 126, 234, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  cursor: grab;
-}
-
-.focus-mode-fab:hover:not(.dragging)::before {
-  transform: translateX(100%);
-}
-
-.focus-mode-fab:active:not(.dragging) {
-  transform: translateY(-1px) scale(1.02);
-}
-
-.fab-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 2px;
-  transition: transform 0.3s ease;
-  pointer-events: none;
-  /* 防止拖拽时选中SVG */
-}
-
-.focus-mode-fab:hover:not(.dragging) .fab-icon {
-  transform: scale(1.1);
-}
-
-.fab-text {
-  font-size: 9px;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1;
-  opacity: 0.9;
-  letter-spacing: -0.02em;
-  pointer-events: none;
-  /* 防止拖拽时选中文字 */
-}
-
-.focus-mode-fab.active {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-  animation: focusModePulse 2s ease-in-out infinite;
-}
-
-.focus-mode-fab.active:hover:not(.dragging) {
-  box-shadow:
-    0 15px 35px rgba(255, 107, 107, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-}
-
-.focus-mode-fab.active.dragging {
-  box-shadow:
-    0 15px 35px rgba(255, 107, 107, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
-}
-
-@keyframes focusModePulse {
-
-  0%,
-  100% {
-    box-shadow:
-      0 8px 25px rgba(255, 107, 107, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  }
-
-  50% {
-    box-shadow:
-      0 8px 25px rgba(255, 107, 107, 0.5),
-      0 0 0 1px rgba(255, 255, 255, 0.2) inset,
-      0 0 0 4px rgba(255, 107, 107, 0.1);
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .focus-mode-fab {
-    width: 56px;
-    height: 56px;
-  }
-
-  .fab-icon {
-    width: 22px;
-    height: 22px;
-  }
-
-  .fab-text {
-    font-size: 8px;
-  }
-}
-
-/* 更新对话中发布说明的 Markdown 样式 */
-.notes-content :deep(h1),
-.notes-content :deep(h2),
-.notes-content :deep(h3),
-.notes-content :deep(h4) {
-  color: #1a1a1a;
-  font-weight: 700;
-  margin: 20px 0 12px 0;
-  line-height: 1.3;
-}
-
-.notes-content :deep(h1) {
-  font-size: 22px;
-  background: linear-gradient(135deg, #AF52DE, #BF5AF2);
+.crud-dialog .dialog-title h3 {
+  background: linear-gradient(135deg, #2c3e50, #AF52DE);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.crud-form {
+  padding: 24px 28px;
+}
+
+.form-item {
   margin-bottom: 16px;
 }
 
-.notes-content :deep(h2) {
-  font-size: 18px;
-  color: #AF52DE;
-  border-bottom: 2px solid rgba(175, 82, 222, 0.2);
-  padding-bottom: 6px;
-  margin-top: 24px;
-  margin-bottom: 14px;
-}
-
-.notes-content :deep(h3) {
-  font-size: 16px;
-  color: #BF5AF2;
-  margin-top: 20px;
-}
-
-.notes-content :deep(h4) {
+.form-label {
+  display: block;
   font-size: 14px;
-  color: #DA70D6;
-  margin-top: 16px;
-}
-
-.notes-content :deep(p) {
-  color: #4a5568;
-  line-height: 1.6;
-  margin: 8px 0;
-}
-
-.notes-content :deep(ul),
-.notes-content :deep(ol) {
-  color: #4a5568;
-  line-height: 1.6;
-  padding-left: 20px;
-  margin: 8px 0;
-}
-
-.notes-content :deep(li) {
-  margin: 4px 0;
-}
-
-.notes-content :deep(strong) {
-  color: #2c3e50;
   font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
 }
 
-.notes-content :deep(em) {
-  color: #6b7280;
-  font-style: italic;
+.form-select {
+  width: 100%;
 }
 
-.notes-content :deep(code) {
+.crud-form :deep(.form-select .el-select__wrapper) {
+  padding: 12px 16px;
+  border: 1px solid rgba(175, 82, 222, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+}
+
+.crud-form :deep(.form-select .el-select__wrapper:hover) {
+  border-color: rgba(175, 82, 222, 0.4);
+  box-shadow: 0 2px 8px rgba(175, 82, 222, 0.1);
+}
+
+.crud-form :deep(.form-select .el-select__wrapper.is-focused) {
+  border-color: rgba(175, 82, 222, 0.6);
+  box-shadow: 0 0 0 3px rgba(175, 82, 222, 0.1);
+}
+
+.crud-form :deep(.form-select .el-select__placeholder) {
+  color: #999;
+  font-size: 14px;
+}
+
+.crud-form :deep(.form-select .el-select__input) {
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.crud-form :deep(.form-select .el-select__caret) {
+  color: rgba(175, 82, 222, 0.6);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.crud-form :deep(.form-select .el-select__caret.is-reverse) {
+  transform: rotateZ(180deg);
+  color: #AF52DE;
+}
+
+/* 下拉框弹出层样式 */
+.crud-form :deep(.el-select-dropdown) {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(175, 82, 222, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(175, 82, 222, 0.15);
+}
+
+.crud-form :deep(.el-select-dropdown .el-select-dropdown__item) {
+  color: #2c3e50;
+  font-size: 14px;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.crud-form :deep(.el-select-dropdown .el-select-dropdown__item:hover) {
   background: rgba(175, 82, 222, 0.1);
   color: #AF52DE;
-  padding: 2px 6px;
-  border-radius: 6px;
+}
+
+.crud-form :deep(.el-select-dropdown .el-select-dropdown__item.is-selected) {
+  background: rgba(175, 82, 222, 0.15);
+  color: #AF52DE;
   font-weight: 600;
-  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-  font-size: 0.9em;
-}
-
-.notes-content :deep(pre) {
-  background: rgba(248, 250, 252, 0.8);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 12px 0;
-  border: 1px solid rgba(175, 82, 222, 0.1);
-  overflow-x: auto;
-}
-
-.notes-content :deep(blockquote) {
-  border-left: 3px solid #AF52DE;
-  padding: 8px 16px;
-  margin: 12px 0;
-  background: rgba(175, 82, 222, 0.05);
-  border-radius: 0 6px 6px 0;
-  color: #4a5568;
-  font-style: italic;
 }
 </style>

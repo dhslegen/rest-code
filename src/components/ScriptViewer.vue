@@ -2,7 +2,8 @@
   <!-- 错误信息展示 -->
   <el-popover v-model="showErrorPopover" placement="top" width="700" :visible="showErrorPopover">
     <div style="max-height: 400px; overflow: auto;" @click.stop>
-      <div style="background: #f8f9fa; padding: 8px 12px; border-radius: 4px; margin-bottom: 8px; border-left: 4px solid #409eff;">
+      <div
+        style="background: #f8f9fa; padding: 8px 12px; border-radius: 4px; margin-bottom: 8px; border-left: 4px solid #409eff;">
         <h4 style="margin: 0 0 4px 0; color: #303133; font-size: 14px;">脚本校验结果</h4>
         <div style="font-size: 12px; color: #606266;">
           实时检查脚本语法和格式规范
@@ -14,35 +15,45 @@
       <div ref="errorButton" class="error-trigger"></div>
     </template>
   </el-popover>
-  
+
   <div class="script-viewer">
     <div class="editor-container" ref="editorContainer">
       <!-- CodeMirror 编辑器将在这里挂载 -->
-      </div>
-    
+    </div>
+
     <div class="editor-actions">
-      <el-button class="action-btn help-btn" @click.stop="showGptDialog" 
+      <el-button class="action-btn help-btn" @click.stop="showGptDialog"
         :title="'此指令用于调教 GPT 成为 一个 RCS 脚本生成专家，将 Markdown 表格的中文伪代码解析为 RCS 文件。'">
-        <el-icon><ChatDotRound /></el-icon>
+        <el-icon>
+          <ChatDotRound />
+        </el-icon>
         GPT指令
       </el-button>
       <el-button class="action-btn info-btn" @click.stop="showAboutDialog">
-        <el-icon><InfoFilled /></el-icon>
+        <el-icon>
+          <InfoFilled />
+        </el-icon>
         关于
       </el-button>
       <el-button class="action-btn help-btn" @click.stop="showHelpDialog">
-        <el-icon><QuestionFilled /></el-icon>
+        <el-icon>
+          <QuestionFilled />
+        </el-icon>
         帮助
       </el-button>
       <el-button class="action-btn validate-btn" @click.stop="validateScripts">
-        <el-icon><CircleCheck /></el-icon>
+        <el-icon>
+          <CircleCheck />
+        </el-icon>
         校验
       </el-button>
-      <el-button class="action-btn save-btn" @click.stop="saveScripts">
-        <el-icon><DocumentChecked /></el-icon>
+      <el-button class="action-btn save-btn" @click.stop="saveScripts" :title="`保存 (${isMac ? 'Cmd' : 'Ctrl'}+S)`">
+        <el-icon>
+          <DocumentChecked />
+        </el-icon>
         保存
       </el-button>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -62,6 +73,14 @@ import { Decoration, DecorationSet, ViewPlugin, ViewUpdate } from '@codemirror/v
 import { RangeSetBuilder } from '@codemirror/state'
 
 const store = useStore()
+
+// 平台检测
+const isMac = computed(() => {
+  if (typeof window !== 'undefined' && window.navigator) {
+    return navigator.userAgent.toLowerCase().includes('mac')
+  }
+  return false
+})
 
 // 定义emit事件
 const emit = defineEmits<{
@@ -95,7 +114,7 @@ const createLinter = () => {
   return linter((view) => {
     const content = view.state.doc.toString()
     const validation = store.validateRcsContent(content)
-    
+
     const diagnostics: Diagnostic[] = validation.errors.map(error => {
       const line = view.state.doc.line(error.line)
       return {
@@ -106,7 +125,7 @@ const createLinter = () => {
         actions: []
       }
     })
-    
+
     return diagnostics
   })
 }
@@ -122,54 +141,54 @@ const createSyntaxDecorator = () => {
     'api-contract',    // 索引4: 参数契约
     'api-description'  // 索引5: 描述
   ]
-  
+
   // 定义2种领域部分的颜色（领域名称、领域描述）
   const domainPartColors = [
     'domain-name',        // 索引0: 领域名称
     'domain-description'  // 索引1: 领域描述
   ]
-  
+
   // 定义HTTP方法和对应的特殊样式
   const httpMethodColors: Record<string, string> = {
     'GET': 'http-method-get',
     'POST': 'http-method-post',
-    'PUT': 'http-method-put', 
+    'PUT': 'http-method-put',
     'PATCH': 'http-method-patch',
     'DELETE': 'http-method-delete',
     'HEAD': 'http-method-head',
     'OPTIONS': 'http-method-options'
   }
-  
+
   return ViewPlugin.fromClass(class {
     decorations: DecorationSet
-    
+
     constructor(view: EditorView) {
       this.decorations = this.buildDecorations(view)
     }
-    
+
     update(update: ViewUpdate) {
       if (update.docChanged || update.viewportChanged) {
         this.decorations = this.buildDecorations(update.view)
       }
     }
-    
+
     buildDecorations(view: EditorView) {
       const builder = new RangeSetBuilder<Decoration>()
       const doc = view.state.doc
-      
+
       // 统一收集所有装饰
       const allDecorations: Array<{
-        from: number, 
-        to: number, 
+        from: number,
+        to: number,
         decoration: Decoration,
         type: 'line' | 'mark',
         priority: number
       }> = []
-      
+
       for (let i = 1; i <= doc.lines; i++) {
         const line = doc.line(i)
         const lineText = line.text.trim()
-        
+
         // 跳过空行和注释行
         if (lineText === '' || lineText.startsWith('//')) {
           if (lineText.startsWith('//')) {
@@ -183,21 +202,21 @@ const createSyntaxDecorator = () => {
           }
           continue
         }
-        
+
         // 检查是否为API脚本（包含句点分隔符）
         if (lineText.includes('.')) {
           const parts = lineText.split('.')
-          
+
           let currentPos = line.from
-          
+
           for (let partIndex = 0; partIndex < parts.length; partIndex++) {
             const part = parts[partIndex]
             const partStart = currentPos
             const partEnd = partStart + part.length
-            
+
             // 确定样式类名
             let styleClass = ''
-            
+
             if (partIndex === 1 && httpMethodColors[part.toUpperCase()]) {
               // HTTP方法使用特殊颜色
               styleClass = httpMethodColors[part.toUpperCase()]
@@ -208,7 +227,7 @@ const createSyntaxDecorator = () => {
               // 超出预定义索引，使用描述样式
               styleClass = apiPartColors[5] // 使用描述样式
             }
-            
+
             if (styleClass && partStart < partEnd) {
               allDecorations.push({
                 from: partStart,
@@ -218,11 +237,11 @@ const createSyntaxDecorator = () => {
                 priority: partIndex + 1
               })
             }
-            
+
             // 移动到下一部分（跳过句点）
             currentPos = partEnd + 1
           }
-          
+
           // 为HTTP方法行添加左边框
           if (parts.length > 1 && httpMethodColors[parts[1].toUpperCase()]) {
             const methodClass = httpMethodColors[parts[1].toUpperCase()]
@@ -234,18 +253,18 @@ const createSyntaxDecorator = () => {
               priority: 0
             })
           }
-          
+
         } else if (lineText.includes('/')) {
           // 检查是否为领域定义（包含斜杠分隔符）
           const parts = lineText.split('/')
-          
+
           let currentPos = line.from
-          
+
           for (let partIndex = 0; partIndex < parts.length; partIndex++) {
             const part = parts[partIndex]
             const partStart = currentPos
             const partEnd = partStart + part.length
-            
+
             // 确定样式类名
             let styleClass = ''
             if (partIndex < domainPartColors.length) {
@@ -254,7 +273,7 @@ const createSyntaxDecorator = () => {
               // 超出预定义索引，使用描述样式
               styleClass = domainPartColors[1] // 使用描述样式
             }
-            
+
             if (styleClass && partStart < partEnd) {
               allDecorations.push({
                 from: partStart,
@@ -264,13 +283,13 @@ const createSyntaxDecorator = () => {
                 priority: partIndex + 1
               })
             }
-            
+
             // 移动到下一部分（跳过斜杠）
             currentPos = partEnd + 1
           }
         }
       }
-      
+
       try {
         // 统一排序：先按from位置，再按to位置，最后按优先级
         allDecorations.sort((a, b) => {
@@ -278,16 +297,16 @@ const createSyntaxDecorator = () => {
           if (a.to !== b.to) return a.to - b.to
           return a.priority - b.priority
         })
-        
+
         // 按正确顺序添加所有装饰
-        for (const {from, to, decoration} of allDecorations) {
+        for (const { from, to, decoration } of allDecorations) {
           if (from <= to) {
             builder.add(from, to, decoration)
           }
         }
-        
+
         return builder.finish()
-        
+
       } catch (error) {
         return Decoration.none
       }
@@ -439,7 +458,7 @@ const createEditor = () => {
           borderRadius: '4px',
           padding: '1px 4px'
         },
-        
+
         // API脚本部分样式（按句点分隔的6个部分）
         '.api-domain': {
           color: '#7c3aed',
@@ -484,7 +503,7 @@ const createEditor = () => {
           borderRadius: '4px',
           padding: '1px 4px'
         },
-        
+
         // 领域部分样式（按斜杠分隔的2个部分）
         '.domain-name': {
           color: '#7c2d12',
@@ -501,7 +520,7 @@ const createEditor = () => {
           borderRadius: '4px',
           padding: '1px 4px'
         },
-        
+
         // HTTP方法特殊样式（覆盖api-method的默认样式）
         '.http-method-get': {
           color: '#22c55e',
@@ -559,7 +578,7 @@ const createEditor = () => {
           padding: '1px 4px',
           textShadow: '0 1px 2px rgba(236, 72, 153, 0.3)'
         },
-        
+
         // HTTP方法行左边框样式（只保留左边框，去掉背景色）
         '.line-http-method-get': {
           borderLeft: '4px solid #22c55e',
@@ -625,15 +644,15 @@ watch(rcsContent, (newValue) => {
 // 内容变化处理
 const onContentChange = (content: string) => {
   isUpdatingFromStore.value = true
-  
+
   // 更新 store 数据
   store.updateRcsContent(content)
-  
+
   // 清除之前的定时器
   if (validateTimer) {
     clearTimeout(validateTimer)
   }
-  
+
   // 设置防抖校验，300ms 后执行 linting
   validateTimer = setTimeout(() => {
     if (editorView) {
@@ -662,7 +681,7 @@ const showErrorPopover = computed({
 const formattedErrors = computed(() => {
   // 依赖 forceRefreshErrors 来确保响应式更新
   forceRefreshErrors.value
-  
+
   // 强制使用编辑器内容进行校验
   let content = ''
   if (editorView) {
@@ -670,36 +689,36 @@ const formattedErrors = computed(() => {
   } else {
     content = currentEditorContent.value
   }
-  
+
   // 确保内容不为空
   if (!content) {
     content = store.generateRcsContent()
   }
-  
+
   const validation = store.validateRcsContent(content)
-  
+
   if (validation.errors.length === 0) {
     return `<div style="color: #67c23a; font-size: 14px; text-align: center; padding: 20px; background: #f0f9ff; border-radius: 4px; border: 1px solid #b3d8ff;">
       <i class="el-icon-success" style="margin-right: 8px;"></i>
       ✅ 脚本校验通过，没有发现错误
     </div>`
   }
-  
+
   // 错误统计
   const errorCount = validation.errors.filter(e => e.severity === 'error').length
   const warningCount = validation.errors.filter(e => e.severity === 'warning').length
-  
+
   let result = `<div style="background: #fef0f0; padding: 8px 12px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #fbc4c4;">
     <div style="font-size: 13px; color: #f56c6c; font-weight: bold;">
       <i class="el-icon-warning" style="margin-right: 4px;"></i>
       发现 ${errorCount} 个错误${warningCount > 0 ? `, ${warningCount} 个警告` : ''}
     </div>
   </div>`
-  
+
   result += validation.errors.map((error) => {
     const iconColor = error.severity === 'error' ? '#f56c6c' : '#e6a23c'
     const icon = error.severity === 'error' ? '❌' : '⚠️'
-    
+
     return `<div style="padding: 8px 12px; margin: 4px 0; background: ${error.severity === 'error' ? '#fef0f0' : '#fdf6ec'}; border-radius: 4px; border-left: 3px solid ${iconColor};">
       <div style="display: flex; align-items: center; margin-bottom: 4px;">
         <span style="margin-right: 8px;">${icon}</span>
@@ -713,7 +732,7 @@ const formattedErrors = computed(() => {
       </div>
     </div>`
   }).join('')
-  
+
   return result
 })
 
@@ -723,10 +742,10 @@ const validateScripts = async () => {
   // 使用编辑器内容进行校验
   const content = getCurrentContent()
   const validation = store.validateRcsContent(content)
-  
+
   // 强制刷新错误信息
   forceRefreshErrors.value++
-  
+
   if (validation.isValid) {
     ElMessage.success('校验通过')
     store.showErrorPopover = false
@@ -746,7 +765,7 @@ const saveScripts = async () => {
   // 使用编辑器内容进行校验和保存
   const content = getCurrentContent()
   const validation = store.validateRcsContent(content)
-  
+
   if (!validation.isValid) {
     ElMessage.error('脚本校验失败，无法保存')
     // 触发错误弹窗显示
@@ -757,34 +776,39 @@ const saveScripts = async () => {
       const errorBtn = (errorButton.value as ComponentPublicInstance).$el
       errorBtn.click()
     }
-    return
+    return false
   }
-  
+
   // 确保 store 数据是最新的
   store.updateRcsContent(content)
-  
+
   if (store.loadedFilePath) {
     // 直接保存编辑器内容
     try {
       window.api.writeFile(store.loadedFilePath, content)
-      ElMessage.success('保存成功')
+      ElMessage.success(`保存成功`)
+      return true
     } catch (error) {
       ElMessage.error('保存失败')
       console.error(error)
+      return false
     }
   } else {
     const filePath = await window.api.showSaveDialog()
     if (filePath) {
       try {
         window.api.writeFile(filePath, content)
-        ElMessage.success('保存成功')
-      store.loadedFilePath = filePath
+        ElMessage.success(`保存成功`)
+        store.loadedFilePath = filePath
+        return true
       } catch (error) {
         ElMessage.error('保存失败')
         console.error(error)
+        return false
       }
     }
   }
+  return false
 }
 
 onMounted(() => {
@@ -826,7 +850,7 @@ watch(
             selection: { anchor: editorView.state.doc.length },
             scrollIntoView: true
           })
-        store.setScrollToBottom(false)
+          store.setScrollToBottom(false)
         }
       })
     }
@@ -849,7 +873,8 @@ watch(() => store.triggerErrorDisplay, async (newVal) => {
 
 // 暴露 getCurrentContent 方法供外部组件使用
 defineExpose({
-  getCurrentContent
+  getCurrentContent,
+  saveScripts
 })
 </script>
 
@@ -980,19 +1005,17 @@ defineExpose({
 }
 
 .editor-container :deep(.cm-scroller::-webkit-scrollbar-thumb) {
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.4), 
-    rgba(191, 90, 242, 0.4)
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.4),
+      rgba(191, 90, 242, 0.4));
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
 .editor-container :deep(.cm-scroller::-webkit-scrollbar-thumb:hover) {
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.6), 
-    rgba(191, 90, 242, 0.6)
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.6),
+      rgba(191, 90, 242, 0.6));
 }
 
 .editor-container :deep(.cm-line) {
@@ -1005,10 +1028,9 @@ defineExpose({
 }
 
 .editor-container :deep(.cm-gutters) {
-  background: linear-gradient(135deg, 
-    rgba(248, 249, 250, 0.95) 0%, 
-    rgba(241, 245, 249, 0.9) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(248, 249, 250, 0.95) 0%,
+      rgba(241, 245, 249, 0.9) 100%);
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 0;
@@ -1024,36 +1046,35 @@ defineExpose({
 }
 
 .editor-container :deep(.cm-activeLine) {
-  background: linear-gradient(90deg, 
-    rgba(175, 82, 222, 0.08) 0%,
-    rgba(191, 90, 242, 0.05) 50%,
-    rgba(175, 82, 222, 0.08) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(175, 82, 222, 0.08) 0%,
+      rgba(191, 90, 242, 0.05) 50%,
+      rgba(175, 82, 222, 0.08) 100%);
   animation: activeLinePulse 3s ease-in-out infinite;
 }
 
 @keyframes activeLinePulse {
-  0%, 100% { 
-    background: linear-gradient(90deg, 
-      rgba(175, 82, 222, 0.08) 0%,
-      rgba(191, 90, 242, 0.05) 50%,
-      rgba(175, 82, 222, 0.08) 100%
-    );
+
+  0%,
+  100% {
+    background: linear-gradient(90deg,
+        rgba(175, 82, 222, 0.08) 0%,
+        rgba(191, 90, 242, 0.05) 50%,
+        rgba(175, 82, 222, 0.08) 100%);
   }
-  50% { 
-    background: linear-gradient(90deg, 
-      rgba(175, 82, 222, 0.12) 0%,
-      rgba(191, 90, 242, 0.08) 50%,
-      rgba(175, 82, 222, 0.12) 100%
-    );
+
+  50% {
+    background: linear-gradient(90deg,
+        rgba(175, 82, 222, 0.12) 0%,
+        rgba(191, 90, 242, 0.08) 50%,
+        rgba(175, 82, 222, 0.12) 100%);
   }
 }
 
 .editor-container :deep(.cm-selectionBackground) {
-  background: linear-gradient(135deg, 
-    rgba(175, 82, 222, 0.25),
-    rgba(191, 90, 242, 0.15)
-  );
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.25),
+      rgba(191, 90, 242, 0.15));
 }
 
 .editor-container :deep(.cm-cursor) {
@@ -1062,17 +1083,28 @@ defineExpose({
 }
 
 @keyframes cursorBlink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.3; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0.3;
+  }
 }
 
 /* 错误下划线动画 */
 @keyframes errorUnderline {
-  0%, 100% { 
+
+  0%,
+  100% {
     background-position: 0% bottom;
     opacity: 0.7;
   }
-  50% { 
+
+  50% {
     background-position: 100% bottom;
     opacity: 1;
   }
@@ -1080,11 +1112,14 @@ defineExpose({
 
 /* 警告下划线动画 */
 @keyframes warningUnderline {
-  0%, 100% { 
+
+  0%,
+  100% {
     background-position: 0% bottom;
     opacity: 0.6;
   }
-  50% { 
+
+  50% {
     background-position: 100% bottom;
     opacity: 0.9;
   }
@@ -1097,7 +1132,7 @@ defineExpose({
     gap: 6px;
     padding: 10px 12px;
   }
-  
+
   .action-btn {
     height: 28px;
     padding: 0 8px;
