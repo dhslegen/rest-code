@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <!-- 更新检查按钮 -->
+        <!-- macOS 下的更新检查按钮 -->
         <div class="titlebar-actions" v-if="isDarwin">
           <el-button text size="small" @click="toggleFocusMode" :class="['focus-mode-btn', { 'active': focusMode }]"
             :title="`${focusMode ? '退出专注模式' : '进入专注模式'} (${isDarwin ? 'Cmd' : 'Ctrl'}+E)`">
@@ -29,7 +29,8 @@
           </el-button>
         </div>
 
-        <div class="window-controls" v-if="!isDarwin">
+        <!-- Windows 下的布局：功能按钮在中间，窗口控制在最右边 -->
+        <div class="win32-layout" v-if="!isDarwin">
           <div class="win32-actions">
             <el-button text size="small" @click="toggleFocusMode" :class="['focus-mode-btn', { 'active': focusMode }]"
               :title="`${focusMode ? '退出专注模式' : '进入专注模式'} (${isDarwin ? 'Cmd' : 'Ctrl'}+E)`">
@@ -46,21 +47,23 @@
               <span class="update-btn-text">检查更新</span>
             </el-button>
           </div>
-          <button class="control-btn minimize-btn" @click="minimizeWindow">
-            <svg width="12" height="12" viewBox="0 0 12 12">
-              <rect x="2" y="5.5" width="8" height="1" fill="currentColor" />
-            </svg>
-          </button>
-          <button class="control-btn maximize-btn" @click="maximizeWindow">
-            <svg width="12" height="12" viewBox="0 0 12 12">
-              <rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1" fill="none" />
-            </svg>
-          </button>
-          <button class="control-btn close-btn" @click="closeWindow">
-            <svg width="12" height="12" viewBox="0 0 12 12">
-              <path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.5" />
-            </svg>
-          </button>
+          <div class="window-controls">
+            <button class="control-btn minimize-btn" @click="minimizeWindow">
+              <svg width="12" height="12" viewBox="0 0 12 12">
+                <rect x="2" y="5.5" width="8" height="1" fill="currentColor" />
+              </svg>
+            </button>
+            <button class="control-btn maximize-btn" @click="maximizeWindow">
+              <svg width="12" height="12" viewBox="0 0 12 12">
+                <rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1" fill="none" />
+              </svg>
+            </button>
+            <button class="control-btn close-btn" @click="closeWindow">
+              <svg width="12" height="12" viewBox="0 0 12 12">
+                <path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -817,8 +820,17 @@ const toggleFocusMode = () => {
   -webkit-app-region: no-drag;
   display: flex;
   height: 100%;
-  position: relative;
-  /* 确保在标题之上 */
+}
+
+/* Windows 布局容器 */
+.win32-layout {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
   z-index: 10;
 }
 
