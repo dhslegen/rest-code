@@ -4,7 +4,7 @@
 
 [![Release](https://img.shields.io/github/v/release/dhslegen/rest-code?style=flat-square)](https://github.com/dhslegen/rest-code/releases)
 [![License](https://img.shields.io/github/license/dhslegen/rest-code?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](https://github.com/dhslegen/rest-code/releases)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS?style=flat-square)](https://github.com/dhslegen/rest-code/releases)
 
 <p align="center">
   <img src="./images/readme-001.png" alt="Rest Code 主界面" width="80%">
@@ -303,7 +303,7 @@ yarn run build --mac|--win
 
 ## 📄 许可证
 
-本项目基于 [MIT License](LICENSE) 开源协议。
+本项目基于 [Apache-2.0 license](LICENSE) 开源协议。
 
 ## 🙏 致谢
 

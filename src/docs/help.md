@@ -105,67 +105,60 @@ Rcs 文件分为两部分：**Domain 声明** 和 **API 脚本**。
 User.POST..create.@.新增用户
 Order.GET./{id}.get.#id.获取订单详情
 ```
-
 ### 参数契约格式
 
 `参数契约` 是 API 脚本中用于定义请求参数和响应类型的核心机制。契约采用特殊前缀符号组合的方式描述 REST API 的输入输出规范，格式为：`@xxx?yyy%num%$str>zzz`。
 
 #### 契约符号说明
 
-**1. `@` - 请求体参数（RequestBody）**
-
-用于定义 HTTP 请求体中的 JSON 数据结构：
+#### `@` - 请求体参数（RequestBody）
 
 | 符号格式 | 参数类型 | 生成代码示例 | 说明 |
 |---------|---------|-------------|------|
-| `@` | 单个业务对象 | `@` → `@RequestBody @Valid UserReqVo reqVo` | 标准请求体对象 |
-| `@业务名` | 带业务后缀的对象 | `@update` → `@RequestBody @Valid UserUpdateReqVo reqVo` | 指定业务场景的请求体 |
-| `@=` | 对象列表 | `@=` → `@RequestBody @Valid List<UserReqVo> reqVos` | 批量操作的对象列表 |
-| `@=业务名` | 带业务后缀的对象列表 | `@=update` → `@RequestBody @Valid List<UserUpdateReqVo> reqVos` | 指定业务场景的对象列表 |
-| `@#` | 数值型列表 | `@#` → `@RequestBody @Valid List<Long> ids` | 数值型ID列表，默认参数名为`ids` |
-| `@#参数名` | 自定义数值型列表 | `@#userIds` → `@RequestBody @Valid List<Long> userIds` | 自定义参数名的数值型列表 |
-| `@$` | 字符串型列表 | `@$` → `@RequestBody @Valid List<String> codes` | 字符串型编码列表，默认参数名为`codes` |
-| `@$参数名` | 自定义字符串型列表 | `@$orgCodes` → `@RequestBody @Valid List<String> orgCodes` | 自定义参数名的字符串型列表 |
+| `@` | 单个业务对象 | `@RequestBody @Valid UserReqVo reqVo` | 标准请求体对象 |
+| `@业务名` | 带业务后缀的对象 | `@RequestBody @Valid UserUpdateReqVo reqVo` | 指定业务场景的请求体 |
+| `@=` | 对象列表 | `@RequestBody @Valid List<UserReqVo> reqVos` | 批量操作的对象列表 |
+| `@=业务名` | 带业务后缀的对象列表 | `@RequestBody @Valid List<UserUpdateReqVo> reqVos` | 指定业务场景的对象列表 |
+| `@#` | 数值型列表 | `@RequestBody @Valid List<Long> ids` | 数值型ID列表，默认参数名为`ids` |
+| `@#参数名` | 自定义数值型列表 | `@RequestBody @Valid List<Long> userIds` | 自定义参数名的数值型列表 |
+| `@$` | 字符串型列表 | `@RequestBody @Valid List<String> codes` | 字符串型编码列表，默认参数名为`codes` |
+| `@$参数名` | 自定义字符串型列表 | `@RequestBody @Valid List<String> orgCodes` | 自定义参数名的字符串型列表 |
 
-**2. `?` - 查询参数（Query Parameters）**
-
-用于定义 HTTP GET 请求的查询条件：
+#### `?` - 查询参数（Query Parameters）
 
 | 符号格式 | 参数类型 | 生成代码示例 | 说明 |
 |---------|---------|-------------|------|
-| `?` | 标准查询对象 | `?` → `@ParameterObject UserQueryVo queryVo` | 领域标准查询参数 |
-| `?业务名` | 带业务后缀的查询对象 | `?simple` → `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
-| `?$` | 字符串型查询参数 | `?$` → `@RequestParam("code") String code` | 默认字符串查询参数 |
-| `?$参数名` | 自定义字符串查询参数 | `?$orgCode` → `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
-| `?#` | 数值型查询参数 | `?#` → `@RequestParam("number") Long number` | 默认数值查询参数 |
-| `?#参数名` | 自定义数值查询参数 | `?#userId` → `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+| `?` | 标准查询对象 | `@ParameterObject UserQueryVo queryVo` | 领域标准查询参数 |
+| `?业务名` | 带业务后缀的查询对象 | `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
+| `?$` | 字符串型查询参数 | `@RequestParam("code") String code` | 默认字符串查询参数 |
+| `?$参数名` | 自定义字符串查询参数 | `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
+| `?#` | 数值型查询参数 | `@RequestParam("number") Long number` | 默认数值查询参数 |
+| `?#参数名` | 自定义数值查询参数 | `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+| `?*` | 文件型查询参数 | `@RequestParam("file") MultipartFile file` | 默认文件查询参数 |
+| `?*参数名` | 自定义文件查询参数 | `@RequestParam("document") MultipartFile document` | 自定义的文件型查询参数 |
 
-**3. `%` - 路径参数（PathVariable）**
-
-用于定义 URL 路径中的变量：
+#### `%` - 路径参数（PathVariable）
 
 | 符号格式 | 参数类型 | 生成代码示例 | 说明 |
 |---------|---------|-------------|------|
-| `%` | 数值型路径参数 | `%` → `@PathVariable("id") long id` | 默认主键ID参数 |
-| `%参数名` | 自定义数值参数 | `%userId` → `@PathVariable("userId") long userId` | 自定义的数值型路径参数 |
-| `%$` | 字符串型路径参数 | `%$` → `@PathVariable("code") String code` | 默认编码参数 |
-| `%$参数名` | 自定义字符串参数 | `%$orgCode` → `@PathVariable("orgCode") String orgCode` | 自定义的字符串型路径参数 |
+| `%` | 数值型路径参数 | `@PathVariable("id") long id` | 默认主键ID参数 |
+| `%参数名` | 自定义数值参数 | `@PathVariable("userId") long userId` | 自定义的数值型路径参数 |
+| `%$` | 字符串型路径参数 | `@PathVariable("code") String code` | 默认编码参数 |
+| `%$参数名` | 自定义字符串参数 | `@PathVariable("orgCode") String orgCode` | 自定义的字符串型路径参数 |
 
-**4. `>` - 响应类型（Response Type）**
-
-用于定义 HTTP 响应体的数据结构：
+#### `>` - 响应类型（Response Type）
 
 | 符号格式 | 响应类型 | 生成代码示例 | 说明 |
 |---------|---------|-------------|------|
-| `>` | 单个业务对象 | `>` → `Result<UserRespVo>` | 返回单个业务对象 |
-| `>业务名` | 带业务后缀的对象 | `>simple` → `Result<UserSimpleRespVo>` | 返回指定业务场景的对象 |
-| `>=` | 对象列表 | `>=` → `Result<List<UserRespVo>>` | 返回对象列表 |
-| `>=业务名` | 带业务后缀的对象列表 | `>=simple` → `Result<List<UserSimpleRespVo>>` | 返回指定业务场景的对象列表 |
-| `>+` | 分页对象 | `>+` → `Result<Page<UserRespVo>>` | 返回分页数据，自动添加分页查询参数 |
-| `>+业务名` | 带业务后缀的分页对象 | `>+simple` → `Result<Page<UserSimpleRespVo>>` | 返回指定业务场景的分页数据 |
-| `><` | 树形结构 | `><` → `Result<TreeNode<Long, UserTreeVo>>` | 返回树形结构数据 |
-| `><业务名` | 带业务后缀的树形结构 | `><simple` → `Result<TreeNode<Long, UserSimpleTreeVo>>` | 返回指定业务场景的树形数据 |
-| 无`>`符号 | 空响应 | `无` → `Result<Void>` | 无返回数据的操作 |
+| `>` | 单个业务对象 | `Result<UserRespVo>` | 返回单个业务对象 |
+| `>业务名` | 带业务后缀的对象 | `Result<UserSimpleRespVo>` | 返回指定业务场景的对象 |
+| `>=` | 对象列表 | `Result<List<UserRespVo>>` | 返回对象列表 |
+| `>=业务名` | 带业务后缀的对象列表 | `Result<List<UserSimpleRespVo>>` | 返回指定业务场景的对象列表 |
+| `>+` | 分页对象 | `Result<Page<UserRespVo>>` | 返回分页数据，自动添加分页查询参数 |
+| `>+业务名` | 带业务后缀的分页对象 | `Result<Page<UserSimpleRespVo>>` | 返回指定业务场景的分页数据 |
+| `><` | 树形结构 | `Result<TreeNode<Long, UserTreeVo>>` | 返回树形结构数据 |
+| `><业务名` | 带业务后缀的树形结构 | `Result<TreeNode<Long, UserSimpleTreeVo>>` | 返回指定业务场景的树形数据 |
+| 无`>`符号 | 空响应 | `Result<Void>` | 无返回数据的操作 |
 
 #### 契约组合规则
 
