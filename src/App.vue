@@ -20,6 +20,18 @@
             </el-icon>
             <span class="focus-btn-text">{{ focusMode ? '退出专注' : '专注模式' }}</span>
           </el-button>
+          <el-button text size="small" @click="showHelpDialog = true" class="help-btn" title="使用帮助">
+            <el-icon>
+              <QuestionFilled />
+            </el-icon>
+            <span class="help-btn-text">帮助</span>
+          </el-button>
+          <el-button text size="small" @click="showAboutDialog = true" class="about-btn" title="关于应用">
+            <el-icon>
+              <InfoFilled />
+            </el-icon>
+            <span class="about-btn-text">关于</span>
+          </el-button>
           <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
             title="检查更新">
             <el-icon>
@@ -38,6 +50,18 @@
                 <component :is="focusMode ? 'View' : 'Hide'" />
               </el-icon>
               <span class="focus-btn-text">{{ focusMode ? '退出专注' : '专注模式' }}</span>
+            </el-button>
+            <el-button text size="small" @click="showHelpDialog = true" class="help-btn" title="使用帮助">
+              <el-icon>
+                <QuestionFilled />
+              </el-icon>
+              <span class="help-btn-text">帮助</span>
+            </el-button>
+            <el-button text size="small" @click="showAboutDialog = true" class="about-btn" title="关于应用">
+              <el-icon>
+                <InfoFilled />
+              </el-icon>
+              <span class="about-btn-text">关于</span>
             </el-button>
             <el-button text size="small" @click="checkForUpdates" :loading="checkingUpdate" class="update-check-btn"
               title="检查更新">
@@ -70,7 +94,7 @@
       <!-- 内容区域 -->
       <div class="app-content">
         <!-- 操作区域 -->
-        <div class="section-card operation-section" v-show="!focusMode">
+        <div class="section-card operation-section" v-show="!focusMode && !editorMaximized">
           <div class="section-header" @click="toggleSection('operation')">
             <div class="section-icon">⚡</div>
             <span class="section-title">操作区域</span>
@@ -104,7 +128,7 @@
         </div>
 
         <!-- 领域设计区域 -->
-        <div class="section-card domain-section" v-show="!focusMode">
+        <div class="section-card domain-section" v-show="!focusMode && !editorMaximized">
           <div class="section-header" @click="toggleSection('domain')">
             <div class="section-icon">🎯</div>
             <span class="section-title">领域设计</span>
@@ -119,7 +143,7 @@
         </div>
 
         <!-- 脚本设计区域 -->
-        <div class="section-card script-section">
+        <div class="section-card script-section" v-show="!editorMaximized">
           <div class="section-header" @click="toggleSection('script')">
             <div class="section-icon">⚙️</div>
             <span class="section-title">脚本设计</span>
@@ -127,21 +151,21 @@
               :icon="sectionCollapsed.script ? 'ArrowDown' : 'ArrowUp'" />
           </div>
           <el-collapse-transition>
-            <div v-show="!sectionCollapsed.script" class="section-content" :class="{ 'focus-mode-content': focusMode }">
-              <script-editor @show-crud-dialog="handleShowCrudDialog" />
+            <div v-show="!sectionCollapsed.script" class="section-content">
+              <script-editor ref="scriptEditorRef" @show-crud-dialog="handleShowCrudDialog" />
             </div>
           </el-collapse-transition>
         </div>
 
         <!-- 脚本编辑器区域 -->
         <div class="section-card editor-section">
-          <div class="section-header">
+          <div class="section-header" v-show="!editorMaximized">
             <div class="section-icon">📝</div>
             <span class="section-title">脚本编辑器</span>
           </div>
-          <div class="section-content editor-content">
+          <div class="section-content editor-content" :class="{ 'maximized-content': editorMaximized }">
             <script-viewer ref="scriptViewerRef" @open-gpt-dialog="showGptDialog = true"
-              @open-about-dialog="showAboutDialog = true" @open-help-dialog="showHelpDialog = true" />
+              @toggle-maximize="handleEditorMaximize" />
           </div>
         </div>
       </div>
@@ -236,8 +260,8 @@
               <div class="card-content">
                 <label>当前版本</label>
                 <a href="javascript:void(0)"
-                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.4')" class="link-btn">
-                  v1.1.4
+                  @click="openLink('https://github.com/dhslegen/rest-code/releases/tag/v1.1.5')" class="link-btn">
+                  v1.1.5
                 </a>
               </div>
             </div>
@@ -370,6 +394,18 @@
         </div>
       </div>
     </div>
+
+    <!-- 加载覆盖层 -->
+    <div v-if="showLoadingOverlay" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <div class="loading-text">{{ loadingText }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -379,9 +415,9 @@ import DomainEditor from './components/DomainEditor.vue'
 import ScriptEditor from './components/ScriptEditor.vue'
 import ScriptViewer from './components/ScriptViewer.vue'
 import CodeGenerator from './components/CodeGenerator.vue'
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Refresh } from '@element-plus/icons-vue'
+import { Refresh, InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import helpContentRaw from './docs/help.md?raw'
@@ -399,6 +435,7 @@ const { domains } = store
 
 // 状态管理
 const scriptViewerRef = ref()
+const scriptEditorRef = ref()
 const fileLoaderRef = ref()
 const checkingUpdate = ref(false)
 
@@ -470,8 +507,14 @@ const openLink = (url: string) => {
 
 // 获取平台信息
 onMounted(async () => {
-  platform.value = navigator.platform.toLowerCase().includes('mac') ? 'darwin' :
-    navigator.platform.toLowerCase().includes('win') ? 'win32' : 'linux'
+  const userAgent = navigator.userAgent.toLowerCase()
+  if (userAgent.includes('mac')) {
+    platform.value = 'darwin'
+  } else if (userAgent.includes('win')) {
+    platform.value = 'win32'
+  } else {
+    platform.value = 'linux'
+  }
 
   // 获取当前版本
   if ((window.api as any)?.getCurrentVersion) {
@@ -660,6 +703,13 @@ const toggleSection = (section: keyof typeof sectionCollapsed) => {
 // 专注模式相关状态
 const focusMode = ref(false)
 
+// 编辑器最大化状态
+const editorMaximized = ref(false)
+
+// 加载覆盖层状态
+const showLoadingOverlay = ref(false)
+const loadingText = ref('正在恢复界面...')
+
 const toggleFocusMode = () => {
   focusMode.value = !focusMode.value
 
@@ -667,13 +717,41 @@ const toggleFocusMode = () => {
     // 进入专注模式
     ElMessage.success(`已进入专注模式 (${isDarwin.value ? 'Cmd' : 'Ctrl'}+E)`)
 
-    // 滚动到底部
-    setTimeout(() => {
-      const appContent = document.querySelector('.app-content')
-      if (appContent) {
-        appContent.scrollTop = appContent.scrollHeight
+    // 显示加载覆盖层
+    loadingText.value = '正在进入专注模式...'
+    showLoadingOverlay.value = true
+
+    // 计算可用高度并设置各区域高度为50%
+    nextTick(() => {
+      const availableHeight = window.innerHeight - 40 // 减去标题栏高度
+      const halfHeight = Math.floor((availableHeight) / 2) // 减去边距，然后分成两半
+
+      // 设置脚本设计区域高度
+      if (scriptEditorRef.value && scriptEditorRef.value.setTemporaryHeight) {
+        scriptEditorRef.value.setTemporaryHeight(halfHeight - 110)
       }
-    }, 100)
+
+      // 设置编辑器高度为另一半
+      if (scriptViewerRef.value && scriptViewerRef.value.setTemporaryHeight) {
+        scriptViewerRef.value.setTemporaryHeight(halfHeight - 187)
+      }
+
+      // 滚动到底部
+      setTimeout(() => {
+        const appContent = document.querySelector('.app-content')
+        if (appContent) {
+          appContent.scrollTo({
+            top: appContent.scrollHeight,
+            behavior: 'smooth'
+          })
+        }
+
+        // 滚动完成后隐藏加载覆盖层
+        setTimeout(() => {
+          showLoadingOverlay.value = false
+        }, 600) // 等待滚动和布局调整完成
+      }, 150)
+    })
 
     // 禁用滚动条
     document.body.style.overflow = 'hidden'
@@ -685,12 +763,103 @@ const toggleFocusMode = () => {
     // 退出专注模式
     ElMessage.info(`已退出专注模式 (${isDarwin.value ? 'Cmd' : 'Ctrl'}+E)`)
 
+    // 显示加载覆盖层
+    loadingText.value = '正在退出专注模式...'
+    showLoadingOverlay.value = true
+
     // 恢复滚动条
     document.body.style.overflow = ''
     const appContent = document.querySelector('.app-content')
     if (appContent) {
       (appContent as any).style.overflow = ''
     }
+
+    // 恢复脚本设计区域的默认样式
+    if (scriptEditorRef.value && scriptEditorRef.value.restoreOriginalHeight) {
+      scriptEditorRef.value.restoreOriginalHeight()
+    }
+
+    // 恢复之前的编辑器高度
+    if (scriptViewerRef.value && scriptViewerRef.value.restoreOriginalHeight) {
+      scriptViewerRef.value.restoreOriginalHeight()
+    }
+
+    // 等待DOM更新完成后滚动到底部
+    nextTick(() => {
+      setTimeout(() => {
+        const appContent = document.querySelector('.app-content')
+        if (appContent) {
+          appContent.scrollTo({
+            top: appContent.scrollHeight,
+            behavior: 'smooth'
+          })
+        }
+
+        // 滚动完成后隐藏加载覆盖层
+        setTimeout(() => {
+          showLoadingOverlay.value = false
+        }, 800) // 等待滚动动画完成
+      }, 300)
+    })
+  }
+}
+
+// 处理编辑器最大化
+const handleEditorMaximize = (maximized: boolean) => {
+  editorMaximized.value = maximized
+  const appContent = document.querySelector('.app-content') as HTMLElement
+
+  if (maximized) {
+    ElMessage.success('编辑器已最大化')
+
+    // 显示加载覆盖层
+    loadingText.value = '正在最大化编辑器...'
+    showLoadingOverlay.value = true
+
+    // 隐藏滚动条
+    if (appContent) {
+      appContent.style.overflow = 'hidden'
+    }
+
+    // 滚动到底部
+    nextTick(() => {
+      if (appContent) {
+        appContent.scrollTop = appContent.scrollHeight
+      }
+
+      // 等待布局调整完成后隐藏加载覆盖层
+      setTimeout(() => {
+        showLoadingOverlay.value = false
+      }, 500)
+    })
+  } else {
+    ElMessage.info('编辑器已还原')
+
+    // 显示加载覆盖层
+    loadingText.value = '正在还原编辑器...'
+    showLoadingOverlay.value = true
+
+    // 恢复滚动条
+    if (appContent) {
+      appContent.style.overflow = ''
+    }
+
+    // 滚动到底部
+    nextTick(() => {
+      setTimeout(() => {
+        if (appContent) {
+          appContent.scrollTo({
+            top: appContent.scrollHeight,
+            behavior: 'smooth'
+          })
+        }
+
+        // 滚动完成后隐藏加载覆盖层
+        setTimeout(() => {
+          showLoadingOverlay.value = false
+        }, 600) // 等待滚动动画完成
+      }, 200)
+    })
   }
 }
 
@@ -761,7 +930,6 @@ const toggleFocusMode = () => {
 
 .update-check-btn {
   color: rgba(255, 255, 255, 0.8) !important;
-  padding: 8px 16px !important;
   border-radius: 10px !important;
   transition: all 0.3s ease !important;
 
@@ -776,6 +944,54 @@ const toggleFocusMode = () => {
   transform: scale(1.05) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 帮助按钮样式 */
+.help-btn {
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.help-btn:hover {
+  background: rgba(34, 197, 94, 0.3) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.05) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2) !important;
+}
+
+.help-btn-text {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* 关于按钮样式 */
+.about-btn {
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.about-btn:hover {
+  background: rgba(108, 117, 125, 0.3) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.05) !important;
+  border-color: rgba(108, 117, 125, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2) !important;
+}
+
+.about-btn-text {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
 }
 
 .update-check-btn.is-loading {
@@ -900,7 +1116,9 @@ const toggleFocusMode = () => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out;
 }
 
 .operation-section {
@@ -925,16 +1143,18 @@ const toggleFocusMode = () => {
   border: 1px solid rgba(175, 82, 222, 0.2);
   flex: 1;
   min-height: 250px;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
+
 
 .section-header {
   display: flex;
   align-items: center;
-  padding: 12px 20px 12px;
+  padding: 13px 20px;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   border-radius: 24px 24px 0 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -973,17 +1193,40 @@ const toggleFocusMode = () => {
   padding: 20px;
 }
 
-/* 专注模式下的内容区域样式 */
-.focus-mode-content {
-  min-height: 350px !important;
-  height: auto !important;
-  /* 覆盖原有的固定高度 */
+/* 专注模式下脚本设计区域的滚动条样式 */
+.script-section .section-content {
+  transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.script-section .section-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.script-section .section-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.script-section .section-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.4), rgba(90, 200, 250, 0.4));
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.script-section .section-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.6), rgba(90, 200, 250, 0.6));
 }
 
 .editor-content {
   padding: 0;
-  height: 390px;
   min-height: 200px;
+}
+
+.editor-content.maximized-content {
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-grid {
@@ -1087,11 +1330,13 @@ const toggleFocusMode = () => {
 .app-content {
   flex: 1;
   overflow-y: auto;
-  padding: 0 0 20px 0;
   /* 移除左右padding，只保留底部padding */
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scroll-behavior: smooth;
 }
+
+
 
 .app-content::-webkit-scrollbar {
   width: 8px;
@@ -2052,13 +2297,11 @@ const toggleFocusMode = () => {
 /* 专注模式按钮样式 */
 .focus-mode-btn {
   color: rgba(255, 255, 255, 0.8) !important;
-  padding: 8px 16px !important;
   border-radius: 10px !important;
   transition: all 0.3s ease !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-  margin-right: 8px !important;
 }
 
 .focus-mode-btn:hover {
@@ -2196,5 +2439,193 @@ const toggleFocusMode = () => {
   background: rgba(175, 82, 222, 0.15);
   color: #AF52DE;
   font-weight: 600;
+}
+
+/* 加载覆盖层样式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg,
+      #ff6b6b 0%,
+      #4ecdc4 14%,
+      #45b7d1 28%,
+      #96ceb4 42%,
+      #ffeaa7 56%,
+      #fd79a8 70%,
+      #fdcb6e 84%,
+      #6c5ce7 100%);
+  background-size: 400% 400%;
+  animation: rainbowShift 3s ease-in-out infinite, fadeIn 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
+  padding: 50px 60px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 0 30px rgba(255, 255, 255, 0.5),
+    0 0 60px rgba(255, 255, 255, 0.3),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  margin: 0 auto 25px;
+}
+
+.spinner-ring {
+  position: absolute;
+  border-radius: 50%;
+  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  width: 80px;
+  height: 80px;
+  border: 5px solid transparent;
+  border-top: 5px solid #ff6b6b;
+  border-right: 5px solid #4ecdc4;
+  animation-delay: -0.6s;
+  filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.8));
+}
+
+.spinner-ring:nth-child(2) {
+  width: 60px;
+  height: 60px;
+  top: 10px;
+  left: 10px;
+  border: 4px solid transparent;
+  border-top: 4px solid #45b7d1;
+  border-right: 4px solid #96ceb4;
+  animation-delay: -0.4s;
+  animation-direction: reverse;
+  filter: drop-shadow(0 0 12px rgba(69, 183, 209, 0.8));
+}
+
+.spinner-ring:nth-child(3) {
+  width: 40px;
+  height: 40px;
+  top: 20px;
+  left: 20px;
+  border: 3px solid transparent;
+  border-top: 3px solid #fd79a8;
+  border-right: 3px solid #fdcb6e;
+  animation-delay: -0.2s;
+  filter: drop-shadow(0 0 10px rgba(253, 121, 168, 0.8));
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #fd79a8);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  animation: textRainbow 2s ease-in-out infinite, textGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rainbowShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow:
+      0 0 20px rgba(255, 255, 255, 0.4),
+      0 0 40px rgba(255, 255, 255, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  100% {
+    box-shadow:
+      0 0 40px rgba(255, 255, 255, 0.8),
+      0 0 80px rgba(255, 255, 255, 0.4),
+      inset 0 0 40px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 1);
+  }
+}
+
+@keyframes textRainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes textGlow {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1));
+  }
 }
 </style>

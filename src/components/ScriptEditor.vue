@@ -3,7 +3,7 @@
         <div class="table-container">
             <el-table :data="scripts" ref="scriptTable" class="modern-table"
                 :header-cell-style="{ backgroundColor: 'rgba(248, 249, 250, 0.8)', textAlign: 'center', color: '#2c3e50', fontWeight: '600' }"
-                :show-header="true" :max-height="300">
+                :show-header="true" :max-height="tableMaxHeight">
                 <el-table-column label="内置模板" align="center">
                     <template #default="{ row }">
                         <el-select v-model="row.template" @change="onTemplateChange(row)" placeholder="请选择模板" filterable
@@ -103,10 +103,11 @@ const domains = store.domains
 import type { ElTable } from 'element-plus'
 
 const scriptTable = ref<InstanceType<typeof ElTable> | null>(null)
+const tableMaxHeight = ref<number>(300) // 默认最大高度
 
 // 定义emit事件
 const emit = defineEmits<{
-  showCrudDialog: []
+    showCrudDialog: []
 }>()
 
 const tips = {
@@ -234,6 +235,24 @@ const onTemplateChange = (row: any) => {
         }
     }
 }
+
+// 暴露高度管理方法
+const setTemporaryHeight = (height: number) => {
+    // 动态调整表格的最大高度
+    tableMaxHeight.value = height
+
+}
+
+const restoreOriginalHeight = () => {
+    // 恢复表格的默认最大高度
+    tableMaxHeight.value = 300
+}
+
+// 暴露方法给父组件使用
+defineExpose({
+    setTemporaryHeight,
+    restoreOriginalHeight
+})
 </script>
 
 <style scoped>
@@ -242,6 +261,27 @@ const onTemplateChange = (row: any) => {
     flex-direction: column;
     gap: 16px;
     height: 100%;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 自定义滚动条样式 */
+.script-editor::-webkit-scrollbar {
+    width: 8px;
+}
+
+.script-editor::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.script-editor::-webkit-scrollbar-thumb {
+    background: rgba(0, 122, 255, 0.3);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.script-editor::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 122, 255, 0.5);
 }
 
 .table-container {
@@ -399,6 +439,4 @@ const onTemplateChange = (row: any) => {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
-
-
 </style>

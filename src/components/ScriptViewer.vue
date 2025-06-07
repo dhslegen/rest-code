@@ -16,12 +16,30 @@
     </template>
   </el-popover>
 
-  <div class="script-viewer">
-    <div class="editor-container" ref="editorContainer">
+  <div class="script-viewer" ref="scriptViewerContainer">
+    <div class="editor-container" ref="editorContainer" :style="{ height: editorHeight + 'px' }">
       <!-- CodeMirror 编辑器将在这里挂载 -->
     </div>
 
+    <!-- 拖拽调整大小的分隔条 -->
+    <div v-show="!isMaximized" class="resize-handle" @mousedown="startResize" :title="'拖拽调整编辑器高度'">
+      <div class="resize-indicator">
+        <div class="resize-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
     <div class="editor-actions">
+      <el-button class="action-btn maximize-btn" @click.stop="toggleMaximize" :title="isMaximized ? '还原窗口' : '最大化编辑器'">
+        <el-icon>
+          <FullScreen v-if="!isMaximized" />
+          <ScaleToOriginal v-else />
+        </el-icon>
+        {{ isMaximized ? '还原' : '最大化' }}
+      </el-button>
       <el-button class="action-btn help-btn" @click.stop="showGptDialog"
         :title="'此指令用于调教 GPT 成为 一个 RCS 脚本生成专家，将 Markdown 表格的中文伪代码解析为 RCS 文件。'">
         <el-icon>
@@ -29,18 +47,7 @@
         </el-icon>
         GPT指令
       </el-button>
-      <el-button class="action-btn info-btn" @click.stop="showAboutDialog">
-        <el-icon>
-          <InfoFilled />
-        </el-icon>
-        关于
-      </el-button>
-      <el-button class="action-btn help-btn" @click.stop="showHelpDialog">
-        <el-icon>
-          <QuestionFilled />
-        </el-icon>
-        帮助
-      </el-button>
+
       <el-button class="action-btn validate-btn" @click.stop="validateScripts">
         <el-icon>
           <CircleCheck />
@@ -61,7 +68,7 @@
 import { computed, ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from '../store/'
 import { ElMessage } from 'element-plus'
-import { ChatDotRound, InfoFilled, QuestionFilled, CircleCheck, DocumentChecked } from '@element-plus/icons-vue'
+import { ChatDotRound, CircleCheck, DocumentChecked, FullScreen, ScaleToOriginal } from '@element-plus/icons-vue'
 
 // CodeMirror imports
 import { EditorView, basicSetup } from 'codemirror'
@@ -85,19 +92,80 @@ const isMac = computed(() => {
 // 定义emit事件
 const emit = defineEmits<{
   openGptDialog: []
-  openAboutDialog: []
-  openHelpDialog: []
+  toggleMaximize: [maximized: boolean]
 }>()
 
 // 对话框打开函数
 const showGptDialog = () => emit('openGptDialog')
-const showAboutDialog = () => emit('openAboutDialog')
-const showHelpDialog = () => emit('openHelpDialog')
+
+// 最大化切换函数
+const toggleMaximize = () => {
+  isMaximized.value = !isMaximized.value
+  emit('toggleMaximize', isMaximized.value)
+  
+  if (isMaximized.value) {
+    // 最大化时设置编辑器高度为容器最大高度
+    editorHeight.value = Math.max(700, window.innerHeight - 160)
+  } else {
+    // 还原时恢复保存的高度偏好
+    const savedHeight = localStorage.getItem('scriptEditor-height')
+    if (savedHeight) {
+      const height = parseInt(savedHeight)
+      if (height >= minHeight && height <= maxHeight) {
+        editorHeight.value = height
+      }
+    } else {
+      editorHeight.value = 280
+    }
+  }
+}
 
 const editorContainer = ref<HTMLElement | null>(null)
+const scriptViewerContainer = ref<HTMLElement | null>(null)
 let editorView: EditorView | null = null
 const isUpdatingFromStore = ref(false)
 let validateTimer: NodeJS.Timeout | null = null
+
+// 编辑器高度管理
+const editorHeight = ref(280) // 默认高度
+const isResizing = ref(false)
+const minHeight = 280
+const maxHeight = 730
+
+// 最大化状态管理
+const isMaximized = ref(false)
+
+// 专注模式临时高度管理
+const savedHeightBeforeFocus = ref(280)
+
+// 开始拖拽调整大小
+const startResize = (e: MouseEvent) => {
+  isResizing.value = true
+  const startY = e.clientY
+  const startHeight = editorHeight.value
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const deltaY = e.clientY - startY
+    const newHeight = Math.max(minHeight, Math.min(maxHeight, startHeight + deltaY))
+    editorHeight.value = newHeight
+
+    // 保存用户的高度偏好
+    localStorage.setItem('scriptEditor-height', newHeight.toString())
+  }
+
+  const handleMouseUp = () => {
+    isResizing.value = false
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }
+
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleMouseUp)
+  document.body.style.cursor = 'ns-resize'
+  document.body.style.userSelect = 'none'
+}
 
 // 当前编辑器内容（作为唯一数据源）
 const currentEditorContent = ref('')
@@ -813,6 +881,10 @@ const saveScripts = async () => {
 
 onMounted(() => {
   document.addEventListener('click', closePopover)
+
+  // 恢复默认高度
+  localStorage.setItem('scriptEditor-height', minHeight.toString())
+
   // 创建 CodeMirror 编辑器
   nextTick(() => {
     createEditor()
@@ -871,10 +943,30 @@ watch(() => store.triggerErrorDisplay, async (newVal) => {
   }
 })
 
-// 暴露 getCurrentContent 方法供外部组件使用
+// 临时设置编辑器高度（专注模式用）
+const setTemporaryHeight = (tempHeight: number) => {
+  // 保存当前高度
+  savedHeightBeforeFocus.value = editorHeight.value
+  // 平滑设置临时高度
+  setTimeout(() => {
+    editorHeight.value = tempHeight
+  }, 50)
+}
+
+// 恢复专注模式前的编辑器高度
+const restoreOriginalHeight = () => {
+  // 平滑恢复之前保存的高度
+  setTimeout(() => {
+    editorHeight.value = savedHeightBeforeFocus.value
+  }, 50)
+}
+
+// 暴露方法供外部组件使用
 defineExpose({
   getCurrentContent,
-  saveScripts
+  saveScripts,
+  setTemporaryHeight,
+  restoreOriginalHeight
 })
 </script>
 
@@ -898,13 +990,79 @@ defineExpose({
 }
 
 .editor-container {
-  flex: 1;
   border: none;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 0;
   overflow: hidden;
-  min-height: 335px;
+  min-height: 200px;
   position: relative;
+  transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 拖拽调整大小的分隔条 */
+.resize-handle {
+  height: 8px;
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.1) 0%,
+      rgba(191, 90, 242, 0.1) 50%,
+      rgba(175, 82, 222, 0.1) 100%);
+  cursor: ns-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+  border-top: 1px solid rgba(175, 82, 222, 0.1);
+  border-bottom: 1px solid rgba(175, 82, 222, 0.1);
+}
+
+.resize-handle:hover {
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.2) 0%,
+      rgba(191, 90, 242, 0.2) 50%,
+      rgba(175, 82, 222, 0.2) 100%);
+  border-top-color: rgba(175, 82, 222, 0.3);
+  border-bottom-color: rgba(175, 82, 222, 0.3);
+}
+
+.resize-handle:active {
+  background: linear-gradient(135deg,
+      rgba(175, 82, 222, 0.3) 0%,
+      rgba(191, 90, 242, 0.3) 50%,
+      rgba(175, 82, 222, 0.3) 100%);
+}
+
+.resize-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 100%;
+  position: relative;
+}
+
+.resize-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.resize-dots span {
+  width: 4px;
+  height: 4px;
+  background: rgba(175, 82, 222, 0.4);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.resize-handle:hover .resize-dots span {
+  background: rgba(175, 82, 222, 0.7);
+  transform: scale(1.2);
+}
+
+.resize-handle:active .resize-dots span {
+  background: rgba(175, 82, 222, 0.9);
+  transform: scale(1.4);
 }
 
 .editor-actions {
@@ -974,6 +1132,17 @@ defineExpose({
   background: linear-gradient(135deg, #20c997, #1dd1a1);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.maximize-btn {
+  background: linear-gradient(135deg, #007AFF, #5AC8FA);
+  color: white;
+}
+
+.maximize-btn:hover {
+  background: linear-gradient(135deg, #5AC8FA, #32D74B);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
 /* CodeMirror 编辑器的额外样式 */
