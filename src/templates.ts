@@ -238,8 +238,6 @@ public class {{domainName}}Controller {
      */
     @Resource
     private {{domainName}}Service {{domainNameLower}}Service;
-
-
 }
 `;
 }
