@@ -6,21 +6,10 @@
     "output": "release/${version}",
     "buildResources": "build"
   },
-  "files": [
-    "dist",
-    "dist-electron"
-  ],
-  "extraResources": [
-    {
-      "from": "decrypt/decrypt.exe",
-      "to": "./"
-    }
-  ],
+  "files": ["dist", "dist-electron"],
   "mac": {
     "icon": "build/icons/icon.icns",
-    "target": [
-      "dmg"
-    ],
+    "target": ["dmg"],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
@@ -28,18 +17,14 @@
     "target": [
       {
         "target": "nsis",
-        "arch": [
-          "x64"
-        ]
+        "arch": ["x64"]
       }
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
   "linux": {
     "icon": "build/icons/icon.png",
-    "target": [
-      "AppImage"
-    ],
+    "target": ["AppImage"],
     "artifactName": "${productName}-Linux-${version}.${ext}"
   },
   "nsis": {

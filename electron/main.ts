@@ -1,7 +1,6 @@
 import { app, ipcMain, dialog, BrowserWindow, Menu, shell } from 'electron';
 import path from "path";
 import { fileURLToPath } from 'url';
-import { execFile } from 'child_process';
 import https from 'https';
 
 // 重建 __dirname
@@ -142,28 +141,6 @@ ipcMain.handle('appPath', () => {
   return app.getAppPath();
 });
 
-ipcMain.handle('decrypt-files', async (_event, directory: string) => {
-  return new Promise((resolve) => {
-    let decryptExePath;
-    if (app.isPackaged) {
-      // 生产环境
-      decryptExePath = path.join(process.resourcesPath, 'decrypt.exe');
-    } else {
-      // 开发环境
-      decryptExePath = path.join(__dirname, '../decrypt/decrypt.exe');
-    }
-    execFile(decryptExePath, [directory], (error, _stdout) => {
-      if (error) {
-        // console.error('解密失败:', error);
-        resolve({ success: false, error: error.message });
-        return;
-      }
-      // console.log('解密成功');
-      resolve({ success: true });
-    });
-  });
-});
-
 // 更新检查功能
 function checkForUpdates(): Promise<{ hasUpdate: boolean; latestVersion?: string; downloadUrl?: string; releaseNotes?: string }> {
   return new Promise((resolve) => {
@@ -177,9 +154,9 @@ function checkForUpdates(): Promise<{ hasUpdate: boolean; latestVersion?: string
           console.log('获取到发布信息:', release.tag_name, release.name);
           const latestVersion = release.tag_name?.replace('v', '') || release.name;
           const hasUpdate = compareVersions(latestVersion, CURRENT_VERSION) > 0;
-          
+
           console.log(`当前版本: ${CURRENT_VERSION}, 最新版本: ${latestVersion}, 需要更新: ${hasUpdate}`);
-          
+
           resolve({
             hasUpdate,
             latestVersion,
@@ -192,12 +169,12 @@ function checkForUpdates(): Promise<{ hasUpdate: boolean; latestVersion?: string
         }
       });
     });
-    
+
     req.on('error', (error) => {
       console.error('检查更新失败:', error);
       resolve({ hasUpdate: false });
     });
-    
+
     req.setTimeout(10000, () => {
       console.log('更新检查超时');
       req.destroy();
@@ -209,11 +186,11 @@ function checkForUpdates(): Promise<{ hasUpdate: boolean; latestVersion?: string
 function compareVersions(version1: string, version2: string): number {
   const v1parts = version1.split('.').map(Number);
   const v2parts = version2.split('.').map(Number);
-  
+
   for (let i = 0; i < Math.max(v1parts.length, v2parts.length); i++) {
     const v1part = v1parts[i] || 0;
     const v2part = v2parts[i] || 0;
-    
+
     if (v1part > v2part) return 1;
     if (v1part < v2part) return -1;
   }

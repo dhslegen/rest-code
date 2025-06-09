@@ -2274,7 +2274,8 @@ function insertMethodsBeforeLastBrace(content: string, methods: string): string 
     const contentBeforeLastBrace = content.substring(0, lastBraceIndex);
     const contentAfterLastBrace = content.substring(lastBraceIndex);
 
-    return contentBeforeLastBrace + methods + contentAfterLastBrace;
+    // 在contentBeforeLastBrace后加一个空行
+    return contentBeforeLastBrace + '\n' + methods + contentAfterLastBrace;
 }
 
 function generateBasicControllerClass(config: Config, domain: Domain): string {

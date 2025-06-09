@@ -20,7 +20,6 @@ interface CommonAPI {
   mkdir(path: string): void
   openExternal(url: string): void
   onOpenFile(callback: (event: Electron.IpcRendererEvent, filePath: string) => void): void
-  decryptFiles(directory: string): Promise<{ success: boolean; error?: string }>
   minimizeWindow(): Promise<void>
   maximizeWindow(): Promise<void>
   closeWindow(): Promise<void>

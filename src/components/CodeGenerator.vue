@@ -469,17 +469,6 @@ const ensureDirectoryExistence = (filePath: string) => {
     left: 100%;
 }
 
-.decrypt-btn {
-    background: linear-gradient(135deg, #ffc107, #e0a800);
-    color: white;
-}
-
-.decrypt-btn:hover {
-    background: linear-gradient(135deg, #5a6268, #495057);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-}
-
 .preview-btn {
     background: linear-gradient(135deg, #17a2b8, #138496);
     color: white;
