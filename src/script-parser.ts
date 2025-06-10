@@ -164,7 +164,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
                 method.voNames.push(typeName)
                 method.imports.add(`${config.basePackage}.model.vo.req.${typeName}`)
                 method.importsService.add(`${config.basePackage}.model.vo.req.${typeName}`)
-                method.imports.add(getVersionSpecificImport(config, 'ParameterObject'))
             }
         } else if (token.startsWith('?')) {
             // Query 参数
