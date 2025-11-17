@@ -1,0 +1,97 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/allowed/directory"
+      ],
+      "description": "文件系统访问 - 允许Claude访问指定目录"
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "your-token-here"
+      },
+      "description": "GitHub集成 - 访问仓库、Issues、PRs等"
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://user:password@localhost/dbname"
+      ],
+      "description": "PostgreSQL数据库访问"
+    },
+    "sqlite": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "--db-path",
+        "/path/to/database.db"
+      ],
+      "description": "SQLite数据库访问"
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "your-api-key-here"
+      },
+      "description": "Brave搜索集成 - 实时网络搜索能力"
+    },
+    "google-maps": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-google-maps"
+      ],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "your-api-key-here"
+      },
+      "description": "Google Maps集成 - 地理位置和地图服务"
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ],
+      "description": "网页抓取和自动化 - 使用无头浏览器"
+    },
+    "git": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git",
+        "--repository",
+        "/path/to/git/repo"
+      ],
+      "description": "Git仓库操作 - 查看历史、diff等"
+    },
+    "custom-server": {
+      "command": "node",
+      "args": [
+        "/path/to/your/custom-mcp-server.js"
+      ],
+      "description": "自定义MCP服务器示例"
+    }
+  },
+  "注释说明": {
+    "配置位置": "~/.config/claude/claude_desktop_config.json (macOS/Linux) 或 %APPDATA%/Claude/claude_desktop_config.json (Windows)",
+    "环境变量": "敏感信息如API密钥应使用环境变量或密钥管理工具",
+    "路径说明": "所有路径应使用绝对路径",
+    "重启要求": "修改配置后需要重启Claude Desktop应用",
+    "调试方法": "查看Claude开发者工具中的MCP连接状态"
+  }
+}
