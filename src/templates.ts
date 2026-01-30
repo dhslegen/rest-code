@@ -237,7 +237,7 @@ public class {{domainName}}Controller {
      * 服务对象
      */
     @Resource
-    private {{domainName}}Service {{domainNameLower}}Service;
+    private {{domainName}}AppService {{domainNameLower}}AppService;
 }
 `;
 }
@@ -251,7 +251,7 @@ export function getServiceBasicTemplate(): string {
  * @author {{author}}
  * @since {{date}}
  */
-public interface {{domainName}}Service {
+public interface {{domainName}}AppService {
 
 }
 `;
@@ -267,7 +267,7 @@ export function getServiceImplBasicTemplate(): string {
  * @since {{date}}
  */
 @Service
-public class {{domainName}}ServiceImpl implements {{domainName}}Service {
+public class {{domainName}}AppServiceImpl implements {{domainName}}AppService {
 
 }
 `;

@@ -9,8 +9,23 @@
   "files": ["dist", "dist-electron"],
   "mac": {
     "icon": "build/icons/icon.icns",
-    "target": ["dmg"],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["arm64"]
+      },
+      {
+        "target": "dmg",
+        "arch": ["x64"]
+      }
+    ],
+    "artifactName": "${productName}-Mac-${arch}-${version}-Installer.${ext}",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist",
+    "type": "distribution",
+    "minimumSystemVersion": "10.12.0"
   },
   "win": {
     "icon": "build/icons/icon.ico",

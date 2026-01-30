@@ -323,12 +323,12 @@ function parseParameterContract(config: Config, method: ApiMethod) {
         }
     }
     // 设置方法体
-    method.methodBody = `return Result.ok(${domainNameLower}Service.${method.operationName}(${method.parameterNames.join(', ')}));`
+    method.methodBody = `return Result.ok(${domainNameLower}AppService.${method.operationName}(${method.parameterNames.join(', ')}));`
     method.methodBodyServiceImpl = `return null;`
 
     if (!method.hasResponseType) {
         method.responseType = 'Result<Void>'
-        method.methodBody = `${domainNameLower}Service.${method.operationName}(${method.parameterNames.join(', ')});
+        method.methodBody = `${domainNameLower}AppService.${method.operationName}(${method.parameterNames.join(', ')});
         return Result.ok();`
         method.methodBodyServiceImpl = '';
     }
@@ -345,7 +345,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
     } else {
         method.imports.add(`${config.basePackage}.core.Result`)
     }
-    method.imports.add(`${config.basePackage}.service.${domainName}Service`)
+    method.imports.add(`${config.basePackage}.service.${domainName}AppService`)
     method.imports.add('io.swagger.v3.oas.annotations.Operation')
     method.imports.add('io.swagger.v3.oas.annotations.tags.Tag')
     method.imports.add('org.springframework.web.bind.annotation.*')
@@ -355,6 +355,6 @@ function parseParameterContract(config: Config, method: ApiMethod) {
     method.importsService.forEach((importItem) => {
         method.importsServiceImpl.add(importItem);
     });
-    method.importsServiceImpl.add(`${config.basePackage}.service.${domainName}Service`)
+    method.importsServiceImpl.add(`${config.basePackage}.service.${domainName}AppService`)
     method.importsServiceImpl.add('org.springframework.stereotype.Service')
 }

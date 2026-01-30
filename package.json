@@ -1,7 +1,7 @@
 {
   "name": "rest-code",
   "private": true,
-  "version": "1.1.6",
+  "version": "1.1.7",
   "author": "zhaowenhao<https://dahaoshen.com>",
   "description": "Rest Code 是一款基于 Electron 的自动化工具，用于通过简洁的脚本快速生成 REST API 后端代码。",
   "license": "Apache-2.0",
@@ -9,6 +9,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder",
+    "build:mac": "vue-tsc && vite build && electron-builder --mac",
+    "build:mac-x64": "vue-tsc && vite build && electron-builder --mac --x64 --publish=never",
+    "build:mac-arm64": "vue-tsc && vite build && electron-builder --mac --arm64 --publish=never",
+    "build:mac-universal": "vue-tsc && vite build && electron-builder --mac --universal --publish=never",
+    "build:win": "vue-tsc && vite build && electron-builder --win",
+    "build:linux": "vue-tsc && vite build && electron-builder --linux",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -2441,11 +2441,11 @@ function ensureDirectoryExistence(filePath: string) {
 }
 
 async function generateService(domain: Domain, apiMethods: ApiMethod[], config: Config, preview: boolean, generatedFiles: GeneratedFile[]) {
-    const interfaceName = `${domain.name}Service`;
+    const interfaceName = `${domain.name}AppService`;
     const packageName = `${config.basePackage}.service`;
     const interfaceFilePath = window.api.join(config.outputPath, ...packageName.split('.'), `${interfaceName}.java`);
 
-    const implName = `${domain.name}ServiceImpl`;
+    const implName = `${domain.name}AppServiceImpl`;
     const implPackageName = `${config.basePackage}.service.impl`;
     const implFilePath = window.api.join(config.outputPath, ...implPackageName.split('.'), `${implName}.java`);
 
@@ -2550,7 +2550,7 @@ async function generateServiceImpl(domain: Domain, apiMethods: ApiMethod[], conf
     // 解析新的 imports
     const newImports = new Set<string>(apiMethods.flatMap((method) => Array.from(method.importsServiceImpl)));
     // 添加接口的 import
-    newImports.add(`${config.basePackage}.service.${domain.name}Service`);
+    newImports.add(`${config.basePackage}.service.${domain.name}AppService`);
     const newImportsMap = parseImports(newImports);
 
     // 合并 imports
