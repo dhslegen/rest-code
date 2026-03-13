@@ -343,7 +343,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
         // %$ - @PathVariable 字符串型
         const paramName = token.substring(2) || "code";
         method.parameters.push(
-          `@PathVariable("${paramName}") String ${paramName}`,
+          `@PathVariable String ${paramName}`,
         );
         method.parametersPure.push(`String ${paramName}`);
         method.parameterNames.push(paramName);
@@ -363,7 +363,7 @@ function parseParameterContract(config: Config, method: ApiMethod) {
         // % - @PathVariable 数值型
         const paramName = token.substring(1) || "id";
         method.parameters.push(
-          `@PathVariable("${paramName}") long ${paramName}`,
+          `@PathVariable long ${paramName}`,
         );
         method.parametersPure.push(`long ${paramName}`);
         method.parameterNames.push(paramName);

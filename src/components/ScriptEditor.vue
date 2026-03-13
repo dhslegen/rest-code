@@ -152,11 +152,11 @@ const tips = {
     '%': `<strong>% - 路径参数（PathVariable）</strong><br />
           用于定义 URL 路径中的变量：<br /><br />
           <strong>数值型路径参数：</strong><br />
-          • <code>%</code> → <code>@PathVariable("id") long id</code> (默认主键ID)<br />
-          • <code>%参数名</code> → <code>@PathVariable("userId") long userId</code> (自定义数值参数)<br /><br />
+          • <code>%</code> → <code>@PathVariable long id</code> (默认主键ID)<br />
+          • <code>%参数名</code> → <code>@PathVariable long userId</code> (自定义数值参数)<br /><br />
           <strong>字符串型路径参数：</strong><br />
-          • <code>%$</code> → <code>@PathVariable("code") String code</code> (默认编码参数)<br />
-          • <code>%$参数名</code> → <code>@PathVariable("orgCode") String orgCode</code> (自定义字符串参数)`,
+          • <code>%$</code> → <code>@PathVariable String code</code> (默认编码参数)<br />
+          • <code>%$参数名</code> → <code>@PathVariable String orgCode</code> (自定义字符串参数)`,
 
     '>': `<strong>&gt; - 响应类型（Response Type）</strong><br />
           用于定义 HTTP 响应体的数据结构：<br /><br />
