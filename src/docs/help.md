@@ -119,10 +119,16 @@ Order.GET./{id}.get.#id.获取订单详情
 | `@业务名` | 带业务后缀的对象 | `@RequestBody @Valid UserUpdateReqVo reqVo` | 指定业务场景的请求体 |
 | `@=` | 对象列表 | `@RequestBody @Valid List<UserReqVo> reqVos` | 批量操作的对象列表 |
 | `@=业务名` | 带业务后缀的对象列表 | `@RequestBody @Valid List<UserUpdateReqVo> reqVos` | 指定业务场景的对象列表 |
-| `@#` | 数值型列表 | `@RequestBody @Valid List<Long> ids` | 数值型ID列表，默认参数名为`ids` |
-| `@#参数名` | 自定义数值型列表 | `@RequestBody @Valid List<Long> userIds` | 自定义参数名的数值型列表 |
-| `@$` | 字符串型列表 | `@RequestBody @Valid List<String> codes` | 字符串型编码列表，默认参数名为`codes` |
-| `@$参数名` | 自定义字符串型列表 | `@RequestBody @Valid List<String> orgCodes` | 自定义参数名的字符串型列表 |
+| `@#` | 单个 Long | `@RequestBody Long id` | 默认参数名 `id` |
+| `@$` | 单个 String | `@RequestBody String code` | 默认参数名 `code` |
+| `@!` | 单个 Boolean | `@RequestBody Boolean value` | 默认参数名 `value` |
+| `@~` | 单个 BigDecimal | `@RequestBody BigDecimal value` | 默认参数名 `value` |
+| `@=#` | Long 列表 | `@RequestBody @Valid List<Long> ids` | 默认参数名 `ids` |
+| `@=$` | String 列表 | `@RequestBody @Valid List<String> codes` | 默认参数名 `codes` |
+| `@=!` | Boolean 列表 | `@RequestBody @Valid List<Boolean> flags` | 默认参数名 `flags` |
+| `@=~` | BigDecimal 列表 | `@RequestBody @Valid List<BigDecimal> amounts` | 默认参数名 `amounts` |
+
+> 所有标量类型均支持自定义参数名，如 `@#myId`、`@=#userIds`。
 
 #### `?` - 查询参数（Query Parameters）
 
@@ -130,12 +136,18 @@ Order.GET./{id}.get.#id.获取订单详情
 |---------|---------|-------------|------|
 | `?` | 标准查询对象 | `@ParameterObject UserQueryVo queryVo` | 领域标准查询参数 |
 | `?业务名` | 带业务后缀的查询对象 | `@ParameterObject UserSimpleQueryVo queryVo` | 指定业务场景的查询参数 |
-| `?$` | 字符串型查询参数 | `@RequestParam("code") String code` | 默认字符串查询参数 |
-| `?$参数名` | 自定义字符串查询参数 | `@RequestParam("orgCode") String orgCode` | 自定义的字符串型查询参数 |
-| `?#` | 数值型查询参数 | `@RequestParam("number") Long number` | 默认数值查询参数 |
-| `?#参数名` | 自定义数值查询参数 | `@RequestParam("userId") Long userId` | 自定义的数值型查询参数 |
+| `?#` | Long 查询参数 | `@RequestParam("number") Long number` | 默认参数名 `number` |
+| `?$` | String 查询参数 | `@RequestParam("code") String code` | 默认参数名 `code` |
+| `?!` | Boolean 查询参数 | `@RequestParam("flag") Boolean flag` | 默认参数名 `flag` |
+| `?~` | BigDecimal 查询参数 | `@RequestParam("amount") BigDecimal amount` | 默认参数名 `amount` |
+| `?=#` | Long 列表查询参数 | `@RequestParam("ids") List<Long> ids` | 默认参数名 `ids` |
+| `?=$` | String 列表查询参数 | `@RequestParam("codes") List<String> codes` | 默认参数名 `codes` |
+| `?=!` | Boolean 列表查询参数 | `@RequestParam("flags") List<Boolean> flags` | 默认参数名 `flags` |
+| `?=~` | BigDecimal 列表查询参数 | `@RequestParam("amounts") List<BigDecimal> amounts` | 默认参数名 `amounts` |
 | `?*` | 文件型查询参数 | `@RequestParam("file") MultipartFile file` | 默认文件查询参数 |
 | `?*参数名` | 自定义文件查询参数 | `@RequestParam("document") MultipartFile document` | 自定义的文件型查询参数 |
+
+> 所有标量类型均支持自定义参数名，如 `?#userId`、`?=#userIds`。
 
 #### `%` - 路径参数（PathVariable）
 
@@ -158,7 +170,17 @@ Order.GET./{id}.get.#id.获取订单详情
 | `>+业务名` | 带业务后缀的分页对象 | `Result<Page<UserSimpleRespVo>>` | 返回指定业务场景的分页数据 |
 | `><` | 树形结构 | `Result<TreeNode<Long, UserTreeVo>>` | 返回树形结构数据 |
 | `><业务名` | 带业务后缀的树形结构 | `Result<TreeNode<Long, UserSimpleTreeVo>>` | 返回指定业务场景的树形数据 |
+| `>#` | Long 标量 | `Result<Long>` | 返回数值 |
+| `>$` | String 标量 | `Result<String>` | 返回字符串 |
+| `>!` | Boolean 标量 | `Result<Boolean>` | 返回布尔值 |
+| `>~` | BigDecimal 标量 | `Result<BigDecimal>` | 返回精确数值 |
+| `>=#` | Long 列表 | `Result<List<Long>>` | 返回数值列表 |
+| `>=$` | String 列表 | `Result<List<String>>` | 返回字符串列表 |
+| `>=!` | Boolean 列表 | `Result<List<Boolean>>` | 返回布尔列表 |
+| `>=~` | BigDecimal 列表 | `Result<List<BigDecimal>>` | 返回精确数值列表 |
 | 无`>`符号 | 空响应 | `Result<Void>` | 无返回数据的操作 |
+
+> 标量响应不生成 VO 文件，不支持业务后缀。
 
 #### 契约组合规则
 
@@ -176,11 +198,15 @@ User.PATCH./{id}.update.%id@update.更新用户       # %id + @update → @PathV
 User.DELETE./{id}.delete.%id.删除用户           # %id → @PathVariable id + Result<Void>
 
 # 批量操作
-User.DELETE..batchDelete.@#.批量删除用户        # @# → @RequestBody List<Long> ids + Result<Void>
-User.DELETE./batchDeleteUsers.batchDeleteUsers.@#userIds.按用户ID批量删除  # @#userIds → @RequestBody List<Long> userIds + Result<Void>
+User.DELETE..batchDelete.@=#.批量删除用户        # @=# → @RequestBody List<Long> ids + Result<Void>
+User.DELETE./batchDeleteUsers.batchDeleteUsers.@=#userIds.按用户ID批量删除  # @=#userIds → @RequestBody List<Long> userIds + Result<Void>
 User.POST./batchCreate.batchCreate.@=.批量创建用户          # @= → @RequestBody List<UserReqVo> reqVos + Result<Void>
-User.POST./importByCodes.importByCodes.@$.按编码导入用户  # @$ → @RequestBody List<String> codes + Result<Void>
-User.POST./importByOrgCodes.importByOrgCodes.@$orgCodes.按组织编码导入用户  # @$orgCodes → @RequestBody List<String> orgCodes + Result<Void>
+User.POST./importByCodes.importByCodes.@=$.按编码导入用户  # @=$ → @RequestBody List<String> codes + Result<Void>
+User.POST./importByOrgCodes.importByOrgCodes.@=$orgCodes.按组织编码导入用户  # @=$orgCodes → @RequestBody List<String> orgCodes + Result<Void>
+
+# 标量响应
+User.GET./count.count.?>#.获取用户数量           # ? + ># → UserQueryVo + Result<Long>
+User.GET./exists/{id}.exists.%id>!.判断用户是否存在  # %id + >! → @PathVariable id + Result<Boolean>
 
 # 查询操作
 User.GET..list.?>=.获取用户列表                 # ? + >= → @ParameterObject UserQueryVo + Result<List<UserRespVo>>
@@ -205,19 +231,24 @@ User.GET./{id}/profile.getProfile.%id>profile.获取用户档案    # %id + >pro
 ```
 
 #### 查询参数（Query Parameters）
-- `?$` → 自动生成字符串查询参数的说明注解
-- `?#` → 自动生成数值查询参数的说明注解
+- `?#` → 数值查询参数注解
+- `?$` → 字符串查询参数注解
+- `?!` → 布尔查询参数注解
+- `?~` → BigDecimal 查询参数注解
+- `?=#`/`?=$`/`?=!`/`?=~` → 标量数组查询参数注解
 
 ```java
 @Parameter(name = "keyword", description = "字符串查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
 @Parameter(name = "age", description = "数值查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "integer", format = "int64"))
+@Parameter(name = "active", description = "布尔查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"))
+@Parameter(name = "amount", description = "数值(BigDecimal)查询参数", in = ParameterIn.QUERY, schema = @Schema(type = "number"))
 ```
 
 #### 请求体参数（RequestBody）
-- `@#` → 自动生成数值列表的说明注解
-- `@$` → 自动生成字符串列表的说明注解
-- `@` → 自动生成单个对象的说明注解
-- `@=` → 自动生成对象列表的说明注解
+- `@#`/`@$`/`@!`/`@~` → 单标量请求体
+- `@=#`/`@=$`/`@=!`/`@=~` → 标量数组请求体
+- `@` → 单个 VO 对象请求体
+- `@=` → VO 对象列表请求体
 
 #### 生成的完整示例
 

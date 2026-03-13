@@ -113,33 +113,41 @@ const emit = defineEmits<{
 const tips = {
     '@': `<strong>@ - 请求体参数（RequestBody）</strong><br />
           用于定义 HTTP 请求体中的 JSON 数据结构：<br /><br />
-          <strong>基础格式：</strong><br />
+          <strong>VO 对象：</strong><br />
           • <code>@</code> → <code>@RequestBody @Valid UserReqVo reqVo</code> (单个业务对象)<br />
-          • <code>@业务名</code> → <code>@RequestBody @Valid UserUpdateReqVo reqVo</code> (指定业务场景)<br /><br />
-          <strong>列表格式：</strong><br />
+          • <code>@业务名</code> → <code>@RequestBody @Valid UserUpdateReqVo reqVo</code> (指定业务场景)<br />
           • <code>@=</code> → <code>@RequestBody @Valid List&lt;UserReqVo&gt; reqVos</code> (对象列表)<br />
           • <code>@=业务名</code> → <code>@RequestBody @Valid List&lt;UserUpdateReqVo&gt; reqVos</code> (带业务后缀)<br /><br />
-          <strong>数值列表：</strong><br />
-          • <code>@#</code> → <code>@RequestBody @Valid List&lt;Long&gt; ids</code> (默认参数名)<br />
-          • <code>@#参数名</code> → <code>@RequestBody @Valid List&lt;Long&gt; userIds</code> (自定义参数名)<br /><br />
-          <strong>字符串列表：</strong><br />
-          • <code>@$</code> → <code>@RequestBody @Valid List&lt;String&gt; codes</code> (默认参数名)<br />
-          • <code>@$参数名</code> → <code>@RequestBody @Valid List&lt;String&gt; orgCodes</code> (自定义参数名)`,
+          <strong>单标量：</strong><br />
+          • <code>@#</code> → <code>@RequestBody Long id</code> (默认参数名 id)<br />
+          • <code>@$</code> → <code>@RequestBody String code</code> (默认参数名 code)<br />
+          • <code>@!</code> → <code>@RequestBody Boolean value</code> (默认参数名 value)<br />
+          • <code>@~</code> → <code>@RequestBody BigDecimal value</code> (默认参数名 value)<br /><br />
+          <strong>标量数组：</strong><br />
+          • <code>@=#</code> → <code>@RequestBody @Valid List&lt;Long&gt; ids</code> (默认参数名 ids)<br />
+          • <code>@=$</code> → <code>@RequestBody @Valid List&lt;String&gt; codes</code> (默认参数名 codes)<br />
+          • <code>@=!</code> → <code>@RequestBody @Valid List&lt;Boolean&gt; flags</code> (默认参数名 flags)<br />
+          • <code>@=~</code> → <code>@RequestBody @Valid List&lt;BigDecimal&gt; amounts</code> (默认参数名 amounts)<br /><br />
+          <em>以上标量类型均支持自定义参数名，如 <code>@#myId</code>、<code>@=#userIds</code></em>`,
 
     '?': `<strong>? - 查询参数（Query Parameters）</strong><br />
           用于定义 HTTP 请求的查询条件：<br /><br />
           <strong>对象查询：</strong><br />
           • <code>?</code> → <code>@ParameterObject UserQueryVo queryVo</code> (标准查询对象)<br />
           • <code>?业务名</code> → <code>@ParameterObject UserSimpleQueryVo queryVo</code> (指定业务场景)<br /><br />
-          <strong>字符串查询：</strong><br />
-          • <code>?\$</code> → <code>@RequestParam("code") String code</code> (默认字符串参数)<br />
-          • <code>?\$参数名</code> → <code>@RequestParam("参数名") String 参数名</code> (自定义字符串参数)<br /><br />
-          <strong>数值查询：</strong><br />
+          <strong>标量查询：</strong><br />
           • <code>?#</code> → <code>@RequestParam("number") Long number</code> (默认数值参数)<br />
-          • <code>?#参数名</code> → <code>@RequestParam("参数名") Long 参数名</code> (自定义数值参数)<br /><br />
+          • <code>?\$</code> → <code>@RequestParam("code") String code</code> (默认字符串参数)<br />
+          • <code>?!</code> → <code>@RequestParam("flag") Boolean flag</code> (默认布尔参数)<br />
+          • <code>?~</code> → <code>@RequestParam("amount") BigDecimal amount</code> (默认精确数值参数)<br /><br />
+          <strong>标量数组查询：</strong><br />
+          • <code>?=#</code> → <code>@RequestParam("ids") List&lt;Long&gt; ids</code><br />
+          • <code>?=\$</code> → <code>@RequestParam("codes") List&lt;String&gt; codes</code><br />
+          • <code>?=!</code> → <code>@RequestParam("flags") List&lt;Boolean&gt; flags</code><br />
+          • <code>?=~</code> → <code>@RequestParam("amounts") List&lt;BigDecimal&gt; amounts</code><br /><br />
           <strong>文件查询：</strong><br />
-          • <code>?*</code> → <code>@RequestParam("file") MultipartFile file</code> (默认文件参数)<br />
-          • <code>?*参数名</code> → <code>@RequestParam("参数名") MultipartFile 参数名</code> (自定义文件参数)`,
+          • <code>?*</code> → <code>@RequestParam("file") MultipartFile file</code> (默认文件参数)<br /><br />
+          <em>以上标量类型均支持自定义参数名，如 <code>?#userId</code>、<code>?=#userIds</code></em>`,
 
     '%': `<strong>% - 路径参数（PathVariable）</strong><br />
           用于定义 URL 路径中的变量：<br /><br />
@@ -152,18 +160,22 @@ const tips = {
 
     '>': `<strong>&gt; - 响应类型（Response Type）</strong><br />
           用于定义 HTTP 响应体的数据结构：<br /><br />
-          <strong>单个对象响应：</strong><br />
+          <strong>VO 对象响应：</strong><br />
           • <code>&gt;</code> → <code>Result&lt;UserRespVo&gt;</code> (单个业务对象)<br />
-          • <code>&gt;业务名</code> → <code>Result&lt;UserSimpleRespVo&gt;</code> (指定业务场景)<br /><br />
-          <strong>列表响应：</strong><br />
+          • <code>&gt;业务名</code> → <code>Result&lt;UserSimpleRespVo&gt;</code> (指定业务场景)<br />
           • <code>&gt;=</code> → <code>Result&lt;List&lt;UserRespVo&gt;&gt;</code> (对象列表)<br />
-          • <code>&gt;=业务名</code> → <code>Result&lt;List&lt;UserSimpleRespVo&gt;&gt;</code> (指定业务场景)<br /><br />
-          <strong>分页响应：</strong><br />
           • <code>&gt;+</code> → <code>Result&lt;Page&lt;UserRespVo&gt;&gt;</code> (自动添加分页查询参数)<br />
-          • <code>&gt;+业务名</code> → <code>Result&lt;Page&lt;UserSimpleRespVo&gt;&gt;</code> (指定业务场景)<br /><br />
-          <strong>树形响应：</strong><br />
-          • <code>&gt;&lt;</code> → <code>Result&lt;TreeNode&lt;Long, UserTreeVo&gt;&gt;</code> (树形结构)<br />
-          • <code>&gt;&lt;业务名</code> → <code>Result&lt;TreeNode&lt;Long, UserSimpleTreeVo&gt;&gt;</code> (指定业务场景)<br /><br />
+          • <code>&gt;&lt;</code> → <code>Result&lt;TreeNode&lt;Long, UserTreeVo&gt;&gt;</code> (树形结构)<br /><br />
+          <strong>标量响应：</strong><br />
+          • <code>&gt;#</code> → <code>Result&lt;Long&gt;</code> (返回数值)<br />
+          • <code>&gt;$</code> → <code>Result&lt;String&gt;</code> (返回字符串)<br />
+          • <code>&gt;!</code> → <code>Result&lt;Boolean&gt;</code> (返回布尔值)<br />
+          • <code>&gt;~</code> → <code>Result&lt;BigDecimal&gt;</code> (返回精确数值)<br /><br />
+          <strong>标量列表响应：</strong><br />
+          • <code>&gt;=#</code> → <code>Result&lt;List&lt;Long&gt;&gt;</code><br />
+          • <code>&gt;=$</code> → <code>Result&lt;List&lt;String&gt;&gt;</code><br />
+          • <code>&gt;=!</code> → <code>Result&lt;List&lt;Boolean&gt;&gt;</code><br />
+          • <code>&gt;=~</code> → <code>Result&lt;List&lt;BigDecimal&gt;&gt;</code><br /><br />
           <strong>空响应：</strong><br />
           • 无 <code>&gt;</code> 符号 → <code>Result&lt;Void&gt;</code> (无返回数据的操作)`
 }
